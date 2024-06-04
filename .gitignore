@@ -1,3 +1,4 @@
 notebooks/*/input
 notebooks/*/output
 rss-urls.pdf
+.ipynb_checkpoints/
