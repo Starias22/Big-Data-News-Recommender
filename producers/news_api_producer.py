@@ -11,7 +11,7 @@ import redis
 from kafka import KafkaProducer
 
 # Load the configuration from the JSON file
-with open('config.json', 'r') as config_file:
+with open('../config.json', 'r') as config_file:
     config = json.load(config_file)
 # Init
 
@@ -115,6 +115,7 @@ for _, article in articles.iterrows():
         "title": article['title'],
         "description": article['description'],
         "source_name": article['source_name'],
+        "source_id": article['source_id'],
         "url": article['url'],
         "img_url": article['img_url'],
         "publication_date": article['publication_date'],

@@ -1,5 +1,10 @@
 from kafka import KafkaConsumer
 import json
+
+# Load the configuration from the JSON file
+with open('../config.json', 'r') as config_file:
+    config = json.load(config_file)
+
 # List of topics to subscribe to
 topics = ['NewsTopic'
           #, 'topic2'
@@ -8,7 +13,7 @@ topics = ['NewsTopic'
 # Initialize the consumer
 consumer = KafkaConsumer(
     *topics,  # Unpack the list of topics
-    bootstrap_servers='localhost:9092',
+    bootstrap_servers=config["kafka_bootstrap_servers"],
     auto_offset_reset='earliest', # Retrieve all the mesage published to the topic and still available
     #auto_offset_reset='latest', # Retrieve all the meaage published since the consumer started
     #auto_offset_reset='none', # 
