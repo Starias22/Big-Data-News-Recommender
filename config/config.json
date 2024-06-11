@@ -1,6 +1,8 @@
 {
     "_newsapi_key": "8308c1e8b30640468c1be43719b78124",
      "newsapi_key":" b95752dfc6374f0c9512b9f033ac4b42",
+     "newsdataapi_key":"pub_46149142ef04a265227717f0e3e10c60002be",
+
     "__newsapi_key":"f6cca8a85c1e4114b05f78c1e2c4edae",
     "languages": ["en","fr","es"],
     "page_size": 100,
@@ -9,7 +11,8 @@
     "page":1,
     "raw_news_topic":"RawNewsTopic",
     "null_replacements":{
-        
+      
+        "":null,
         "[Removed]": null,  
         "https://removed.com": null 
 },
