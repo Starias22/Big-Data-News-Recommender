@@ -7,7 +7,7 @@
     "hours_period":25,
     "query":"Trump OR Benin OR Niger OR Morocco OR Gaza OR France Ukraine OR a OR b",
     "page":1,
-    "news_topic":"RawNewsTopic",
+    "raw_news_topic":"RawNewsTopic",
     "null_replacements":{
         
         "[Removed]": null,  

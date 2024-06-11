@@ -123,7 +123,7 @@ for _, article in articles.iterrows():
         "lang": article['lang']
 
     }
-    producer.send(config['news_topic'], standardized_news)
+    producer.send(config['raw_news_topic'], standardized_news)
     n+=1
     print(n)
 

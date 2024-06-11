@@ -6,7 +6,7 @@ with open('../config/config.json', 'r') as config_file:
     config = json.load(config_file)
 
 # List of topics to subscribe to
-topics = ['NewsTopic'
+topics = [config["raw_news_topic"]
           #, 'topic2'
           ]
 
