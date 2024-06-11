@@ -2,3 +2,4 @@ notebooks/*/input
 notebooks/*/output
 rss-urls.pdf
 .ipynb_checkpoints/
+big_data_env
