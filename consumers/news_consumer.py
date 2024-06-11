@@ -24,13 +24,13 @@ consumer = KafkaConsumer(
 print(consumer)
 
 
-#n=0
+n=0
 
 
 # Consume messages from the subscribed topics
 for message in consumer:
     print(f"Received message from topic {message.topic}: {message.value}")
-    #n+=1
-    #print(n)
+    n+=1
+    print(n)
 
 #print(len(consumer))

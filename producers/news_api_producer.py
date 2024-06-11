@@ -35,7 +35,7 @@ num_results_dict = {}
 total_results = 0
 
 
-
+num_results=0
 for lang in config["languages"]:
     articles = newsapi.get_everything(q=config["query"],
                             from_param=from_param,
@@ -45,10 +45,11 @@ for lang in config["languages"]:
                             page=config["page"],
                             page_size=config["page_size"])
 
-    status,num_results,articles=articles['status'],articles['totalResults'],articles['articles']
+    status,_,articles=articles['status'],articles['totalResults'],articles['articles']
     print('Status:',status)
     print('Number of results:',num_results)
     
+    num_results=len(articles)
 
     if num_results!=0:
         articles = list(map(
@@ -59,21 +60,13 @@ for lang in config["languages"]:
                              },
             articles
         ))
-        #update_article = lambda article: {**article, 'source': article['source']['name']}
-
-        #updated_articles = articles.map(update_article).collect()
         
-        print('The lenght is:',len(articles))
-        print('xxxxx:',articles)
+        
         articles = pd.DataFrame(articles)
-        print('********The shape is:',articles.shape)
+        
 
         
-        articles.drop('source', axis=1, inplace=True)
-        articles.rename(columns={'urlToImage': 'img_url',
-                            'publishedAt': 
-                            'publication_date'},
-                            inplace=True)
+        
         articles['lang']=lang
         print(articles.keys())
         articles_list.append(articles)
@@ -93,6 +86,15 @@ else:
 
     articles.replace(config["null_replacements"], inplace=True)
 
+articles.drop('source', axis=1, inplace=True)
+articles.rename(columns={'urlToImage': 'img_url',
+                            'publishedAt': 
+                            'publication_date'},
+                            inplace=True)
+
+articles['producer'] = 'NewsAPI'
+
+
 print('Articles:',articles,sep="\n")
 
 print(status_dict)
@@ -108,7 +110,9 @@ producer = KafkaProducer(
 
 print(producer)
 
-n=0
+#n=0
+total_results=articles.shape[0]
+
 # Send articles to Kafka
 for _, article in articles.iterrows():
     standardized_news = {
@@ -120,20 +124,22 @@ for _, article in articles.iterrows():
         "url": article['url'],
         "img_url": article['img_url'],
         "publication_date": article['publication_date'],
-        "lang": article['lang']
+        "lang": article['lang'],
+        "producer": article['producer']
+
 
     }
     producer.send(config['raw_news_topic'], standardized_news)
-    n+=1
-    print(n)
+    #n+=1
+print(total_results,'news sent by NewsAPI producer')
 
 producer.flush()
 
-print('Done')
-
+#print(articles.shape)
+#print('Done')
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 # Store metadata to Redis
-current_id = redis_client.incr('news_id')
+current_id = redis_client.incr('date_id')
 metadata = {
     'id': current_id,
     'date': now.strftime('%Y-%m-%dT%H:%M:%S'),
