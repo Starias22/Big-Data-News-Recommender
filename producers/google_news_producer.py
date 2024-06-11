@@ -28,12 +28,18 @@ num_results_dict = {}
 total_results = 0
 
 for lang in config["languages"]:
-    googlenews = GoogleNews(period='25h', lang=lang)
-    googlenews.search(config["query"])
-    results = googlenews.result()
-    googlenews.clear()
 
-    if results:
+    results=[]
+
+    for query in config["query"]:
+        googlenews = GoogleNews(period='25h', lang=lang)
+
+        googlenews.search(query)
+        results.extend( googlenews.result(query))
+        googlenews.clear()
+    print(lang,'got',len(results))
+
+    if len(results):
         print(results[0]['datetime'])
         print(type(results[0]['datetime']))
 
