@@ -3,3 +3,4 @@ notebooks/*/output
 rss-urls.pdf
 .ipynb_checkpoints/
 big_data_env
+kafka-3.7.0-src
