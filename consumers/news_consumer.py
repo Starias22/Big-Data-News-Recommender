@@ -2,7 +2,7 @@ from kafka import KafkaConsumer
 import json
 
 # Load the configuration from the JSON file
-with open('../config.json', 'r') as config_file:
+with open('../config/config.json', 'r') as config_file:
     config = json.load(config_file)
 
 # List of topics to subscribe to
