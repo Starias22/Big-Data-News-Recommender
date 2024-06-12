@@ -27,7 +27,7 @@ status_dict = {}
 num_results_dict = {}
 total_results = 0
 
-for lang in config["languages"]:
+for lang in config["languages"][:1]:
 
     results=[]
 
