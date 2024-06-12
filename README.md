@@ -169,7 +169,7 @@ Install venv for virtual environments.
    using the following command:
 
    ```sh
-   bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 2 --replication-factor 1
+   bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 4 --replication-factor 1
    ```
 
    - Kafka producers will retrieve news data using news API, and send it to that topic.
