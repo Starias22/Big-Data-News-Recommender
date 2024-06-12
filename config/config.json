@@ -1,11 +1,11 @@
 {
     "__newsapi_key": "8308c1e8b30640468c1be43719b78124",
-    "newsapi_key":"1b13a2bb468b4f5e959edf839a9cb469"
+    "_newsapi_key":"1b13a2bb468b4f5e959edf839a9cb469"
 ,
      "___newsapi_key":" b95752dfc6374f0c9512b9f033ac4b42",
      "newsdataapi_key":"pub_46149142ef04a265227717f0e3e10c60002be",
 
-    "_newsapi_key":"f6cca8a85c1e4114b05f78c1e2c4edae",
+    "newsapi_key":"f6cca8a85c1e4114b05f78c1e2c4edae",
     "languages": ["en","fr","es"],
     "page_size": 100,
     "hours_period":25,
