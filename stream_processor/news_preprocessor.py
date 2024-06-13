@@ -34,18 +34,24 @@ class NewsPreprocessor:
             StructField("producer", StringType(), True),
         ])
 
-    def clean(self, raw_articles):
+    def filter(self,raw_articles):
         """
         Clean the raw articles by removing duplicate rows, rows with missing URL, content, or description.
-        Also clean and standardize the description text.
         """
         # Drop duplicate news
         articles=raw_articles.dropDuplicates()
         # Drop articles missing essential fields
         articles = articles.na.drop(subset=['url', 'content', 'description'])
+        return articles
+
+    def clean(self, filtered_articles):
+        """
+        Clean the desrcription of the articles.
+        """
+    
         
         # Clean and normalize the description
-        articles = articles.withColumn(
+        articles = filtered_articles.withColumn(
             "description_cleaned",
             trim(
                 regexp_replace(
@@ -96,8 +102,9 @@ class NewsPreprocessor:
 
     def preprocess(self, articles, to_str=True):
         """
-        Main preprocessing function to clean, transform, and preprocess the articles.
+        Main preprocessing function to filter, clean, transform, and transform the articles.
         """
-        cleaned_data = self.clean(articles)
+        filtered_articles=self.filter(articles)
+        cleaned_data = self.clean(filtered_articles)
         transformed_data = self.transform(cleaned_data, to_str=to_str)
         return transformed_data
