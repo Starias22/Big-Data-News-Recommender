@@ -12,5 +12,4 @@ news_data_api_producer.py
 models/
 test.py
 __pycache__
-stream_processor/output
-stream_processor/checkpoint
+checkpoint/
