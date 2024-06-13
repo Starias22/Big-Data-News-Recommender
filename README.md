@@ -237,7 +237,7 @@ After filling the requested information you will have a new key generated. Copy 
  
 7. **Create Kafka topics:**
 
-  a. Explanation
+  a. **Explanation**
   
   - Kafka producers will retrieve news data using news API and google news API. They will then send them to a KafKa topic called ***RawNewsTopic***.
     
@@ -247,7 +247,7 @@ After filling the requested information you will have a new key generated. Copy 
 
     -  A Kafka consumer will subscribe to that topic to retrieve the preprocessed news and recommand them to the users according to their preferences.
 
-  b. Topic creation
+  b. **Topic creation**
   
   -  Open a shell and create a Kafka topic named ***RawNewsTopic*** with 4 partitions and replication factor=1 (for now)
 
@@ -261,7 +261,8 @@ After filling the requested information you will have a new key generated. Copy 
    ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
    ```
-  c. Check the topics list
+  c. **Check the topics list**
+  
    Use the following command to list the topics available. You should see ***RawNewsTopic*** and ***ProcessedNewsTopic*** listed.
 
    ```sh
