@@ -13,3 +13,4 @@ models/
 test.py
 __pycache__
 checkpoint/
+notebooks/
