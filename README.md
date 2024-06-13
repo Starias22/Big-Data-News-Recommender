@@ -275,38 +275,60 @@ After filling the requested information you will have a new key generated. Copy 
 
 2. **Run the application:**
 
-- Start the producers:
+a. Start the producers:
 
 Move to the producers folder and start the producers
 
-a. Start Google news produder
+- Start Google news producer
 
-     ```sh
+     ```py
      python3 google_news_producer.py
      ```
 
-b. Start News API producer
+- Start News API producer
 
-     ```sh
+     ```py
      python3 news_api_producer.py
      ```
 
-   - Start the  raw news consumer:
+b. Start the  raw news consumer:
  Move to the consumer folder and start the raw news consumer.
 
-     ```sh
-     python3 consumers/news_consumer.py
+     ```py
+     python3 raw_news_consumer.py
      ```
 
      You can use <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop it.
 
-   - Start the stream processor:
+c. Start the stream processor:
 
  Move to the stream processor folder and start the spark news stream processor.
  
-     ```sh
+     ```py
      python3 spark_stream_processor.py
      ```
+
+Let it active
+
+d. Start the google news producer one again
+
+Open a new tab, navigate to the producers folder and start the google news producer once again.
+
+```py
+     python3 google_news_producer.py
+```
+
+Now go to the spark stream processor tab. You should see the stream processor processing the news sent to Kafka by google news producer.
+
+e. Start the processed news consumer
+
+Navigate to the consumers folder and start the processed news consumer.
+
+```py
+     python3 processed_news_consumer.py
+```
+
+You should see the processed news displayed.
 
 
 
