@@ -238,14 +238,13 @@ After filling the requested information you will have a new key generated. Copy 
 7. **Create Kafka topics:**
 
   1. Explanation
-     
-    - We Kafka producers will retrieve news data using news API and google news API. They will then send them to a KafKa topic called ***RawNewsTopic***.
+     - We Kafka producers will retrieve news data using news API and google news API. They will then send them to a KafKa topic called ***RawNewsTopic***.
     
-     - A spark streaming processor will suscribe to that topic to retrieve news in real-time.
+      - A spark streaming processor will suscribe to that topic to retrieve news in real-time.
      
-     Then it will filter the news by removing duplicates and news without description, content or URL. Then it will save the filtered news to a database, process by doing tasks such as preprocessing(cleaning, tokennization, lemmatization, stop words removals), sentiment analysis, topic distribution and categorization of the news using their description. Then, it will send the processed news back to  Kafka, especiallly another Kafka topic called ***ProcessedNewsTopic***.
+       Then it will filter the news by removing duplicates and news without description, content or URL. Then it will save the filtered news to a database, process by doing tasks such as preprocessing(cleaning, tokennization, lemmatization, stop words removals), sentiment analysis, topic distribution and categorization of the news using their description. Then, it will send the processed news back to  Kafka, especiallly another Kafka topic called ***ProcessedNewsTopic***.
 
-   -  A Kafka consumer will subscribe to that topic to retrieve the preprocessed news and recommand them to the users according to their preferences.
+      -  A Kafka consumer will subscribe to that topic to retrieve the preprocessed news and recommand them to the users according to their preferences.
 
   2. Topic creation
    -  Open a shell and create a Kafka topic named ***RawNewsTopic*** with 4 partitions and replication factor=1 (for now)
@@ -255,10 +254,7 @@ After filling the requested information you will have a new key generated. Copy 
    ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 4 --replication-factor 1
    ```
-
-
-
-     -  Open a new shell and create another Kafca topic called **ProcessedNewsTopic** . Use the following command to do it.
+-  Open a new shell and create another Kafca topic called **ProcessedNewsTopic** . Use the following command to do it.
 
       ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
