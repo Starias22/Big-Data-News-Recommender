@@ -202,7 +202,7 @@ After filling the requested information you will have a new key generated. Copy 
    Now you can move the compressed file downloaded from the repository.
 
     ```sh
-   mv mv kafka-3.7.0-src.tgz ..
+   mv kafka-3.7.0-src.tgz ..
    ```
    Then move to the extracted folder.
 
