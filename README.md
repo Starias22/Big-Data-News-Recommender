@@ -148,7 +148,7 @@ Install venv for virtual environments.
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/yourusername/Big-Data-News-Recommender.git
+   git clone https://github.com/Starias22/Big-Data-News-Recommender.git
    cd Big-Data-News-Recommender
    ```
 
