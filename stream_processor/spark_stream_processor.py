@@ -72,10 +72,13 @@ news_df = kafka_df.selectExpr("CAST(value AS STRING) as json") \
     .select(from_json(col("json"), news_processor.schema).alias("data")) \
     .select("data.*")
 
+# Filter the news articles to remove duplicates and news without URL, content or description
+filtered_news_df = news_processor.filter(news_df)
 
+# A code will be added to send the filtered news to a database or HDFS
 
-# Preprocess the data
-preprocessed_news_df = news_processor.preprocess(news_df)
+# Preprocess the filtered news
+preprocessed_news_df = news_processor.preprocess(filtered_news_df)
 
 # UDF for sentiment analysis
 sentiment_udf = udf(get_sentiment_score, DoubleType())
@@ -84,21 +87,38 @@ sentiment_udf = udf(get_sentiment_score, DoubleType())
 df = preprocessed_news_df.withColumn("sentiment_score", sentiment_udf(preprocessed_news_df["description_filtered_str"]))
 
 # Get topic distribution and drop unnecessary columns
-df1 = get_topic_distribution(df)
-df1 = df1.drop('rawFeatures').drop('features')
+df = get_topic_distribution(df)
+df = df.drop('rawFeatures').drop('features')
 
 # Categorize news articles
-df2 = categorize_news(df1)
-df3 = df2.withColumn("category", map_prediction_to_category_udf(df2["prediction"]))
+df = categorize_news(df)
 
+df = df.withColumn("category", map_prediction_to_category_udf(df["prediction"]))
+df=df.select(["title","description","publication_date",
+                          "source_name","source_id","url","img_url","lang",
+                          "sentiment_score","category",
+                          "topicDistribution","most_dominant_topic",
+                          
+                          ])
+processed_news_json_df = df.selectExpr("to_json(struct(*)) AS value")
+
+# Add a logic here to send the processed news back to a Kafka topic
 # Write stream to console
-query = df3.select(['publication_date','description', 'sentiment_score', 'most_dominant_topic', 'category', 'prediction']) \
+"""query = processed_news_df.select(['publication_date','description', 'sentiment_score', 'most_dominant_topic', 'category', 'prediction']) \
     .writeStream \
     .outputMode("append") \
     .format("console") \
     .trigger(processingTime="40 seconds") \
     .option("truncate", "false") \
     .option("numRows", 30) \
+    .start()"""
+
+# Write the processed data to a Kafka topic
+query = processed_news_json_df.writeStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", config['kafka_bootstrap_servers']) \
+    .option("topic", config["processed_news_topic"]) \
+    .option("checkpointLocation", "../checkpoint/") \
     .start()
 
 # Await termination of the query
