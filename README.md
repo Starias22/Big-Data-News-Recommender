@@ -238,6 +238,7 @@ After filling the requested information you will have a new key generated. Copy 
 7. **Create Kafka topics:**
 
   a. Explanation
+  
      - Kafka producers will retrieve news data using news API and google news API. They will then send them to a KafKa topic called ***RawNewsTopic***.
     
       - A spark streaming processor will suscribe to that topic to retrieve news in real-time.
