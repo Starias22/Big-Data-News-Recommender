@@ -2,7 +2,7 @@ import json
 import numpy as np
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, udf, from_json
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, ArrayType, IntegerType
+from pyspark.sql.types import StringType, DoubleType, ArrayType, IntegerType
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk import WordNetLemmatizer
 from news_preprocessor import NewsPreprocessor
