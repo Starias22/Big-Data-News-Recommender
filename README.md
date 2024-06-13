@@ -168,6 +168,14 @@ Install venv for virtual environments.
 4. **Download the models folder***
 Download the models zip file  from  [my drive](https://drive.google.com/drive/folders/1xyo_IqACn7A9cOo8sq9H2FeBptWwPM8y?usp=drive_link) , unzip it and put the extracted folder  in the current working directory(the repository)***
 
+5. **Generate a NewsAPI key**
+
+You need a NewsAPI key. You can generate one [here](https://newsapi.org/register).
+
+After filling the requested information you will have a new key generated. Copy and paste it in a safe place.
+5. **Set up your config.json file**
+
+   Rename the file config/config_template.json to config/config.json and replace the value of the key "news_api_key" from "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" to the key you have just generated.
 
 ## Kafka Setup
 
@@ -227,9 +235,20 @@ Download the models zip file  from  [my drive](https://drive.google.com/drive/fo
    bin/kafka-server-start.sh config/server.properties
    ```
  
-7. **Create a Kafka topic:**
+7. **Create Kafka topics:**
 
-   Create a Kafka topic named ***RawNewsTopic*** with 4 partitions and replication factor=1 (for now)
+  1. Explanation
+     
+    - We Kafka producers will retrieve news data using news API and google news API. They will then send them to a KafKa topic called ***RawNewsTopic***.
+    
+     - A spark streaming processor will suscribe to that topic to retrieve news in real-time.
+     
+     Then it will filter the news by removing duplicates and news without description, content or URL. Then it will save the filtered news to a database, process by doing tasks such as preprocessing(cleaning, tokennization, lemmatization, stop words removals), sentiment analysis, topic distribution and categorization of the news using their description. Then, it will send the processed news back to  Kafka, especiallly another Kafka topic called ***ProcessedNewsTopic***.
+
+   -  A Kafka consumer will subscribe to that topic to retrieve the preprocessed news and recommand them to the users according to their preferences.
+
+  2. Topic creation
+   -  Open a shell and create a Kafka topic named ***RawNewsTopic*** with 4 partitions and replication factor=1 (for now)
 
    using the following command:
 
@@ -237,17 +256,15 @@ Download the models zip file  from  [my drive](https://drive.google.com/drive/fo
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 4 --replication-factor 1
    ```
 
-   ```sh
+
+
+     -  Open a new shell and create another Kafca topic called **ProcessedNewsTopic** . Use the following command to do it.
+
+      ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
    ```
-
-   - Kafka producers will retrieve news data using news API, and send it to that topic.
-
-   - Kafka consumers will subscribe to that topic to retrieve the news sent by Kafka producers.
-
-   - A spark streaming processor will retrieve the news in real-time, process them and send the processed news back to Kafka (to another Kafka topic).
-
-   Use the following command to list the topics available. You should see ***RawNewsTopic*** listed.
+  3. Check the topics list
+   Use the following command to list the topics available. You should see ***RawNewsTopic*** and ProcessedNewsTopic listed.
 
    ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
