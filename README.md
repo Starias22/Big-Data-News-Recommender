@@ -275,7 +275,7 @@ After filling the requested information you will have a new key generated. Copy 
 
 2. **Run the application:**
 
-   - Start the producers:
+- Start the producers:
 
 Move to the producers folder and start the producers
 
@@ -283,6 +283,7 @@ a. Start Google news produder
      ```sh
      python3 google_news_producer.py
      ```
+
 b. Start News API producer
      ```sh
      python3 news_api_producer.py
