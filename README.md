@@ -165,7 +165,8 @@ Install venv for virtual environments.
    pip install -r requirements.txt
    ```
 
-4. ** Download the models folder  from  [my drive](https://drive.google.com/drive/folders/1xyo_IqACn7A9cOo8sq9H2FeBptWwPM8y?usp=drive_link) and put it in the current working directory(the repository)
+4. **Download the models folder***
+Download the models zip file  from  [my drive](https://drive.google.com/drive/folders/1xyo_IqACn7A9cOo8sq9H2FeBptWwPM8y?usp=drive_link) , unzip it and put the extracted folder  in the current working directory(the repository)***
 
 
 ## Kafka Setup
