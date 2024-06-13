@@ -30,7 +30,7 @@ total_results = 0
 
 for lang in config["languages"][:1]:
     results = []
-    for query in config["query"]:
+    for query in config["query"][:1]:
         response = newsapi.get_everything(
             q=query,
             from_param=from_param,
@@ -65,7 +65,7 @@ for lang in config["languages"][:1]:
         num_results_dict[lang] = len(results)
         total_results += len(results)
 
-if articles_list:
+if len(articles_list)!=0:
     articles = pd.concat(articles_list, axis=0, ignore_index=True)
     articles.replace(config["null_replacements"], inplace=True)
     articles.rename(columns={
@@ -77,11 +77,18 @@ if articles_list:
 else:
     articles = pd.DataFrame()
 
+fmt="%Y-%m-%dT%H:%M:%SZ"
+# Replace NaN with None and convert datetime to string
+articles['publication_date'] = articles['publication_date'].apply(
+    lambda x:  int(  datetime.strptime(x,fmt ).timestamp() ))
+
 print('Articles:', articles, sep="\n")
 
 print(status_dict)
 print(num_results_dict)
 print(total_results)
+
+print(articles['publication_date'])
 
 # Kafka Producer
 producer = KafkaProducer(
@@ -114,7 +121,7 @@ redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 current_id = redis_client.incr('date_id')
 metadata = {
     'id': current_id,
-    'date': now.strftime('%Y-%m-%dT%H:%M:%S'),
+    'date': int(now.timestamp()),
     'status': status_dict,
     'num_results': num_results_dict,
     'total': total_results

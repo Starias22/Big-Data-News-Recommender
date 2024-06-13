@@ -31,7 +31,7 @@ for lang in config["languages"][:1]:
 
     results=[]
 
-    for query in config["query"]:
+    for query in config["query"][:1]:
         googlenews = GoogleNews(period='25h', lang=lang)
 
         googlenews.search(query)
@@ -66,10 +66,21 @@ articles.rename(columns={
     'media': 'source_name'
 }, inplace=True)
 
+fmt='%Y-%m-%d %H:%M:%S'
 # Replace NaN with None and convert datetime to string
 articles['publication_date'] = articles['publication_date'].apply(
-    lambda x: x if isinstance(x, str) else (x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
+    lambda x: x if isinstance(x, str) else ( int(  x.timestamp()  ) if pd.notna(x) else None)
 )
+
+# Given datetime string
+#date_str = "2024-06-13 14:27:58"
+
+# Convert to datetime object
+#dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+
+# Convert datetime object to timestamp in seconds
+#timestamp_seconds = int(dt.timestamp())
+
 
 articles['source_id'] = articles['author'] = articles['source_name']
 articles['content'] = 'From Google News API'
@@ -118,7 +129,7 @@ redis_client = redis.StrictRedis(host='localhost', port=6379, db=1)
 current_id = redis_client.incr('day_id')
 metadata = {
     'id': current_id,
-    'date': now.strftime('%Y-%m-%dT%H:%M:%S'),
+    'date': int(now.timestamp()),
     
     'num_results': num_results_dict,
     'total': total_results
