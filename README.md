@@ -277,23 +277,34 @@ After filling the requested information you will have a new key generated. Copy 
 
    - Start the producers:
 
+Move to the producers folder and start the producers
+
+a. Start Google news produder
      ```sh
-     python3 producers/news_producer.py
+     python3 google_news_producer.py
+     ```
+b. Start News API producer
+     ```sh
+     python3 news_api_producer.py
      ```
 
-   - Start the consumers:
+   - Start the  raw news consumer:
+ Move to the consumer folder and start the raw news consumer.
 
      ```sh
      python3 consumers/news_consumer.py
      ```
 
-   - Start the stream processors:
+     You can use <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop it.
 
+   - Start the stream processor:
+
+ Move to the stream processor folder and start the spark news stream processor.
      ```sh
-     python3 stream_processors/recommender.py
+     python3 spark_stream_processor.py
      ```
 
-   Adjust the script paths based on your project's structure and scripts.
+
 
 ## Contributing
 
