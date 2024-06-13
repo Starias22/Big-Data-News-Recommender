@@ -1,0 +1,24 @@
+{
+    "newsapi_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "languages": ["en","fr","es"],
+    "page_size": 100,
+    "hours_period":25,
+    "query":["finance","economy","business","technology",
+    "biology","science","politics","family","ecology","health","coronavirus","war","Gaza",
+    "Israel","Palsestine","Ukraine","Benin","Niger","Morocco","sports","Trump",
+    "Biden","education","crime","justice","religion","travel","weddings","styles","nation"
+  ],
+    "page":1,
+    "raw_news_topic":"RawNewsTopic",
+    "processed_news_topic":"ProcessedNewsTopic",
+    "null_replacements":{
+      
+        "":null,
+        "[Removed]": null,  
+        "https://removed.com": null 
+},
+"kafka_bootstrap_servers": "localhost:9092",
+"spark_version":"3.5.1"
+
+  }
+  
