@@ -8,6 +8,6 @@ hash.txt
 news_data_api_producer.py
 models
 test.py
-spaark_stream_processor/__pycache__
-spaark_stream_processor/output
-spaark_stream_processor/checkpoint
+__pycache__
+spark_stream_processor/output
+spark_stream_processor/checkpoint
