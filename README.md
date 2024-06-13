@@ -90,7 +90,7 @@ We will edit Java home in .bashrc file.
 Add the following line to your .bashrc
 
 ```sh
-   nano .bashrc
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/
 ```
 
 Then save the file and exit.
@@ -186,13 +186,19 @@ Install venv for virtual environments.
    ```sh
    tar -xvf kafka-3.7.0-src.tgz
    ```
+
+   Now you can move the compressed file downloaded from the repository.
+
+    ```sh
+   mv mv kafka-3.7.0-src.tgz ..
+   ```
    Then move to the extracted folder.
 
    ```sh
    cd kafka-3.7.0-src
    ```
 
-3. **Build Kafka:**
+4. **Build Kafka:**
 
    The Kafka source you've just installed needs to be built using Gradle. Do it with the following command.
 
@@ -201,7 +207,7 @@ Install venv for virtual environments.
    ```
    where 2.13.12 needs to be replaced with a Gradle version compatible with your Java. It will take some time. Just wait.
 
-4. **Start Zookeeper:**
+5. **Start Zookeeper:**
 
    Kafka requires Zookeeper to be running. Start Zookeeper with the following command:
 
@@ -209,7 +215,7 @@ Install venv for virtual environments.
    bin/zookeeper-server-start.sh config/zookeeper.properties
    ```
 
-5. **Start Kafka:**
+6. **Start Kafka:**
 
    Start a Kafka server with the following command:
 
@@ -217,7 +223,7 @@ Install venv for virtual environments.
    bin/kafka-server-start.sh config/server.properties
    ```
  
-6. **Create a Kafka topic:**
+7. **Create a Kafka topic:**
 
    Create a Kafka topic named ***RawNewsTopic*** with 4 partitions and replication factor=1 (for now)
 
