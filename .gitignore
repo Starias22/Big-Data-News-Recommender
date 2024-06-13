@@ -1,12 +1,12 @@
-notebooks/*/input
-notebooks/*/output
+notebooks/*/input # To drive
+notebooks/*/output # To drive
 rss-urls.pdf
 .ipynb_checkpoints/
 big_data_env
 kafka-3.7.0-src
 hash.txt
 news_data_api_producer.py
-models/
+models/ # To drive
 test.py
 __pycache__
 stream_processor/output
