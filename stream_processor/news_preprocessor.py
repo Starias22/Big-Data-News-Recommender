@@ -100,11 +100,10 @@ class NewsPreprocessor:
         
         return filtered_data
 
-    def preprocess(self, articles, to_str=True):
+    def preprocess(self,filtered_articles, to_str=True):
         """
-        Main preprocessing function to filter, clean, transform, and transform the articles.
+        Main preprocessing function to clean and transform the filtered articles.
         """
-        filtered_articles=self.filter(articles)
         cleaned_data = self.clean(filtered_articles)
         transformed_data = self.transform(cleaned_data, to_str=to_str)
         return transformed_data
