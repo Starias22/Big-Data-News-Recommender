@@ -36,11 +36,13 @@ class NewsPreprocessor:
 
     def clean(self, raw_articles):
         """
-        Clean the raw articles by removing rows with missing URL, content, or description.
+        Clean the raw articles by removing duplicate rows, rows with missing URL, content, or description.
         Also clean and standardize the description text.
         """
+        # Drop duplicate news
+        articles=raw_articles.dropDuplicates()
         # Drop articles missing essential fields
-        articles = raw_articles.na.drop(subset=['url', 'content', 'description'])
+        articles = articles.na.drop(subset=['url', 'content', 'description'])
         
         # Clean and normalize the description
         articles = articles.withColumn(
