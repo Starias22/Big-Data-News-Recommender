@@ -292,6 +292,7 @@ Move to the producers folder and start the producers
      ```
 
 b. Start the  raw news consumer:
+
  Move to the consumer folder and start the raw news consumer.
 
      ```py
@@ -318,7 +319,9 @@ Open a new tab, navigate to the producers folder and start the google news produ
      python3 google_news_producer.py
 ```
 
-Now go to the spark stream processor tab. You should see the stream processor processing the news sent to Kafka by google news producer.
+Now go to the spark stream processor tab.
+
+You should see the stream processor processing the news sent to Kafka by google news producer.
 
 e. Start the processed news consumer
 
