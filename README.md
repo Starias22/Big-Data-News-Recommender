@@ -48,7 +48,7 @@ First of all check if you have Java 21 installed.
 java -version
 ```
 
-If you dont't have any version of Java installed use this command to install Java21
+If you don't have any version of Java installed use this command to install Java21
 
 ```sh
 sudo apt install openjdk-21-jdk
@@ -164,6 +164,9 @@ Install venv for virtual environments.
    ```sh
    pip install -r requirements.txt
    ```
+
+4. ** Download the models folder  from  [my drive](https://drive.google.com/drive/folders/1xyo_IqACn7A9cOo8sq9H2FeBptWwPM8y?usp=drive_link) and put it in the current working directory(the repository)
+
 
 ## Kafka Setup
 
