@@ -14,3 +14,4 @@ test.py
 __pycache__
 checkpoint/
 notebooks/
+config/config.json
