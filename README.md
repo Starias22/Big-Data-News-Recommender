@@ -57,7 +57,7 @@ Check your Java version
 ```sh
 java -version
 ```
-![Alt text](data/java_version.png)
+![Alt text](resources/java_version.png)
 
 - If you have a version of Java greater than 8 and different from 21, go to the [Java-Gradle compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html) and note the Gradle version compatible with your Java version. 
 
