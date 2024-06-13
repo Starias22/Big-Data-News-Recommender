@@ -245,7 +245,7 @@ After filling the requested information you will have a new key generated. Copy 
      
        Then it will filter the news by removing duplicates and news without description, content or URL. Then it will save the filtered news to a database, process by doing tasks such as preprocessing(cleaning, tokennization, lemmatization, stop words removals), sentiment analysis, topic distribution and categorization of the news using their description. Then, it will send the processed news back to  Kafka, especiallly another Kafka topic called ***ProcessedNewsTopic***.
 
-    -  A Kafka consumer will subscribe to that topic to retrieve the preprocessed news and recommand them to the users according to their preferences.
+  - A Kafka consumer will subscribe to that topic to retrieve the preprocessed news and recommand them to the users according to their preferences.
 
   b. **Topic creation**
   
