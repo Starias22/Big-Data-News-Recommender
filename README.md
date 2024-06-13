@@ -280,11 +280,13 @@ After filling the requested information you will have a new key generated. Copy 
 Move to the producers folder and start the producers
 
 a. Start Google news produder
+
      ```sh
      python3 google_news_producer.py
      ```
 
 b. Start News API producer
+
      ```sh
      python3 news_api_producer.py
      ```
@@ -301,6 +303,7 @@ b. Start News API producer
    - Start the stream processor:
 
  Move to the stream processor folder and start the spark news stream processor.
+ 
      ```sh
      python3 spark_stream_processor.py
      ```
