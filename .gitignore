@@ -9,5 +9,5 @@ news_data_api_producer.py
 models
 test.py
 __pycache__
-spark_stream_processor/output
-spark_stream_processor/checkpoint
+stream_processor/output
+stream_processor/checkpoint
