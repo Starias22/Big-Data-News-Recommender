@@ -34,6 +34,8 @@ sudo apt install python3-pip
 
 #### Java>=8
 
+##### Installation
+
 A version of Java newer or equal to 8 need to be installed.
 
 We will need Java to build our Kafka source using Gradle, which works with at least Java 8.
@@ -63,6 +65,57 @@ java -version
 
 - Otherwise, install Java21
 
+  For the following let us suppose you have installed. Java 21
+
+##### Home configuration
+
+Now that Java is instaled we need to set it as default and to configure the home path
+
+1. Set Java 21 as default by running the following command, which will prompt you yo selet the Java version you want to select as the fault.
+
+```sh
+    sudo update-alternatives --config java
+```
+
+2. Now we will configure Java home path
+
+In my case, this is the path to my Java21: /usr/lib/jvm/java-21-openjdk-amd64/
+
+We will edit Java home in .bashrc file.
+
+```sh
+   nano .bashrc
+```
+
+Add the following line to your .bashrc
+
+```sh
+   nano .bashrc
+```
+
+Then save the file and exit.
+
+Now apply the modification by executing the following command
+
+```sh
+   source .bashrc
+```
+
+3. Check Java version by running the command
+
+```sh
+   java -version
+```
+
+4. Check Java home path
+
+ ```sh
+   echo $JAVA_HOME
+```
+
+Java 21 should be your default Java now.
+
+
 #### Redis
 
 We need Redis to store metadata in our application.
@@ -77,6 +130,8 @@ echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://pack
 sudo apt-get update
 sudo apt-get install redis
 ```
+
+You can run `redis-cli` to check Redis installation and then  <kbd>Ctrl</kbd> + <kbd>D</kbd> to exit Redis CLI.
 
 - For other installation alternatives, go to [Redis installation on Linux](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-linux/).
 
