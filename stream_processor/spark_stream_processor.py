@@ -96,7 +96,7 @@ df = categorize_news(df)
 print('We are here')
 df = df.withColumn("category", map_prediction_to_category_udf(df["prediction"]))
 df=df.select(["id","title","features","description","publication_date",
-                          "source_name","source_id","url","img_url","lang",
+                          "source_name","source_id","author","url","img_url","lang",
                           "sentiment_score","category",
                           "topicDistribution","most_dominant_topic",
                           
