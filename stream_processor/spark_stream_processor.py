@@ -88,13 +88,14 @@ df = preprocessed_news_df.withColumn("sentiment_score", sentiment_udf(preprocess
 
 # Get topic distribution and drop unnecessary columns
 df = get_topic_distribution(df)
-df = df.drop('rawFeatures').drop('features')
+df = df.drop('rawFeatures','features')
 
 # Categorize news articles
 df = categorize_news(df)
 
+print('We are here')
 df = df.withColumn("category", map_prediction_to_category_udf(df["prediction"]))
-df=df.select(["title","description","publication_date",
+df=df.select(["id","title","features","description","publication_date",
                           "source_name","source_id","url","img_url","lang",
                           "sentiment_score","category",
                           "topicDistribution","most_dominant_topic",
@@ -104,15 +105,18 @@ processed_news_json_df = df.selectExpr("to_json(struct(*)) AS value")
 
 # Add a logic here to send the processed news back to a Kafka topic
 # Write stream to console
-"""query = processed_news_df.select(['publication_date','description', 'sentiment_score', 'most_dominant_topic', 'category', 'prediction']) \
+"""query = df.select('features') \
     .writeStream \
     .outputMode("append") \
     .format("console") \
-    .trigger(processingTime="40 seconds") \
+    .trigger(processingTime="0 seconds") \
     .option("truncate", "false") \
     .option("numRows", 30) \
-    .start()"""
+    .start()
+"""
 
+print('News proccessed successfully')
+print('Sending the news messages to Kafka')
 # Write the processed data to a Kafka topic
 query = processed_news_json_df.writeStream \
     .format("kafka") \
