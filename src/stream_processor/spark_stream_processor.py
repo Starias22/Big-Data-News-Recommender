@@ -122,7 +122,7 @@ query = processed_news_json_df.writeStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", config['kafka_bootstrap_servers']) \
     .option("topic", config["processed_news_topic"]) \
-    .option("checkpointLocation", "../checkpoint/") \
+    .option("checkpointLocation", "../../checkpoint/") \
     .start()
 
 # Await termination of the query
