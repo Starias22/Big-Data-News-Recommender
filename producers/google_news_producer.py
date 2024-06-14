@@ -72,16 +72,6 @@ articles['publication_date'] = articles['publication_date'].apply(
     lambda x: x if isinstance(x, str) else ( int(  x.timestamp()  ) if pd.notna(x) else None)
 )
 
-# Given datetime string
-#date_str = "2024-06-13 14:27:58"
-
-# Convert to datetime object
-#dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
-
-# Convert datetime object to timestamp in seconds
-#timestamp_seconds = int(dt.timestamp())
-
-
 articles['source_id'] = articles['author'] = articles['source_name']
 articles['content'] = 'From Google News API'
 articles['producer'] = 'GoogleNewsAPI'
@@ -101,9 +91,27 @@ producer = KafkaProducer(
 
 print(producer)
 
+# Initialize Redis client
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=1)
+
+
+
+
+# Retrieve the current max news ID from Redis
+max_news_id = redis_client.get('max_news_id')
+
+print('Max news id is:',max_news_id)
+if max_news_id is None:
+    max_news_id = 0
+else:
+    max_news_id = int(json.loads(max_news_id)['value'])
+
+news_id=max_news_id+1
+
 #n = 0
 # Send articles to Kafka
 for _, article in articles.iterrows():
+    
     standardized_news = {
         "title": article['title'],
         "description": article['description'],
@@ -114,25 +122,30 @@ for _, article in articles.iterrows():
         "img_url": article['img_url'],
         "publication_date": article['publication_date'],
         "lang": article['lang'],
-        "producer":article['producer'] 
+
+        "id": f"google_news_{news_id}"
 
     }
     producer.send(config['raw_news_topic'], standardized_news)
-    #n += 1
+    news_id+=1
+
 
 producer.flush()
+
+
 print(total_results,'news sent by GoogleNewsAPI producer')
 
+# Update the max_news_id in Redis
+redis_client.set('max_news_id', json.dumps({'value':news_id-1}))
 
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=1)
 # Store metadata to Redis
-current_id = redis_client.incr('day_id')
+current_id = redis_client.incr('id')
 metadata = {
     'id': current_id,
-    'date': int(now.timestamp()),
-    
+    'date_time': int(now.timestamp()),
     'num_results': num_results_dict,
-    'total': total_results
+    'total': total_results,
+    #'max_news_id':max_news_id
 }
-redis_client.set(f'news_metadata:{current_id}', json.dumps(metadata))
+redis_client.set(f'google_news_api_metadata:{current_id}', json.dumps(metadata))
 print('Metadata stored to Redis:', metadata)
