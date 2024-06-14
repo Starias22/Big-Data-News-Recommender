@@ -73,7 +73,6 @@ if len(articles_list)!=0:
         'publishedAt': 'publication_date'
     }, inplace=True)
 
-    articles['producer'] = 'NewsAPI'
 else:
     articles = pd.DataFrame()
 
@@ -96,6 +95,22 @@ producer = KafkaProducer(
     value_serializer=lambda v: json.dumps(v).encode('utf-8')
 )
 
+# Initialize Redis client
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+
+# Retrieve the current max news ID from Redis
+max_news_id = redis_client.get('max_news_id')
+
+print('Max news id is:',max_news_id)
+if max_news_id is None:
+    max_news_id = 0
+else:
+    max_news_id = int(json.loads(max_news_id)['value'])
+
+news_id=max_news_id+1
+
+
 # Send articles to Kafka
 for _, article in articles.iterrows():
     standardized_news = {
@@ -108,17 +123,25 @@ for _, article in articles.iterrows():
         "img_url": article['img_url'],
         "publication_date": article['publication_date'],
         "lang": article['lang'],
-        "producer": article['producer']
+        "id": f"news_api_{news_id}"
+
+        #"producer": article['producer']
     }
     producer.send(config['raw_news_topic'], standardized_news)
+    news_id+=1
 
-print(f"{total_results} news articles sent by NewsAPI producer")
 
 producer.flush()
 
+print(f"{total_results} news articles sent by NewsAPI producer")
+
+# Update the max_news_id in Redis
+redis_client.set('max_news_id', json.dumps({'value':news_id-1}))
+
+
 # Store metadata to Redis
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
-current_id = redis_client.incr('date_id')
+#redis_client = redis.Strict
+current_id = redis_client.incr('id')
 metadata = {
     'id': current_id,
     'date': int(now.timestamp()),
@@ -126,5 +149,5 @@ metadata = {
     'num_results': num_results_dict,
     'total': total_results
 }
-redis_client.set(f'news_metadata:{current_id}', json.dumps(metadata))
+redis_client.set(f'news_api_metadata:{current_id}', json.dumps(metadata))
 print('Metadata stored to Redis:', metadata)
