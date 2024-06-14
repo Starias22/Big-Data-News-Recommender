@@ -10,7 +10,7 @@ from news_preprocessor import NewsPreprocessor
 # Load category mapping and config
 with open('../models/news_categorization_model/new_categories.json') as f:
     category_mapping = json.load(f)
-with open('../config/config.json', 'r') as config_file:
+with open('../../config/config.json', 'r') as config_file:
     config = json.load(config_file)
 
 # Convert keys to integers for category mapping
