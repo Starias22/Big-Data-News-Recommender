@@ -2,9 +2,7 @@ from pyspark.sql.functions import col, lower, regexp_replace, trim, concat_ws
 from pyspark.ml.feature import StopWordsRemover, Tokenizer
 from nltk import download
 from pyspark.ml import PipelineModel
-from pyspark.sql.types import StructType, StructField, StringType, DoubleType, ArrayType, IntegerType
-
-from pyspark.sql.types import DateType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
 # Download necessary NLTK data
 download('wordnet')
@@ -33,6 +31,8 @@ class NewsPreprocessor:
             StructField("img_url", StringType(), True),
             StructField("publication_date", IntegerType(), True),
             StructField("lang", StringType(), True),
+            StructField("author", StringType(), True),
+
         ])
 
     def filter(self,raw_articles):
