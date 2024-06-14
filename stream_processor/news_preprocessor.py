@@ -22,6 +22,8 @@ class NewsPreprocessor:
         self.categorization_pipeline = PipelineModel.load('../models/news_categorization_model') 
         # Define schema for JSON data
         self.schema= StructType([
+                        StructField("id", StringType(), True),
+
             StructField("title", StringType(), True),
             StructField("description", StringType(), True),
             StructField("content", StringType(), True),
@@ -31,7 +33,6 @@ class NewsPreprocessor:
             StructField("img_url", StringType(), True),
             StructField("publication_date", IntegerType(), True),
             StructField("lang", StringType(), True),
-            StructField("producer", StringType(), True),
         ])
 
     def filter(self,raw_articles):
