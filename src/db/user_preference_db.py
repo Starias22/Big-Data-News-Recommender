@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from src.profiles.user_preference import UserPreference
 
 class UserPreferenceDB:
-    def __init__(self, uri, db_name):
+    def __init__(self, uri, db_name="news_recommendation_db"):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
 

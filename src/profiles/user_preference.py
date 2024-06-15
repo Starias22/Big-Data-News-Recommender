@@ -1,9 +1,9 @@
 class UserPreference:
-    def __init__(self, user_id, categories=None, sentiments=None, seen_news=None, liked_news=None, disliked_news=None):
+    def __init__(self, user_id, categories=[], sentiments=[], seen_news=[]):
         self.user_id = user_id
-        self.categories = categories if categories else []
-        self.sentiments = sentiments if sentiments else []
-        self.seen_news = seen_news if seen_news else []
+        self.categories = categories
+        self.sentiments = sentiments 
+        self.seen_news = seen_news 
         
 
     def to_dict(self):
