@@ -258,10 +258,15 @@ After filling the requested information you will have a new key generated. Copy 
    ```
   - Open a new shell and create another Kafca topic called **ProcessedNewsTopic** . Use the following command to do it.
 
+    ```sh
+   bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic FilteredNewsTopic --partitions 4 --replication-factor 1
+   ```
+
    ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
    ```
 
+ 
   ```sh
   bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic InteractionsTopic --partitions 4 --replication-factor 1
   ```
