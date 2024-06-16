@@ -23,3 +23,7 @@ class UserDB:
             print("user_data:",user_data)
             return User.from_dict(user_data)
         return None
+    
+    def retrieve_user_preferences(self):
+        users = self.db.users.find()
+        return [User.retrieve_preferences(user_data) for user_data in users]
