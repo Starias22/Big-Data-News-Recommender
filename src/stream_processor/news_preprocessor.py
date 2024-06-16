@@ -2,13 +2,13 @@ from pyspark.sql.functions import col, lower, regexp_replace, trim, concat_ws
 from pyspark.ml.feature import StopWordsRemover, Tokenizer
 from nltk import download
 from pyspark.ml import PipelineModel
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType,DoubleType
 
 # Download necessary NLTK data
 download('wordnet')
 download('vader_lexicon')
-download('punkt')
-download('stopwords')
+#download('punkt')
+#download('stopwords')
 
 class NewsPreprocessor:
     def __init__(self, lemmatize_udf): 
@@ -20,8 +20,7 @@ class NewsPreprocessor:
         self.categorization_pipeline = PipelineModel.load('../models/news_categorization_model') 
         # Define schema for JSON data
         self.schema= StructType([
-                        StructField("id", StringType(), True),
-
+            StructField("id", StringType(), True),
             StructField("title", StringType(), True),
             StructField("description", StringType(), True),
             StructField("content", StringType(), True),
@@ -32,8 +31,7 @@ class NewsPreprocessor:
             StructField("publication_date", IntegerType(), True),
             StructField("lang", StringType(), True),
             StructField("author", StringType(), True),
-
-        ])
+            ])
 
     def filter(self,raw_articles):
         """
