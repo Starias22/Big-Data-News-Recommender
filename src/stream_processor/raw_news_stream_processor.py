@@ -1,11 +1,17 @@
 import json
 import numpy as np
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, udf, from_json
-from pyspark.sql.types import StringType, DoubleType, ArrayType, IntegerType
+from pyspark.sql.functions import col, udf, from_json,when,to_json,struct
+from pyspark.sql.types import StringType, DoubleType, ArrayType, IntegerType,StructField,StructType
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk import WordNetLemmatizer
 from news_preprocessor import NewsPreprocessor
+
+schema = StructType([
+    StructField("size", IntegerType(), False),
+    StructField("indices", ArrayType(IntegerType()), False),
+    StructField("values", ArrayType(DoubleType()), False)
+])
 
 # Load category mapping and config
 with open('../models/news_categorization_model/new_categories.json') as f:
@@ -18,7 +24,7 @@ category_mapping = {int(k): v for k, v in category_mapping.items()}
 
 # Initialize Spark Session with Kafka package
 spark = SparkSession.builder \
-    .appName("NewsStreamProcessor") \
+    .appName("RawNewsStreamProcessor") \
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
     .getOrCreate()
 
@@ -75,7 +81,18 @@ news_df = kafka_df.selectExpr("CAST(value AS STRING) as json") \
 # Filter the news articles to remove duplicates and news without URL, content or description
 filtered_news_df = news_processor.filter(news_df)
 
-# A code will be added to send the filtered news to a database or HDFS
+
+raw_news_df=filtered_news_df.select(['id','title','description','source_id',
+                                          'source_name','url','img_url',
+                                          'publication_date','lang'  ]).selectExpr("to_json(struct(*)) AS value")
+
+# Save the filtered news DataFrame to a temporary location as a stream
+filtered_news_query = raw_news_df.writeStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", config['kafka_bootstrap_servers']) \
+    .option("topic", config["filtered_news_topic"]) \
+    .option("checkpointLocation", "../../checkpoint/filtered_raw_news") \
+    .start()
 
 # Preprocess the filtered news
 preprocessed_news_df = news_processor.preprocess(filtered_news_df)
@@ -95,13 +112,22 @@ df = categorize_news(df)
 
 print('We are here')
 df = df.withColumn("category", map_prediction_to_category_udf(df["prediction"]))
-df=df.select(["id","title","features","description","publication_date",
+df = df.withColumn("sentiment_label", 
+                   when(col("sentiment_score") == 0, 0)
+                   .when(col("sentiment_score") > 0, 1)
+                   .otherwise(-1))
+df=df.select(["id","sentiment_label","title","features","description","publication_date",
                           "source_name","source_id","author","url","img_url","lang",
-                          "sentiment_score","category",
+                          "sentiment_score","prediction","category",
                           "topicDistribution","most_dominant_topic",
                           
                           ])
+
+# Define UDF to transform 'features' column
+#
+# Select and convert the entire dataframe to JSON
 processed_news_json_df = df.selectExpr("to_json(struct(*)) AS value")
+
 
 # Add a logic here to send the processed news back to a Kafka topic
 # Write stream to console
@@ -126,4 +152,6 @@ query = processed_news_json_df.writeStream \
     .start()
 
 # Await termination of the query
+# Await termination of the query
+filtered_news_query.awaitTermination()
 query.awaitTermination()
