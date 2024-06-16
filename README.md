@@ -258,7 +258,7 @@ After filling the requested information you will have a new key generated. Copy 
    ```
   - Open a new shell and create another Kafca topic called **ProcessedNewsTopic** . Use the following command to do it.
 
-    ```sh
+   ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic FilteredNewsTopic --partitions 4 --replication-factor 1
    ```
 
@@ -374,9 +374,10 @@ For questions or issues, please contact:
 
 - Thanks to [contributor1](https://github.com/contributor1) for their valuable input.
 
-  ```sh
-    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  RawNewsTopic
-  ```
+    ```sh
+      bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  RawNewsTopic
+    ```
+  
    ```sh
     bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  ProcessedNewsTopic
   ```
