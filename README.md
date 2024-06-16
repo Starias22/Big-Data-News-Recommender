@@ -261,6 +261,11 @@ After filling the requested information you will have a new key generated. Copy 
    ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
    ```
+
+  ```sh
+  bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic InteractionsTopic --partitions 4 --replication-factor 1
+  ```
+
   c. **Check the topics list**
   
    Use the following command to list the topics available. You should see ***RawNewsTopic*** and ***ProcessedNewsTopic*** listed.
