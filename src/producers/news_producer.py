@@ -107,7 +107,10 @@ class NewsProducer:
             'desc': 'description',
             'media': 'source_name'
             }, inplace=True)
-            articles_df['source_id'] = articles_df['author'] = articles_df['source_name']
+            articles_df['source_id'] = articles_df['source_name']
+
+            articles_df['author'] = articles_df['source_name']
+
             articles_df['publication_date'] = articles_df['publication_date'].apply(lambda x: int(x.timestamp()) if pd.notna(x) else None)
             articles_df['content']='From Google News'
         elif source == 'newsapi':
