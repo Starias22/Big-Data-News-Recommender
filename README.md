@@ -363,3 +363,14 @@ For questions or issues, please contact:
 ## Acknowledgments
 
 - Thanks to [contributor1](https://github.com/contributor1) for their valuable input.
+
+  ```sh
+    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  RawNewsTopic
+  ```
+   ```sh
+    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  ProcessedNewsTopic
+  ```
+    ```sh
+    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  InteractionsTopic
+  ```
+ 
