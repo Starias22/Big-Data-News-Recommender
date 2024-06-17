@@ -7,23 +7,48 @@ import pytz
 from newsapi import NewsApiClient
 from GoogleNews import GoogleNews
 
+
 class NewsProducer:
-    def __init__(self,db):
-        # Load the configuration
-        with open('../../config/config.json', 'r') as config_file:
-            self.config = json.load(config_file)
+    def __init__(self,servers=None,api_key=None,topic=None,page=None,
+                 page_size=None,
+                 null_replacements=None,
+                 languages=None,query=None):
+
+        if servers is None:
+            # Load the configuration
+            with open('../../config/config.json', 'r') as config_file:
+                config = json.load(config_file)
+                servers=config['kafka_bootstrap_servers']
+                api_key= config['newsapi_key']
+                topic=config['raw_news_topic']
+                page=config["page"],
+                page_size=config["page_size"]
+                null_replacements=config["null_replacements"]
+                languages=config["languages"]
+                query=config["query"]
+
+            
+        self.topic=topic
+        self.page=page
+        self.page_size=page_size
+        self.null_replacements=null_replacements
+        self.languages=languages
+        #print(self.languages)
+        self.query=query
+        self.page=self.page[0]
+
+        print('self.page:',self.page)
         
         # Initialize Redis client
-        self.redis_client = redis.StrictRedis(host='localhost', port=6379, db=db)
 
         # Initialize Kafka Producer
         self.producer = KafkaProducer(
-            bootstrap_servers=self.config['kafka_bootstrap_servers'],
+            bootstrap_servers=servers,
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
         
         # Initialize NewsAPI client
-        self.newsapi = NewsApiClient(api_key=self.config['newsapi_key'])
+        self.newsapi = NewsApiClient(api_key=api_key)
         
         # Get current time in UTC
         self.now = datetime.now(pytz.utc)
@@ -34,6 +59,7 @@ class NewsProducer:
         # Format the dates in the required format
         self.from_param = self.period_ago.strftime('%Y-%m-%dT%H:%M:%S')
         self.to = self.now.strftime('%Y-%m-%dT%H:%M:%S')
+
         
     def get_max_news_id(self):
         max_news_id = self.redis_client.get('max_news_id')
@@ -41,7 +67,11 @@ class NewsProducer:
             return 0
         else:
             return int(json.loads(max_news_id)['value'])
-        
+
+    def db_connection(self,db) :
+        self.redis_client = redis.StrictRedis(host='localhost', port=6379, db=db)
+
+
     def update_max_news_id(self, news_id):
         self.redis_client.set('max_news_id', json.dumps({'value': news_id}))
 
@@ -51,6 +81,7 @@ class NewsProducer:
         print(f'Metadata stored to Redis: {metadata}')
 
     def send_to_kafka(self, articles, news_id_prefix):
+        
         max_news_id = self.get_max_news_id()
         news_id = max_news_id + 1
 
@@ -68,7 +99,7 @@ class NewsProducer:
                 "id": f"{news_id_prefix}_{news_id}",
                 "author":article['author'],
             }
-            self.producer.send(self.config['raw_news_topic'], standardized_news)
+            self.producer.send(self.topic, standardized_news)
             news_id += 1
         
         self.producer.flush()
@@ -88,8 +119,8 @@ class NewsProducer:
                 to=self.to,
                 language=lang,
                 sort_by='relevancy',
-                page=self.config["page"],
-                page_size=self.config["page_size"]
+                page=self.page,
+                page_size=self.page_size
             )
             return response['articles'] if response['status'] == 'ok' else []
         else:
@@ -124,17 +155,19 @@ class NewsProducer:
             articles_df['source_name'] = articles_df['source'].apply(lambda x: x['name'] if x else None)
             articles_df.drop(columns=['source'], inplace=True)
         
-        articles_df.replace(self.config["null_replacements"], inplace=True)
+        articles_df.replace(self.null_replacements, inplace=True)
         return articles_df
 
     def run(self, source):
         articles_list = []
         num_results_dict = {}
         total_results = 0
+        languages=self.languages
+        queries=self.query
 
-        for lang in self.config["languages"][:1]:
+        for lang in languages[:1]:
             results = []
-            for query in self.config["query"][:1]:
+            for query in queries[:1]:
                 articles = self.fetch_articles(source, lang, query)
                 if articles:
                     results.extend(articles)
