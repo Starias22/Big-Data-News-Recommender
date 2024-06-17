@@ -4,6 +4,15 @@ from nltk import download
 from pyspark.ml import PipelineModel
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType,DoubleType
 
+from pathlib import Path
+import sys
+
+# Add 'src' directory to the Python path
+#src_path = Path(__file__).resolve().parents[1]
+#sys.path.append(str(src_path))
+
+#from ...config.config import NEWS_TOPIC_MODEL_PATH,NEWS_CATEGORISATION_MODEL_PATH
+
 # Download necessary NLTK data
 download('wordnet')
 download('vader_lexicon')
