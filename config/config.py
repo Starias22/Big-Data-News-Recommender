@@ -31,6 +31,30 @@ NULL_REPLACEMENTS = config.get("null_replacements", {})
 KAFKA_BOOTSTRAP_SERVERS = config.get("kafka_bootstrap_servers", "")
 SPARK_VERSION = config.get("spark_version", "")
 
+
+# Existing config variables...
+
+# Resolve the path to the 'src' directory
+SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
+
+# Path to new_categories.json
+CATEGORIES_JSON_PATH = os.path.join(SRC_PATH, 'models', 'news_categorization_model', 'new_categories.json')
+NEWS_TOPIC_MODEL_PATH = os.path.join(SRC_PATH, 'models', 'news_topic_model')
+NEWS_CATEGORISATION_MODEL_PATH = os.path.join(SRC_PATH, 'models', 'news_categorization_model')
+
+from pathlib import Path
+
+def get_project_root():
+    return Path(__file__).parent.parent.resolve()
+
+# Paths
+PROJECT_ROOT = get_project_root()
+SRC_PATH = PROJECT_ROOT / 'src'
+CATEGORIES_JSON_PATH = SRC_PATH / 'models/news_categorization_model/new_categories.json'
+CHECKPOINT_DIR = PROJECT_ROOT / 'checkpoint'
+FILTERED_RAW_NEWS_CHECKPOINT = CHECKPOINT_DIR / 'filtered_raw_news'
+GENERAL_CHECKPOINT = CHECKPOINT_DIR / 'general'
+
 if __name__=='__main__':
 
     print("Loaded configurations:")
@@ -48,3 +72,10 @@ if __name__=='__main__':
     print(f"NULL_REPLACEMENTS: {NULL_REPLACEMENTS}")
     print(f"KAFKA_BOOTSTRAP_SERVERS: {KAFKA_BOOTSTRAP_SERVERS}")
     print(f"SPARK_VERSION: {SPARK_VERSION}")
+    print(f"SRC_PATH: {SRC_PATH}")
+    print(f"CATEGORIES_JSON_PATH: {CATEGORIES_JSON_PATH}")
+    print(f"NEWS_CATEGORISATION_MODEL_PATH: {NEWS_CATEGORISATION_MODEL_PATH}")
+    print(f"NEWS_TOPIC_MODEL_PATH: {NEWS_TOPIC_MODEL_PATH}")
+
+
+
