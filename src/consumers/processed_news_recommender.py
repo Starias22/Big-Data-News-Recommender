@@ -56,6 +56,9 @@ schema = StructType([
 interaction_db=InteractionDB()
 
 def get_seen_and_liked_news(seen_news):
+    if seen_news is None:
+        seen_news=[]
+    print('**********',seen_news)
     news_ids = []
     for news in seen_news:
         for news_id, value in news.items():
@@ -98,6 +101,7 @@ for user in users:
     categories = user.categories
     sentiments = user.sentiments
     ansa=user.ansa
+
     seen_and_liked_news_ids = get_seen_and_liked_news(user.seen_news)
      # Retrieve filtered interactions
     filtered_interactions = interaction_db.retrieve_all_interactions(seen_and_liked_news_ids)
