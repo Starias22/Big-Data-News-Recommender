@@ -38,10 +38,7 @@ class InteractionDB:
     def retrieve_all_interactions(self, seen_and_liked_news_ids=None):
         interactions = self.db.interactions.find()
         interaction_list = [Interaction.from_dict(interaction_data) for interaction_data in interactions]
-        print('4444444444444444444444444')
         print(interaction_list)
-        print(interaction_list[0].display())
-        
         if seen_and_liked_news_ids is not None:
             interaction_list = [interaction for interaction in interaction_list if interaction.news_id in seen_and_liked_news_ids]
         
