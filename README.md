@@ -377,11 +377,16 @@ For questions or issues, please contact:
     ```sh
       bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  RawNewsTopic
     ```
-  
-   ```sh
+    
+    ```sh
     bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  ProcessedNewsTopic
-  ```
+    ```
+  
+     ```sh
+    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  FilteredNewsTopic
+    ```
+     
     ```sh
     bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  InteractionsTopic
-  ```
+    ```
  
