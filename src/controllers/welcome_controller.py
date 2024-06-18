@@ -2,10 +2,11 @@
 from src.models.user import User
 from src.db.user_db import UserDB
 from src.utils import is_empty
+from src.consumers.recommended_news_fetcher import fetch_recommended_news
 import re
 from typing import Optional
 class WelcomeController:
-    def __init__(self,email,password,firstname=None,lastname=None):
+    def __init__(self,email=None,password=None,firstname=None,lastname=None):
         self.user_db=UserDB()
         self.user=User(email=email,
                        password=password,
@@ -35,4 +36,15 @@ class WelcomeController:
         
         self.user_db.create_user(self.user)
         return 0
+    
+    def get_recommended_news(self):
+        self.user.email='adedeezechiel@gmail.com'
+        self.user.display()
+        print(self.user.email)
+        recommended_news=fetch_recommended_news(user_email=self.user.email)
+        recommended_news=[news.to_dict() for news in recommended_news]
+        print(recommended_news)
+        
+        
+        return recommended_news
         
