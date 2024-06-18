@@ -13,7 +13,7 @@ from db.filtered_news_db import FilteredNewsDB
 
 
 def persist_filtered_news(topics=None ,
-       servers=None):
+       servers=None,timeout_ms=5000):
      
     if topics is None and servers  is None:
          # Load the configuration from the JSON file
@@ -29,7 +29,9 @@ def persist_filtered_news(topics=None ,
         *topics,  # Unpack the list of topics
         bootstrap_servers=servers,
         auto_offset_reset='earliest',  # Start reading from the earliest message
-        value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+        value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+        consumer_timeout_ms=timeout_ms
+        
     )
 
     print("Kafka Consumer Initialized")
@@ -51,7 +53,7 @@ def persist_filtered_news(topics=None ,
         result = filtered_news_db.create_filtered_news(filtered_news)
         print(f"Inserted filtered news with ID: {result}")
 
-    print(f"Processed {n + 1} messages")
+    print(f"{n + 1} filtered news to MongoDB")
 
 if __name__=="__main__":
     persist_filtered_news()
