@@ -9,11 +9,12 @@ from pathlib import Path
 import sys
 
 # Add 'src' directory to the Python path
-#src_path = Path(__file__).resolve().parents[1]
+#src_path = Path(__file__).resolve().parents[2]
 #sys.path.append(str(src_path))
+#print(src_path)
+from news_preprocessor import NewsPreprocessor
 
 #from config.config import CATEGORIES_JSON_PATH
-from news_preprocessor import NewsPreprocessor
 
 schema = StructType([
     StructField("size", IntegerType(), False),
@@ -22,7 +23,7 @@ schema = StructType([
 ])
 
 # Load category mapping and config
-with open('../models/news_categorization_model/news_categories.json', 'r') as f:
+with open('../trained_models/news_categorization_model/news_categories.json', 'r') as f:
     category_mapping = json.load(f)
 
 # Convert keys to integers for category mapping
@@ -97,7 +98,7 @@ def process_raw_news_stream(servers=None,
     # Filter the news articles to remove duplicates and news without URL, content or description
     filtered_news_df = news_processor.filter(news_df)
 
-    raw_news_df = filtered_news_df.select(['id', 'title', 'description', 'source_id',
+    raw_news_df = filtered_news_df.select(['id', 'title', 'description','author',
                                            'source_name', 'url', 'img_url',
                                            'publication_date', 'lang']).selectExpr("to_json(struct(*)) AS value")
 
@@ -132,7 +133,7 @@ def process_raw_news_stream(servers=None,
                     .when(col("sentiment_score") > 0, 1)
                     .otherwise(-1))
     df = df.select(["id", "sentiment_label", "title", "features", "description", "publication_date",
-                    "source_name", "source_id", "author", "url", "img_url", "lang",
+                    "source_name", "author", "url", "img_url", "lang",
                     "sentiment_score", "prediction", "category",
                     "topicDistribution", "most_dominant_topic",
                     ])
