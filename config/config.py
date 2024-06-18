@@ -30,7 +30,8 @@ INTERACTIONS_TOPIC = config.get("interactions_topic", "")
 NULL_REPLACEMENTS = config.get("null_replacements", {})
 KAFKA_BOOTSTRAP_SERVERS = config.get("kafka_bootstrap_servers", "")
 SPARK_VERSION = config.get("spark_version", "")
-
+SENDER_ADDRESS=config.get("sender_address")
+PASSWORD=config.get("password")
 
 # Existing config variables...
 
