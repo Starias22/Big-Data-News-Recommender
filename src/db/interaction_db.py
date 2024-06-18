@@ -5,7 +5,7 @@ import sys
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[1]
 sys.path.append(str(src_path))
-from profiles.interaction import Interaction
+from models.interaction import Interaction
 
 class InteractionDB:
     def __init__(self, uri="mongodb://localhost:27017/", db_name="news_recommendation_db"):

@@ -6,7 +6,7 @@ from pathlib import Path
 src_path = Path(__file__).resolve().parents[1]
 sys.path.append(str(src_path))
 
-from profiles.filtered_news import FilteredNews  # Make sure to import the FilteredNews class from the appropriate module
+from models.filtered_news import FilteredNews  # Make sure to import the FilteredNews class from the appropriate module
 
 class FilteredNewsDB:
     def __init__(self, uri="mongodb://localhost:27017/", db_name="news_recommendation_db"):
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # Create a FilteredNews instance
     news_instance = FilteredNews(
         news_id="12345",
-        title="Sample News Title",
+        title="Sample Newtle",
         description="This is a sample news description.",
         source_id="source_001",
         source_name="Sample Source",

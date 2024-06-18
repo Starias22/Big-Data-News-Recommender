@@ -1,6 +1,12 @@
 from pymongo import MongoClient
-from src.models.user import User
-from src.utils import encrypt_password
+import sys
+from pathlib import Path
+# Add 'src' directory to the Python path
+src_path = Path(__file__).resolve().parents[1]
+sys.path.append(str(src_path))
+
+from models.user import User
+from utils import encrypt_password
 from typing import Optional
 class UserDB:
     def __init__(self,uri="mongodb://localhost:27017/",db_name="news_recommendation_db"):
