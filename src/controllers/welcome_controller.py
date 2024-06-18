@@ -1,7 +1,7 @@
 # src/controllers/welcome_controller.py
 from src.models.user import User
 from src.db.user_db import UserDB
-from src.utils import is_empty
+from src.utils import generate_otp,send_email
 from src.consumers.recommended_news_fetcher import fetch_recommended_news
 import re
 from typing import Optional
@@ -18,10 +18,16 @@ class WelcomeController:
     def login(self) ->Optional[User]:
         if self.user.is_empty(authentication=True):
             return 1
-        return self.user_db.authenticate(self.user)
+        user=self.user_db.authenticate(self.user)
+        
+        if user is None:
+            return None
+        print('The user is')
+        user.display()
+        return user
         
 
-    def register(self):
+    def valid_new_user(self):
 
         if  self.user.is_empty():
             return 1
@@ -34,13 +40,27 @@ class WelcomeController:
         if self.user_db.find_user_by_email(self.user) :
             return 3 # Email add already in use
         
-        self.user_db.create_user(self.user)
+        #self.user_db.create_user(self.user)
         return 0
     
+    def send_verification_email(self):
+        otp =generate_otp()
+        body = f'Your 6-digit verification code is: {otp}'
+        sent=send_email(receiver_addr=self.user.email,subject="Email verification",body=body)
+        if sent:
+            return otp
+        return 1
+
+    def register(self):
+        user=self.user_db.create_user(self.user)
+    
+        return user.email
+
+
     def get_recommended_news(self):
-        self.user.email='adedeezechiel@gmail.com'
         self.user.display()
         print(self.user.email)
+        print(self.user.id)
         recommended_news=fetch_recommended_news(user_email=self.user.email)
         recommended_news=[news.to_dict() for news in recommended_news]
         print(recommended_news)
