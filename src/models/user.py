@@ -1,10 +1,17 @@
 from datetime import datetime
-from src.utils import encrypt_password,is_empty
+from pymongo import MongoClient
+import sys
+from pathlib import Path
+# Add 'src' directory to the Python path
+src_path = Path(__file__).resolve().parents[1]
+sys.path.append(str(src_path))
+
+from utils import encrypt_password,is_empty
 
 class User:
     def __init__(self, id=None, firstname=None, lastname=None, email=None,password=None,
                  categories=[i for i in range(32)], sentiments=[0,-1,1], seen_news=[],
-                 ansa=True,creation_date=datetime.now()):
+                 ansa=True,creation_date=datetime.now(),recommended_news=[]):
         self.id = id
         self.firstname = firstname
         self.lastname = lastname
@@ -15,6 +22,7 @@ class User:
         self.ansa=ansa
         self.password=password
         self.creation_date=creation_date
+        self.recommended_news=recommended_news
         
 
     def to_dict(self):
@@ -29,6 +37,7 @@ class User:
             "seen_news": self.seen_news,
             "ansa":self.ansa,
             
+            
         }
 
     @staticmethod
@@ -41,7 +50,9 @@ class User:
             categories=data.get('categories'),
             sentiments=data.get('sentiments'),
             seen_news=data.get('seen_news'),
-            ansa=data.get('ansa')
+            ansa=data.get('ansa'),
+            recommended_news=data.get("recommended_news")
+            
 
         )
 
