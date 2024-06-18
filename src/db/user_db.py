@@ -1,6 +1,7 @@
 from pymongo import MongoClient
-from profiles.user import User
-
+from src.models.user import User
+from src.utils import encrypt_password
+from typing import Optional
 class UserDB:
     def __init__(self,uri="mongodb://localhost:27017/",db_name="news_recommendation_db"):
         self.client = MongoClient(uri)
@@ -17,10 +18,18 @@ class UserDB:
             return User.from_dict(user_data)
         return None
     
-    def find_user_by_email(self, user_email):
-        user_data = self.db.users.find_one({"email": user_email})
+    def find_user_by_email(self, user: User):
+        user_data = self.db.users.find_one({"email": user.email})
         if user_data:
-            print("user_data:",user_data)
+            return User.from_dict(user_data)
+        return None
+    
+    def authenticate(self, user: User) ->Optional[User]:
+        print(encrypt_password(user.password))
+        user_data = self.db.users.find_one({"email":user.email ,
+        
+                                            "password":encrypt_password(user.password)})
+        if user_data:
             return User.from_dict(user_data)
         return None
     
