@@ -16,16 +16,20 @@ class UserDB:
     def create_user(self, user):
         user_dict = user.to_dict()
         result = self.db.users.insert_one(user_dict)
-        return result.inserted_id
+        user=User.from_dict(result)
+        return user
 
     def find_user_by_id(self, user_id):
-        user_data = self.db.users.find_one({"id": user_id})
+        print('User id is',user_id)
+        user_data = self.db.users.find_one({"_id": user_id})
+        print('User data is',user_data)
+
         if user_data:
             return User.from_dict(user_data)
         return None
     
-    def find_user_by_email(self, user: User):
-        user_data = self.db.users.find_one({"email": user.email})
+    def find_user_by_email(self,  email):
+        user_data = self.db.users.find_one({"email": email})
         if user_data:
             return User.from_dict(user_data)
         return None
