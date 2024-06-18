@@ -35,10 +35,7 @@ class NewsProducer:
         self.languages=languages
         #print(self.languages)
         self.query=query
-        self.page=self.page[0]
-
-        print('self.page:',self.page)
-        
+        self.page=self.page[0]        
         # Initialize Redis client
 
         # Initialize Kafka Producer
@@ -91,7 +88,7 @@ class NewsProducer:
                 "description": article['description'],
                 "content": article["content"],
                 "source_name": article['source_name'],
-                "source_id": article['source_id'],
+                #"source_id": article['source_id'],
                 "url": article['url'],
                 "img_url": article['img_url'],
                 "publication_date": article['publication_date'],
@@ -138,9 +135,8 @@ class NewsProducer:
             'desc': 'description',
             'media': 'source_name'
             }, inplace=True)
-            articles_df['source_id'] = articles_df['source_name']
+            articles_df['author'] = None
 
-            articles_df['author'] = articles_df['source_name']
 
             articles_df['publication_date'] = articles_df['publication_date'].apply(lambda x: int(x.timestamp()) if pd.notna(x) else None)
             articles_df['content']='From Google News'
@@ -151,7 +147,7 @@ class NewsProducer:
             }, inplace=True)
             fmt = "%Y-%m-%dT%H:%M:%SZ"
             articles_df['publication_date'] = articles_df['publication_date'].apply(lambda x: int(datetime.strptime(x, fmt).timestamp()))
-            articles_df['source_id'] = articles_df['source'].apply(lambda x: x['id'] if x else None)
+            #articles_df['source_id'] = articles_df['source'].apply(lambda x: x['id'] if x else None)
             articles_df['source_name'] = articles_df['source'].apply(lambda x: x['name'] if x else None)
             articles_df.drop(columns=['source'], inplace=True)
         
