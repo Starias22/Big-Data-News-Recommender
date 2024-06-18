@@ -43,7 +43,7 @@ class User:
     @staticmethod
     def from_dict(data):
         return User(
-            id=data.get('_id'),
+            #id=data.get('_id'),
             firstname=data['firstname'],
             lastname=data['lastname'],
             email=data['email'],
@@ -59,7 +59,7 @@ class User:
     @staticmethod
     def retrieve_preferences(data):
         return User(
-            id=data.get('_id'),
+            #id=data.get('_id'),
             categories=data.get('categories'),
             sentiments=data.get('sentiments'),
             seen_news=data.get('seen_news'),
