@@ -11,12 +11,12 @@ from models.user import User
 from db.user_db import UserDB
 
 from models.filtered_news import FilteredNews
-from db.filtered_news_db import FilteredNewsDB
 
-def fetch_recommended_news(topics=None, servers=None, 
-                           timeout_ms=5000, user_email='adedeezechiel@gmail.com'):
+def fetch_recommended_news(user_email,topics=None, servers=None, 
+                             timeout_ms=5000):
+
     user = User(email=user_email)
-    recommended_news_ids = UserDB().find_user_by_email(user=user).recommended_news
+    recommended_news_ids = UserDB().find_user_by_email(user.email).recommended_news
     recommended_news = []
 
     # Ensure the path to the config file is correct
