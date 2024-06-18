@@ -24,16 +24,15 @@ class NewsPreprocessor:
         # Initialize with user-defined lemmatization UDF
         self.lemmatize_udf = lemmatize_udf     
         # Load pre-trained LDA model for topic modeling
-        self.lda_model = PipelineModel.load('../models/news_topic_model') 
+        self.lda_model = PipelineModel.load('../trained_models/news_topic_model') 
         # Load pre-trained pipeline model for news categorization
-        self.categorization_pipeline = PipelineModel.load('../models/news_categorization_model') 
+        self.categorization_pipeline = PipelineModel.load('../trained_models/news_categorization_model') 
         # Define schema for JSON data
         self.schema= StructType([
             StructField("id", StringType(), True),
             StructField("title", StringType(), True),
             StructField("description", StringType(), True),
             StructField("content", StringType(), True),
-            StructField("source_id", StringType(), True),
             StructField("source_name", StringType(), True),
             StructField("url", StringType(), True),
             StructField("img_url", StringType(), True),
