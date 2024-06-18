@@ -39,8 +39,6 @@ schema = StructType([
     StructField("id", StringType(), True),
     StructField("title", StringType(), True),
     StructField("description", StringType(), True),
-    #StructField("content", StringType(), True),
-    StructField("source_id", StringType(), True),
     StructField("source_name", StringType(), True),
     StructField("url", StringType(), True),
     StructField("img_url", StringType(), True),
