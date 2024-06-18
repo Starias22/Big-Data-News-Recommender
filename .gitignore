@@ -9,7 +9,7 @@ kafka-3.7.0-src
 hash.txt
 news_data_api_producer.py
 # To drive
-models/
+trained_models
 test.py
 __pycache__
 checkpoint/
