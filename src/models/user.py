@@ -44,9 +44,9 @@ class User:
     def from_dict(data):
         return User(
             #id=data.get('_id'),
-            firstname=data['firstname'],
-            lastname=data['lastname'],
-            email=data['email'],
+            firstname=data.get('firstname'),
+            lastname=data.get('lastname'),
+            email=data.get('email'),
             categories=data.get('categories'),
             sentiments=data.get('sentiments'),
             seen_news=data.get('seen_news'),

@@ -37,7 +37,7 @@ class WelcomeController:
         # Validate the email address
         if not re.match(email_regex, self.user.email):
             return 2  # Invalid email address
-        if self.user_db.find_user_by_email(self.user) :
+        if self.user_db.find_user_by_email(self.user.email) :
             return 3 # Email add already in use
         
         #self.user_db.create_user(self.user)

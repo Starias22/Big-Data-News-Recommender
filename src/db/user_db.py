@@ -16,7 +16,9 @@ class UserDB:
     def create_user(self, user):
         user_dict = user.to_dict()
         result = self.db.users.insert_one(user_dict)
-        user=User.from_dict(result)
+        id=result.inserted_id
+        user=self.find_user_by_id(id)
+        user.display()
         return user
 
     def find_user_by_id(self, user_id):
@@ -30,6 +32,7 @@ class UserDB:
     
     def find_user_by_email(self,  email):
         user_data = self.db.users.find_one({"email": email})
+        print('user data is',user_data)
         if user_data:
             return User.from_dict(user_data)
         return None
