@@ -304,6 +304,10 @@ As news messages arrivse, the raw news stream processor will be processing them.
 
 Move to src/consumer and run filtered news saver.
 
+```sh
+python3 filtered_news_saver.py
+```
+
 This retrieves filtered news messages from **FilteredNewsTopic** and insert them into the collection **filtered_news** of the **news_recommendation_db** in MongoDB.
 
 You can run the following command in mongosh to check the inserted filtered news
