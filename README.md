@@ -237,114 +237,126 @@ After filling the requested information you will have a new key generated. Copy 
  
 7. **Create Kafka topics:**
 
-  a. **Explanation**
-  
-  - Kafka producers will retrieve news data using news API and google news API. They will then send them to a KafKa topic called ***RawNewsTopic***.
-    
-  - A spark streaming processor will suscribe to that topic to retrieve news in real-time.
-     
-       Then it will filter the news by removing duplicates and news without description, content or URL. Then it will save the filtered news to a database, process by doing tasks such as preprocessing(cleaning, tokennization, lemmatization, stop words removals), sentiment analysis, topic distribution and categorization of the news using their description. Then, it will send the processed news back to  Kafka, especiallly another Kafka topic called ***ProcessedNewsTopic***.
+Create the following Kafka topics and list them
 
-  - A Kafka consumer will subscribe to that topic to retrieve the preprocessed news and recommand them to the users according to their preferences.
+```sh
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 4 --replication-factor 1
+```
+ 
+```sh
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic FilteredNewsTopic --partitions 4 --replication-factor 1
+```
 
-  b. **Topic creation**
-  
-  -  Open a shell and create a Kafka topic named ***RawNewsTopic*** with 4 partitions and replication factor=1 (for now)
+```sh
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
+```
 
-   using the following command:
-   
-   ```sh
-   bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 4 --replication-factor 1
-   ```
-  - Open a new shell and create another Kafca topic called **ProcessedNewsTopic** . Use the following command to do it.
+```sh
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic InteractionsTopic --partitions 4 --replication-factor 1
+```
 
-   ```sh
-   bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic FilteredNewsTopic --partitions 4 --replication-factor 1
-   ```
+```sh
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+```
 
-   ```sh
-   bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
-   ```
 
  
-  ```sh
-  bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic InteractionsTopic --partitions 4 --replication-factor 1
-  ```
-
-  c. **Check the topics list**
-  
-   Use the following command to list the topics available. You should see ***RawNewsTopic*** and ***ProcessedNewsTopic*** listed.
-
-   ```sh
-   bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
-   ```
-
 ## Usage
 
-1. **Start the Kafka and Redis servers.**
 
-2. **Run the application:**
+### Run the raw news stream processor
 
-a. Start the producers:
+Run spark raw news stream processor.
 
-Move to the producers folder and start the producers
+The raw news stream processor:
 
-- Start Google news producer
+- Gets news messages from **RawNewsTopic**
+- Filters the news to remove news without URL, content or description and also duplicate news
+- Sends the filtered news to **FilteredNewsTopic**
+- Preprocesses the filtered news by performing cleaning, tokennization, lemmatization and stopwords removal
+- Processes the preprocessed news by performing sentiment analysis, topic detection and categorization on the description field of the news
+- Send the processed news to **ProcessedNewsTopic**
 
-     ```py
-     python3 google_news_producer.py
-     ```
+### Run news producers 
 
-- Start News API producer
+Keep the raw news stream processor running and open another window.
 
-     ```py
-     python3 news_api_producer.py
-     ```
+To run news producers, move to scr/producers and run the following commands
 
-b. Start the  raw news consumer:
-
- Move to the consumer folder and start the raw news consumer.
-
-     ```py
-     python3 raw_news_consumer.py
-     ```
-
-     You can use <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop it.
-
-c. Start the stream processor:
-
- Move to the stream processor folder and start the spark news stream processor.
- 
-     ```py
-     python3 spark_stream_processor.py
-     ```
-
-Let it active
-
-d. Start the google news producer one again
-
-Open a new tab, navigate to the producers folder and start the google news producer once again.
-
-```py
-     python3 google_news_producer.py
+ ```sh
+   python3 news_api_producer.py
 ```
 
-Now go to the spark stream processor tab.
-
-You should see the stream processor processing the news sent to Kafka by google news producer.
-
-e. Start the processed news consumer
-
-Navigate to the consumers folder and start the processed news consumer.
-
-```py
-     python3 processed_news_consumer.py
+ ```sh
+   python3 google_news_producer.py
 ```
 
-You should see the processed news displayed.
+These news producers will retrieve news using News API and Gooogle news and then send them to **RawNewsTopic**
 
+As news messages arrivse, the raw news stream processor will be processing them.
 
+### Run filtered news saver
 
+Move to src/consumer and run filtered news saver.
+
+This retrieves filtered news messages from **FilteredNewsTopic** and insert them into the collection **filtered_news** of the **news_recommendation_db** in MongoDB.
+
+You can run the following command in mongosh to check the inserted filtered news
+
+1. Open a mongo shell using mongosh
+
+   ```sh
+   mongosh
+   ```
+
+2. Switch to **news_recommendation_db**
+
+   ```sh
+    use news_recommendation_db
+   ```
+
+3. Show the collections available
+
+```sh
+   show collections
+```
+
+   You should see `filtered_news` listed.
+
+4. List all filtered news
+
+   ```sh
+    db.filtered_news.find()
+   ```
+
+### Run the application
+
+Move to the root directory of the project and execute the following command to run the application.
+
+```sh
+   streamlit run app.py
+```
+
+### Register a user
+
+Register at least one user with a valid email address and confirm the verification code.
+
+### Run processed news recommender
+
+Move to src/consumer and run the following command.
+
+```sh
+python3 processed_news_recommender.py
+```
+
+The processed news recommender retrieves processed news messages from **ProcessedNewsTopic** and recommend them to each user in the users collection based on their preferences of categories, sentiments and similarities with already seen news.
+
+### Navigation
+ Now go the the application web page, login to an user account created above and see the recommended news.
+
+## Reset
+
+In case you want to reset everything, follow the steps desribed [here](./RESET.md)
 ## Contributing
 
 We welcome contributions! Please follow these steps:
@@ -373,24 +385,3 @@ For questions or issues, please contact:
 ## Acknowledgments
 
 - Thanks to [contributor1](https://github.com/contributor1) for their valuable input.
-
-    ```sh
-      bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  RawNewsTopic
-    ```
-    
-    ```sh
-    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  FilteredNewsTopic
-    ```
-    
-    ```sh
-    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  ProcessedNewsTopic
-    ```
-    
-     
-    ```sh
-    bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic  InteractionsTopic
-    ``
-    ```sh
-    redis-cli flushall
-    ```
- 
