@@ -278,6 +278,10 @@ The raw news stream processor:
 - Processes the preprocessed news by performing sentiment analysis, topic detection and categorization on the description field of the news
 - Send the processed news to **ProcessedNewsTopic**
 
+```sh
+   python3 raw_news_stream_processor.py
+```
+
 ### Run news producers 
 
 Keep the raw news stream processor running and open another window.
