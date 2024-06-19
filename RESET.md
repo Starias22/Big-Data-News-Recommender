@@ -64,9 +64,9 @@ bin/kafka-server-start.sh config/server.properties
     ```
 ## Recreate the topics and list them
 
-    ```sh
+```sh
     bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 4 --replication-factor 1
-    ```
+```
  
    ```sh
    bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic FilteredNewsTopic --partitions 4 --replication-factor 1
