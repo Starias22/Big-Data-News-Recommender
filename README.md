@@ -10,6 +10,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
 - [Installation](#installation)
 - [Kafka Setup](#kafka-setup)
 - [Usage](#usage)
+- [Pipeline Overview](#pipeline-overview)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
