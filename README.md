@@ -385,3 +385,16 @@ For questions or issues, please contact:
 ## Acknowledgments
 
 - Thanks to [contributor1](https://github.com/contributor1) for their valuable input.
+
+        +---------------------+               +-----------------------+               +----------------------+               +----------------------+
+        |  News Producers     |  ------->     |   Raw News Stream     |  ------->     |  Filtered News Saver |  ------->     | Processed News       |
+        |  (NewsAPI, Google)  |               |   Processor           |               |                      |               | Recommender          |
+        +---------------------+               +-----------------------+               +----------------------+               +----------------------+
+                  |                                      |                                    |                                   |
+                  |                                      |                                    |                                   |
+                  v                                      v                                    v                                   v
+        +---------------------+               +-----------------------+               +----------------------+               +----------------------+
+        |   RawNewsTopic      |               |   FilteredNewsTopic   |               |   ProcessedNewsTopic |               | Recommendations to    |
+        +---------------------+               +-----------------------+               +----------------------+               | User Profiles         |
+                                                                                                                            +----------------------+
+                                                                                                                           
