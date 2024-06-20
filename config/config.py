@@ -32,6 +32,8 @@ KAFKA_BOOTSTRAP_SERVERS = config.get("kafka_bootstrap_servers", "")
 SPARK_VERSION = config.get("spark_version", "")
 SENDER_ADDRESS=config.get("sender_address")
 PASSWORD=config.get("password")
+MONGO_DB_NAME=config.get("mongo_db_name")
+MONGO_DB_URI=config.get("mongo_db_uri")
 
 # Existing config variables...
 
