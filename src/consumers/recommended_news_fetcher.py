@@ -5,12 +5,13 @@ import sys
 
 # Add the root directory to the Python path
 root_path = Path(__file__).resolve().parents[2]
-sys.path.append(str(root_path / 'src'))
+sys.path.append(str(root_path))
 
-from models.user import User
-from db.user_db import UserDB
+from src.models.user import User
+from src.db.user_db import UserDB
 
-from models.filtered_news import FilteredNews
+from src.models.filtered_news import FilteredNews
+from config.config import KAFKA_BOOTSTRAP_SERVERS,PROCESSED_NEWS_TOPIC
 
 def fetch_recommended_news(user_email,topics=None, servers=None, 
                              timeout_ms=5000):
@@ -22,14 +23,8 @@ def fetch_recommended_news(user_email,topics=None, servers=None,
     # Ensure the path to the config file is correct
     config_path = root_path / 'config' / 'config.json'
     print(f"Looking for config file at: {config_path}")
-
-    if topics is None and servers is None:
-        # Load the configuration from the JSON file
-        with open(config_path, 'r') as config_file:
-            config = json.load(config_file)
-            # List of topics to subscribe to
-            topics = [config["processed_news_topic"]]
-            servers = config["kafka_bootstrap_servers"]
+    topics = [PROCESSED_NEWS_TOPIC]
+    servers = KAFKA_BOOTSTRAP_SERVERS
 
     # Initialize the consumer
     consumer = KafkaConsumer(
@@ -41,14 +36,34 @@ def fetch_recommended_news(user_email,topics=None, servers=None,
     )
 
     # Consume messages from the subscribed topics
-    for n, message in enumerate(consumer):
-        filtered_news_data = message.value
-        print(f"Received message {n + 1}")
-        if filtered_news_data['id'] in recommended_news_ids:
+    if recommended_news:
+        for n, message in enumerate(consumer):
+            filtered_news_data = message.value
+            print(f"Received message {n + 1}")
+            print(filtered_news_data)
+            print('The id is',filtered_news_data['id'])
+            print(recommended_news_ids)
+            filtered_news_data['_id'] = filtered_news_data.pop('id')
+            if filtered_news_data['_id'] in recommended_news_ids:
+                #filtered_news_data['_id'] = filtered_news_data.pop('id')
+
+                print('@@@@@@@@@@@@@@@@@@@@@')
+                filtered_news = FilteredNews.from_dict(filtered_news_data)
+
+                recommended_news.append(filtered_news)
+    else:
+        # Consume messages from the subscribed topics
+        for n, message in enumerate(consumer):
+            filtered_news_data = message.value
+            print(f"Received message {n + 1}")
+            print(filtered_news_data)
+            print('The id is',filtered_news_data['id'])
+            print(recommended_news_ids)
+            filtered_news_data['_id'] = filtered_news_data.pop('id')
+            print('@@@@@@@@@@@@@@@@@@@@@')
             filtered_news = FilteredNews.from_dict(filtered_news_data)
 
             recommended_news.append(filtered_news)
-
     return recommended_news
 
 if __name__ == "__main__":
