@@ -7,6 +7,14 @@ import pytz
 from newsapi import NewsApiClient
 from GoogleNews import GoogleNews
 
+from pathlib import Path
+import sys
+
+# Add 'src' directory to the Python path
+src_path = Path(__file__).resolve().parents[2]
+sys.path.append(str(src_path))
+from config.config import KAFKA_BOOTSTRAP_SERVERS,NEWSAPI_KEYS,RAW_NEWS_TOPIC,NULL_REPLACEMENTS,LANGUAGES,QUERY,PAGE,PAGE_SIZE
+
 
 class NewsProducer:
     def __init__(self,servers=None,api_key=None,topic=None,page=None,
@@ -14,18 +22,15 @@ class NewsProducer:
                  null_replacements=None,
                  languages=None,query=None):
 
-        if servers is None:
-            # Load the configuration
-            with open('../../config/config.json', 'r') as config_file:
-                config = json.load(config_file)
-                servers=config['kafka_bootstrap_servers']
-                api_key= config['newsapi_key']
-                topic=config['raw_news_topic']
-                page=config["page"],
-                page_size=config["page_size"]
-                null_replacements=config["null_replacements"]
-                languages=config["languages"]
-                query=config["query"]
+        
+        servers=KAFKA_BOOTSTRAP_SERVERS
+        api_key=NEWSAPI_KEYS[2]
+        topic=RAW_NEWS_TOPIC
+        page=PAGE
+        page_size=PAGE_SIZE
+        null_replacements=NULL_REPLACEMENTS
+        languages=LANGUAGES
+        query=QUERY
 
             
         self.topic=topic
@@ -35,7 +40,7 @@ class NewsProducer:
         self.languages=languages
         #print(self.languages)
         self.query=query
-        self.page=self.page[0]        
+        self.page=self.page       
         # Initialize Redis client
 
         # Initialize Kafka Producer
@@ -163,7 +168,7 @@ class NewsProducer:
 
         for lang in languages[:1]:
             results = []
-            for query in queries[:1]:
+            for query in queries[:]:
                 articles = self.fetch_articles(source, lang, query)
                 if articles:
                     results.extend(articles)
