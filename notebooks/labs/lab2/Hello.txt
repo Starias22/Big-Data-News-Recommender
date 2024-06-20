@@ -1,0 +1,6 @@
+Hello world
+Hello Spark
+Hello Spark and Python
+Python and Spark are powerful
+Hello Python
+Hello world again
