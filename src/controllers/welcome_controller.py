@@ -3,33 +3,40 @@ from src.models.user import User
 from src.db.user_db import UserDB
 from src.utils import generate_otp,send_email
 from src.consumers.recommended_news_fetcher import fetch_recommended_news
+from utils import is_empty
+
 import re
 from typing import Optional
 class WelcomeController:
-    def __init__(self,email=None,password=None,firstname=None,lastname=None):
+    def __init__(self,email=None,password=None,firstname=None,lastname=None,password_confirm=None):
         self.user_db=UserDB()
         self.user=User(email=email,
                        password=password,
                        firstname=firstname,
                        lastname=lastname)
         
-    
+        self.password_confirm=password_confirm
 
     def login(self) ->Optional[User]:
         if self.user.is_empty(authentication=True):
             return 1
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+
+        # Validate the email address
+        if not re.match(email_regex, self.user.email):
+            return 2  # Invalid email address
         user=self.user_db.authenticate(self.user)
         
         if user is None:
             return None
-        print('The user is')
-        user.display()
+        #print('The user is')
+        #user.display()
         return user
         
 
     def valid_new_user(self):
 
-        if  self.user.is_empty():
+        if  self.user.is_empty() or is_empty(self.password_confirm):
             return 1
         # Define a regex pattern for validating email addresses
         email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -37,8 +44,12 @@ class WelcomeController:
         # Validate the email address
         if not re.match(email_regex, self.user.email):
             return 2  # Invalid email address
+        if len(self.user.password)<6:
+            return 3
+        if self.password_confirm!=self.user.password:
+            return 4
         if self.user_db.find_user_by_email(self.user.email) :
-            return 3 # Email add already in use
+            return 5 # Email add already in use
         
         #self.user_db.create_user(self.user)
         return 0
