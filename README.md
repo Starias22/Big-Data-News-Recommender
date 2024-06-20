@@ -344,7 +344,7 @@ The raw news stream processor:
 Move to src/consumer and run raw news consumer.
 
 ```sh
-python3 python3 raw_news_consumer.py
+python3 raw_news_consumer.py
 ```
 
 This etrieves raw news messages from **RawNewsTopic**
