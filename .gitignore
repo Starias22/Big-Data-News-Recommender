@@ -13,6 +13,7 @@ trained_models
 test.py
 __pycache__
 checkpoint/
-notebooks/
 config/config.json
 test_users.py
+drive.txt
+links.txt
