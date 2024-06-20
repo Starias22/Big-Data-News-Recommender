@@ -255,17 +255,39 @@ After filling the requested information you will have a new key generated. Copy 
    ```
    where 2.13.12 needs to be replaced with a Gradle version compatible with your Java. It will take some time. Just wait.
 
-5. **Start Zookeeper:**
+5. **Configure and start Zookeeper:**
 
-   Kafka requires Zookeeper to be running. Start Zookeeper with the following command:
+   Kafka requires Zookeeper to be running. But first we need to configure zookeeper properties file.
+   
+   But first make a copy
+
+   ```sh
+   cp config/zookeeper.properties config/zookeeper.properties.templates
+   ```
+
+   Open config/zookeeper.properties and change the line `dataDir=/tmp/zookeeper` to `dataDir=zookeeper-dir`
+
+   This allows Zookeeper to store metada on a persistant location rather than a temporay directory where the metadata like cluster id are lost and re-created after system reboot.
+
+   Start Zookeeper with the following command:
 
    ```sh
    bin/zookeeper-server-start.sh config/zookeeper.properties
    ```
 
-6. **Start Kafka:**
+6. **Configure and start Kafka:**
 
-   Start a Kafka server with the following command:
+Like Zookeeper we need to configure Kafka properties such as the topics we create remain even after system reboot.
+
+We need to change Kafka logs directory. But first make a copy
+
+```sh
+cp config/server.properties config/server.properties.templates
+```
+
+Open `config/server.properties` and change `log.dirs=/tmp/kafka-logs` to `log.dirs=kafka-logs`
+
+Start a Kafka server with the following command:
 
    ```sh
    bin/kafka-server-start.sh config/server.properties
