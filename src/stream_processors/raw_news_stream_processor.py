@@ -9,10 +9,11 @@ from pathlib import Path
 import sys
 
 # Add 'src' directory to the Python path
-#src_path = Path(__file__).resolve().parents[2]
-#sys.path.append(str(src_path))
+src_path = Path(__file__).resolve().parents[2]
+sys.path.append(str(src_path))
 #print(src_path)
 from news_preprocessor import NewsPreprocessor
+from config.config import KAFKA_BOOTSTRAP_SERVERS,RAW_NEWS_TOPIC,FILTERED_NEWS_TOPIC,PROCESSED_NEWS_TOPIC
 
 #from config.config import CATEGORIES_JSON_PATH
 
@@ -76,12 +77,11 @@ def process_raw_news_stream(servers=None,
                             filtered_news_topic=None,
                             processed_news_topic=None):
     if servers is None:
-        with open('../../config/config.json', 'r') as config_file:
-            config = json.load(config_file)
-        servers=config['kafka_bootstrap_servers']
-        raw_news_topic=config["raw_news_topic"]
-        filtered_news_topic=config["filtered_news_topic"]
-        processed_news_topic=config["processed_news_topic"]
+        
+        servers=KAFKA_BOOTSTRAP_SERVERS
+        raw_news_topic=RAW_NEWS_TOPIC
+        filtered_news_topic=FILTERED_NEWS_TOPIC
+        processed_news_topic=PROCESSED_NEWS_TOPIC
         
     # Read data from Kafka topic
     kafka_df = spark.readStream \
