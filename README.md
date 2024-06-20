@@ -339,6 +339,16 @@ The raw news stream processor:
    python3 raw_news_stream_processor.py
 ```
 
+### Run raw news consumer
+
+Move to src/consumer and run raw news consumer.
+
+```sh
+python3 python3 raw_news_consumer.py
+```
+
+This etrieves raw news messages from **RawNewsTopic**
+
 ### Run news producers 
 
 Keep the raw news stream processor running and open another window.
@@ -356,6 +366,7 @@ To run news producers, move to scr/producers and run the following commands
 These news producers will retrieve news using News API and Gooogle news and then send them to **RawNewsTopic**
 
 As news messages arrivse, the raw news stream processor will be processing them.
+
 
 ### Run filtered news saver
 
