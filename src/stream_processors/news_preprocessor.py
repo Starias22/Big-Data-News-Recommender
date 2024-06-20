@@ -49,6 +49,8 @@ class NewsPreprocessor:
         articles=raw_articles.dropDuplicates()
         # Drop articles missing essential fields
         articles = articles.na.drop(subset=['url', 'content', 'description'])
+        # Drop duplicate news based on the 'url' column
+        articles = articles.dropDuplicates(subset=['url','id'])
         return articles
 
     def clean(self, filtered_articles):
