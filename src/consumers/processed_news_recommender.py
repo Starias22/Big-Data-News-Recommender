@@ -8,17 +8,12 @@ from pathlib import Path
 import sys
 
 # Add 'src' directory to the Python path
-src_path = Path(__file__).resolve().parents[1]
+src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
-from db.interaction_db import InteractionDB
+from src.db.interaction_db import InteractionDB
+from config.config import MONGO_DB_URI,MONGO_DB_NAME,KAFKA_BOOTSTRAP_SERVERS,PROCESSED_NEWS_TOPIC
 
-
-# Assuming you have defined your User class and user database access in src.db.user_db
-from db.user_db import UserDB
-
-# Load configuration
-with open('../../config/config.json', 'r') as config_file:
-    config = json.load(config_file)
+from src.db.user_db import UserDB
 
 # Initialize Spark Session
 spark = SparkSession.builder \
@@ -67,8 +62,8 @@ def get_seen_and_liked_news(seen_news):
 # Read data from Kafka topic
 kafka_df = spark.read \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", config['kafka_bootstrap_servers']) \
-    .option("subscribe", config["processed_news_topic"]) \
+    .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
+    .option("subscribe",PROCESSED_NEWS_TOPIC) \
     .option("startingOffsets", "earliest") \
     .option("failOnDataLoss", "false") \
     .load()
@@ -85,8 +80,8 @@ print('The processed news df is:')
 
 processed_news_df.show()
 # Initialize MongoDB client
-client = MongoClient("mongodb://localhost:27017/")
-db = client["news_recommendation_db"]
+client = MongoClient(MONGO_DB_URI)
+db = client[MONGO_DB_NAME]
 user_preferences_collection = db["users"]
 
 # Retrieve user preferences using UserDB class
