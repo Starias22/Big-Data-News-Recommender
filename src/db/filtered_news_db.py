@@ -3,18 +3,19 @@ import sys
 from pathlib import Path
 
 # Add 'src' directory to the Python path
-src_path = Path(__file__).resolve().parents[1]
+src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from models.filtered_news import FilteredNews  # Make sure to import the FilteredNews class from the appropriate module
+from src.models.filtered_news import FilteredNews  # Make sure to import the FilteredNews class from the appropriate module
 
+from config.config import MONGO_DB_NAME,MONGO_DB_URI
 class FilteredNewsDB:
-    def __init__(self, uri="mongodb://localhost:27017/", db_name="news_recommendation_db"):
+    def __init__(self, uri=MONGO_DB_URI, db_name=MONGO_DB_NAME):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
 
     def create_filtered_news(self, news):
-        news_dict = news.to_dict()
+        news_dict = news.to_dict_persist()
         result = self.db.filtered_news.insert_one(news_dict)
         return result.inserted_id
 
