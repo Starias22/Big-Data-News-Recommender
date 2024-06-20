@@ -1,5 +1,4 @@
 from datetime import datetime
-from pymongo import MongoClient
 import sys
 from pathlib import Path
 # Add 'src' directory to the Python path
@@ -59,7 +58,7 @@ class User:
     @staticmethod
     def retrieve_preferences(data):
         return User(
-            #id=data.get('_id'),
+            id=data.get('_id'),
             categories=data.get('categories'),
             sentiments=data.get('sentiments'),
             seen_news=data.get('seen_news'),
