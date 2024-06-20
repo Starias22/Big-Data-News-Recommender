@@ -152,13 +152,13 @@ sudo systemctl is-enabled redis-server
 
 We need MongoDB to store users data, filtered news and data about users interactions with news.
 
-- To install MongoDB, go to [Redis installation on Ubunto](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/) and follow the steps described.
+- To install MongoDB, go to [Mongo installation on Ubuntu](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/) and follow the steps described.
 
 
 You can run `mongosh` to ensure everything is OK and then  <kbd>Ctrl</kbd> + <kbd>D</kbd> to exit mongo shell.
 
 
-If you want to configure redis to automatically start at reboot (if not done yet), run the following command
+If you want to configure MongoDB to automatically start at reboot (if not done yet), run the following command
 
 ```sh
 sudo systemctl status mongod
