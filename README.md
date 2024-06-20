@@ -136,6 +136,40 @@ You can run `redis-cli` to check Redis installation and then  <kbd>Ctrl</kbd> + 
 
 - For other installation alternatives, go to [Redis installation on Linux](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-linux/).
 
+If you want to configure redis to automatically start at rebbot, run the following command
+
+```sh
+sudo systemctl status redis-server
+```
+
+Run the following command to enshure the configuration was sucessfull. You should see `enabled`.
+
+```sh
+sudo systemctl is-enabled redis-server
+```
+
+#### MongoDB
+
+We need MongoDB to store users data, filtered news and data about users interactions with news.
+
+- To install MongoDB, go to [Redis installation on Ubunto](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/) and follow the steps described.
+
+
+You can run `mongosh` to ensure everything is OK and then  <kbd>Ctrl</kbd> + <kbd>D</kbd> to exit mongo shell.
+
+
+If you want to configure redis to automatically start at reboot (if not done yet), run the following command
+
+```sh
+sudo systemctl status mongod
+```
+
+Run the following command to enshure the configuration was sucessfull. You should see `enabled`.
+
+```sh
+sudo systemctl is-enabled mongod
+```
+
 #### Virtual Environment (recommended)
 
 Install venv for virtual environments.
