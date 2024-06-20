@@ -16,7 +16,7 @@ class FilteredNews:
         self.category=category
     def to_dict(self):
         return {
-            "id": self.id,
+            "_id": self.id,
             "title": self.title,
             "description": self.description,
             "source_name": self.source_name,
@@ -27,11 +27,24 @@ class FilteredNews:
             "author":self.author,
             "category":self.category
         }
+    
+    def to_dict_persist(self):
+        return {
+            "_id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "source_name": self.source_name,
+            "url": self.url,
+            "img_url": self.img_url,
+            "publication_date": self.publication_date,
+            "lang": self.lang,
+            "author":self.author,
+        }
 
     @staticmethod
     def from_dict(data):
         return FilteredNews(
-            id=data.get('id'),
+            id=data.get('_id'),
             title=data.get('title'),
             description=data.get('description'),
             source_name=data.get('source_name'),
@@ -41,6 +54,20 @@ class FilteredNews:
             lang=data.get('lang'),
             author=data.get('author'),
             category=data.get('category'),
+        )
+    
+    @staticmethod
+    def from_dict_persist(data):
+        return FilteredNews(
+            id=data.get('_id'),
+            title=data.get('title'),
+            description=data.get('description'),
+            source_name=data.get('source_name'),
+            url=data.get('url'),
+            img_url=data.get('img_url'),
+            publication_date=data.get('publication_date'),
+            lang=data.get('lang'),
+            author=data.get('author')
         )
 
     def display(self):
