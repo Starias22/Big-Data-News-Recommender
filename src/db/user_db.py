@@ -1,3 +1,4 @@
+from bson import ObjectId
 from pymongo import MongoClient
 import sys
 from pathlib import Path
@@ -7,7 +8,7 @@ sys.path.append(str(src_path))
 
 from models.user import User
 from utils import encrypt_password
-from typing import Optional
+from typing import Dict, Optional
 class UserDB:
     def __init__(self,uri="mongodb://localhost:27017/",db_name="news_recommendation_db"):
         self.client = MongoClient(uri)
@@ -23,7 +24,7 @@ class UserDB:
 
     def find_user_by_id(self, user_id):
         print('User id is',user_id)
-        user_data = self.db.users.find_one({"_id": user_id})
+        user_data = self.db.users.find_one({"_id": ObjectId(user_id)})
         print('User data is',user_data)
 
         if user_data:
@@ -49,3 +50,20 @@ class UserDB:
     def retrieve_user_preferences(self):
         users = self.db.users.find()
         return [User.retrieve_preferences(user_data) for user_data in users]
+    
+    def retrieve_user_ids(self):
+        users = self.db.users.find()
+        return [User.retrieve_id(user_data).id for user_data in users]
+
+    def add_seen_news(self, user_id, news_actions):
+        user = self.find_user_by_id(user_id)
+
+        print('The user is')
+        user.display()
+        if user:
+            user.add_seen_news(news_actions)
+            print('The seen news are',user.seen_news)
+            self.db.users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {"seen_news": user.seen_news}}
+            )
