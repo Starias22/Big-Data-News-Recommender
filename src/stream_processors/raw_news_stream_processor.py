@@ -107,7 +107,7 @@ def process_raw_news_stream(servers=None,
         .format("kafka") \
         .option("kafka.bootstrap.servers", servers) \
         .option("topic", filtered_news_topic) \
-        .option("checkpointLocation", "../../checkpoint/filtered_news") \
+        .option("checkpointLocation", "checkpoint/filtered_news") \
         .start()
 
     # Preprocess the filtered news
@@ -120,8 +120,8 @@ def process_raw_news_stream(servers=None,
     df = preprocessed_news_df.withColumn("sentiment_score", sentiment_udf(preprocessed_news_df["description_filtered_str"]))
 
     # Get topic distribution and drop unnecessary columns
-    df = get_topic_distribution(df)
-    df = df.drop('rawFeatures', 'features')
+    #df = get_topic_distribution(df)
+    #df = df.drop('rawFeatures', 'features')
 
     # Categorize news articles
     df = categorize_news(df)
@@ -135,7 +135,6 @@ def process_raw_news_stream(servers=None,
     df = df.select(["id", "sentiment_label", "title", "features", "description", "publication_date",
                     "source_name", "author", "url", "img_url", "lang",
                     "sentiment_score", "prediction", "category",
-                    "topicDistribution", "most_dominant_topic",
                     ])
 
     # Define UDF to transform 'features' column
@@ -150,7 +149,7 @@ def process_raw_news_stream(servers=None,
         .format("kafka") \
         .option("kafka.bootstrap.servers", servers) \
         .option("topic", processed_news_topic) \
-        .option("checkpointLocation", "../../checkpoint/processed_news") \
+        .option("checkpointLocation", "checkpoint/processed_news") \
         .start()
 
     # Await termination of the query
