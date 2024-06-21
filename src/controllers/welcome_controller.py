@@ -4,6 +4,10 @@ from src.db.user_db import UserDB
 from src.utils import generate_otp,send_email
 from src.consumers.recommended_news_fetcher import fetch_recommended_news
 from utils import is_empty
+from src.producers.interactions_producer import send_interaction
+#from src.db.interaction_db import InteractionDB
+from src.models.interaction import Interaction
+from datetime import datetime
 
 import re
 from typing import Optional
@@ -68,14 +72,19 @@ class WelcomeController:
         return user.email
 
 
-    def get_recommended_news(self):
+    def get_recommended_news(self,user_id):
         self.user.display()
         print(self.user.email)
         print(self.user.id)
-        recommended_news=fetch_recommended_news(user_email=self.user.email)
+        recommended_news=fetch_recommended_news(user_id=user_id)
         recommended_news=[news.to_dict() for news in recommended_news]
         print(recommended_news)
         
         
         return recommended_news
-        
+
+    def register_interaction(self,user_id,news_id,action):
+        interaction=Interaction(user_id=user_id,news_id=news_id,action=action,date=int(datetime.now().timestamp()))
+        send_interaction(interaction)
+
+
