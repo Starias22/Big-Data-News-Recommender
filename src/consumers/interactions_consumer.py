@@ -6,22 +6,20 @@ from pathlib import Path
 import sys
 
 # Add 'src' directory to the Python path
-src_path = Path(__file__).resolve().parents[1]
+src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
-from profiles.interaction import Interaction
-from db.interaction_db import InteractionDB
+from src.models.interaction import Interaction
+from src.db.interaction_db import InteractionDB
+from config.config import KAFKA_BOOTSTRAP_SERVERS,INTERACTIONS_TOPIC
 
-# Load the configuration from the JSON file
-with open('../../config/config.json', 'r') as config_file:
-    config = json.load(config_file)
 
 # List of topics to subscribe to
-topics = [config["interactions_topic"]]
+topics = [INTERACTIONS_TOPIC]
 
 # Initialize the consumer
 consumer = KafkaConsumer(
     *topics,  # Unpack the list of topics
-    bootstrap_servers=config["kafka_bootstrap_servers"],
+    bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
     auto_offset_reset='earliest',  # Start reading from the earliest message
     value_deserializer=lambda x: json.loads(x.decode('utf-8'))
 )
@@ -40,9 +38,5 @@ for n, message in enumerate(consumer):
 
     # Deserialize the message into an Interaction object
     interaction = Interaction.from_dict(interaction_data)
-
-    # Insert interaction into MongoDB
-    result = interaction_db.insert_interaction(interaction)
-    print(f"Inserted interaction with ID: {result}")
 
 print(f"Processed {n + 1} messages")
