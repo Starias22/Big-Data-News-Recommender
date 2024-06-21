@@ -2,10 +2,13 @@ import streamlit as st
 from src.controllers.welcome_controller import WelcomeController
 from config.config import SENDER_ADDRESS
 from src.utils import format_duration,format_source
+import webbrowser
+from config.config import DISLIKED,SEEN,LIKED
+
 
 def show_recommended_news(controller):
     # Fetch recommended news based on user_id using the controller
-    recommended_news = controller.get_recommended_news()
+    recommended_news = controller.get_recommended_news(user_id=st.session_state.user_id)
     print('****************************************************')
     print(recommended_news)
     for news in recommended_news:
@@ -16,20 +19,19 @@ def show_recommended_news(controller):
             st.markdown(
                 f"""
                 <div style="text-align: center;">
-                    <img src="{news['img_url']}" alt="news image" style="max-width: 100%;">
+                    <img src="{news['img_url']}" alt="" style="max-width: 100%;">
                 </div>
                 """, unsafe_allow_html=True
             )
-        
-        # Display title as a clickable link but styled as plain text
+        #st.write(f'***{news["title"]}***')
         st.markdown(
-            f"""
-            <h3 style='text-align: center;'>
-                <a href='{news['url']}' target='_blank' style='color: inherit; text-decoration: none;'>{news['title']}</a>
-            </h3>
-            """, 
-            unsafe_allow_html=True
-        )
+    f"""
+    <h3 style='text-align: center;'>
+        {news['title']}
+    </h3>
+    """,
+    unsafe_allow_html=True
+)
 
         # Display news details with icons aligned to the right
         col1, col2, col3, col4, col5 = st.columns([8, 1, 1, 1, 1])
@@ -38,37 +40,37 @@ def show_recommended_news(controller):
             st.write(f"{format_source(news['source_name'],news['author'])} {format_duration(news['publication_date'])}")
         
         with col2:
-            if st.button('👍', key=f"like_{news['_id']}"):
-                st.session_state[f"like_{news['_id']}"] = True
-        
-        with col3:
-            if st.button('👎', key=f"dislike_{news['_id']}"):
-                st.session_state[f"dislike_{news['_id']}"] = True
+            if st.button(f"👁️", key=f"view_{news['_id']}"):
+                webbrowser.open(news['url'])
+                print(f"Title clicked: {news['title']}")
+                print('You are the user',st.session_state.user_id)
+                
+                WelcomeController().register_interaction(user_id=st.session_state.user_id,
+                                                news_id=news['_id'],action=SEEN)
 
+        with col3:
+            if st.button('👍', key=f"like_{news['_id']}"):
+                WelcomeController().register_interaction(user_id=st.session_state.user_id,
+                                                news_id=news['_id'],action=LIKED)
+        
         with col4:
-            if st.button('🔗', key=f"share_{news['_id']}"):
-                st.session_state[f"share_{news['_id']}"] = True
+            if st.button('👎', key=f"dislike_{news['_id']}"):
+                WelcomeController().register_interaction(user_id=st.session_state.user_id,
+                                                news_id=news['_id'],action=DISLIKED)
+
+        
 
         with col5:
             if st.button('⋮', key=f"menu_{news['_id']}"):
-                st.session_state[f"menu_{news['_id']}"] = True
-
+                pass
+                #st.session_state[f"menu_{news['_id']}"] = True
+                
         # Check session state for button clicks
-        if st.session_state.get(f"like_{news['_id']}"):
-            st.write("Like button clicked")
-            st.session_state[f"like_{news['_id']}"] = False  # Reset state
-        
-        if st.session_state.get(f"dislike_{news['_id']}"):
-            st.write("Dislike button clicked")
-            st.session_state[f"dislike_{news['_id']}"] = False  # Reset state
+        #if st.session_state.get(f"view_{news['_id']}"):
+            #print(f"Title clicked: {news['title']}")
+            #st.session_state[f"view_{news['_id']}"] = False  # Reset state
 
-        if st.session_state.get(f"share_{news['_id']}"):
-            st.write("Share button clicked")
-            st.session_state[f"share_{news['_id']}"] = False  # Reset state
-
-        if st.session_state.get(f"menu_{news['_id']}"):
-            st.write("Menu button clicked")
-            st.session_state[f"menu_{news['_id']}"] = False  # Reset state
+        st.write(news['sentiment_score'])
 
         # Separator
         st.markdown("---")
@@ -80,6 +82,8 @@ def show_welcome_page():
         st.session_state.logged_in = False
     if 'user_email' not in st.session_state:
         st.session_state.user_email = None
+    if 'user_id' not in st.session_state:
+        st.session_state.user_id = None
     if 'registration_complete' not in st.session_state:
         st.session_state.registration_complete = False
     if 'otp' not in st.session_state:
@@ -124,8 +128,10 @@ def show_welcome_page():
                     elif user:
                         st.session_state.logged_in = True
                         st.session_state.user_email = user.email
+                        st.session_state.user_id = user.id
+                        print('The user id is',user.id)
                         st.success(f'Welcome back, {user.firstname}!')
-                        st.experimental_rerun()
+                        st.rerun()
                     else:
                         st.error('Unknown error.')
                 
@@ -192,7 +198,7 @@ def show_welcome_page():
                             st.session_state.user_email = controller.register()
                             st.success(f'Registration completed! Your email has been verified successfully, {register_firstname}!')
                             st.session_state.logged_in = True
-                            st.experimental_rerun()
+                            st.rerun()
                         else:
                             st.error('Incorrect confirmation code. Please try again.')
         
