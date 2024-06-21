@@ -1,6 +1,9 @@
+from datetime import datetime
+
 class Interaction:
     def __init__(self, id=None, user_id=None, features=None,
-                 topicDistribution=None, category=None, sentiment=None,news_id=None):
+                 topicDistribution=None, category=None, sentiment=None,news_id=None,
+                 action=None,date=int(datetime.now().timestamp())):
         self.id = id
         self.user_id = user_id
         self.news_id=news_id
@@ -8,16 +11,23 @@ class Interaction:
         self.topicDistribution = topicDistribution
         self.category = category
         self.sentiment = sentiment
+        self.action=action
+        self.date=date
 
     def to_dict(self):
         return {
-            "id": self.id,
             "user_id": self.user_id,
             "features": self.features,
-            "topicDistribution": self.topicDistribution,
-            "category": self.category,
-            "sentiment": self.sentiment,
-            "news_id":self.news_id
+            "news_id": self.news_id,
+            "action": self.action,
+            "date": self.date  # Convert datetime to ISO format string
+        }
+    
+    def to_dict_persist(self):
+        return {
+            "news_id": self.news_id,
+            "features": self.features,
+            "date": self.date
         }
 
     @staticmethod
@@ -29,7 +39,9 @@ class Interaction:
             topicDistribution=data.get('topicDistribution'),
             category=data.get('category'),
             sentiment=data.get('sentiment'),
-            news_id=data.get('news_id')
+            news_id=data.get('news_id'),
+            action=data.get('action'),
+            date=data.get('date')
 
         )
 
@@ -54,6 +66,9 @@ class Interaction:
         print('Category:', self.category)
         print('Sentiment:', self.sentiment)
         print('News ID:', self.news_id)
+        print('Action:', self.action)
+        print('date:', self.date)
+
 
 
 # Example usage
