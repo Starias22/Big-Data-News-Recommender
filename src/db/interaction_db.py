@@ -1,20 +1,22 @@
+from typing import Dict
 from pymongo import MongoClient
 from pathlib import Path
 import sys
 
 # Add 'src' directory to the Python path
-src_path = Path(__file__).resolve().parents[1]
+src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
-from models.interaction import Interaction
+from src.models.interaction import Interaction
+from config.config import MONGO_DB_NAME,MONGO_DB_URI
 
 class InteractionDB:
-    def __init__(self, uri="mongodb://localhost:27017/", db_name="news_recommendation_db"):
+    def __init__(self, uri=MONGO_DB_URI, db_name=MONGO_DB_NAME):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
         self.collection = self.db.interactions  # Access the interactions collection
 
     def insert_interaction(self, interaction):
-        interaction_dict = interaction.to_dict()
+        interaction_dict = interaction.to_dict_persist()
         result = self.collection.insert_one(interaction_dict)
         return result.inserted_id
 
