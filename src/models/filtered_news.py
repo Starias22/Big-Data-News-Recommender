@@ -2,7 +2,7 @@ class FilteredNews:
     def __init__(self, id=None, title=None,
                   description=None, source_name=None,
                     url=None, img_url=None, publication_date=None, 
-                    lang=None,author=None,category=None):
+                    lang=None,author=None,category=None,sentiment=None):
         self.id = id
         self.title = title
         self.description = description
@@ -14,6 +14,7 @@ class FilteredNews:
         self.lang = lang
         self.author=author
         self.category=category
+        self.sentiment=sentiment
     def to_dict(self):
         return {
             "_id": self.id,
@@ -25,7 +26,8 @@ class FilteredNews:
             "publication_date": self.publication_date,
             "lang": self.lang,
             "author":self.author,
-            "category":self.category
+            "category":self.category,
+            "sentiment_score":self.sentiment
         }
     
     def to_dict_persist(self):
@@ -54,6 +56,7 @@ class FilteredNews:
             lang=data.get('lang'),
             author=data.get('author'),
             category=data.get('category'),
+            sentiment=data.get('sentiment_score')
         )
     
     @staticmethod
