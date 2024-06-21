@@ -34,6 +34,9 @@ SENDER_ADDRESS=config.get("sender_address")
 PASSWORD=config.get("password")
 MONGO_DB_NAME=config.get("mongo_db_name")
 MONGO_DB_URI=config.get("mongo_db_uri")
+DISLIKED=config.get("disliked")
+SEEN=config.get("seen")
+LIKED=config.get("liked")
 
 # Existing config variables...
 
