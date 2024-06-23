@@ -38,7 +38,6 @@ def show_recommended_news(controller):
         
         with col1:
             st.write(f"{format_source(news['source_name'],news['author'])} {format_duration(news['publication_date'])}")
-        
         with col2:
             if st.button(f"👁️", key=f"view_{news['_id']}"):
                 webbrowser.open(news['url'])
