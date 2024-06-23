@@ -70,7 +70,7 @@ def fetch_recommended_news(user_id,topics=None, servers=None,
     return recommended_news
 
 if __name__ == "__main__":
-    news = fetch_recommended_news(user_id='66746ce9309d6609f5e066fa')
+    news = fetch_recommended_news(user_id='6675d6cbd31adca141eeeb1b')
     #print(news)
     print(len(news), 'recommended news')
     #print(news[0].sentiment)
