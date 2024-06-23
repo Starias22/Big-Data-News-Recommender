@@ -36,7 +36,7 @@ def persist_filtered_news(topics=[FILTERED_NEWS_TOPIC] ,
     for n, message in enumerate(consumer):
         print('******')
         filtered_news_data = message.value
-        print(f"Received message {n + 1}: {filtered_news_data}")
+        print(f"Received message {n + 1} from topic {FILTERED_NEWS_TOPIC}: {filtered_news_data}")
 
         # Deserialize the message into a FilteredNews object
         #filtered_news_data['_id'] = filtered_news_data.pop('id')

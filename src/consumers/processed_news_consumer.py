@@ -32,7 +32,7 @@ def persist_filtered_news(topics=[PROCESSED_NEWS_TOPIC] ,
     for n, message in enumerate(consumer):
         print('******')
         filtered_news_data = message.value
-        print(f"Received message {n + 1}: {filtered_news_data}")
+        print(f"Received message {n + 1} from {PROCESSED_NEWS_TOPIC}: {filtered_news_data}")
 
 if __name__=="__main__":
     persist_filtered_news()

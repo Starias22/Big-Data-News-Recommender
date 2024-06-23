@@ -34,7 +34,7 @@ print(f"Connected to MongoDB")
 # Consume messages from the subscribed topics
 for n, message in enumerate(consumer):
     interaction_data = message.value
-    print(f"Received message {n + 1}: {interaction_data}")
+    print(f"Received message {n + 1} from {INTERACTIONS_TOPIC}: {interaction_data}")
 
     # Deserialize the message into an Interaction object
     interaction = Interaction.from_dict(interaction_data)

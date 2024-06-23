@@ -62,7 +62,7 @@ def get_seen_and_liked_news(seen_news):
 # Read data from Kafka topic
 kafka_df = spark.read \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
+    .option("kafka.bootstrap.servers", ",".join(KAFKA_BOOTSTRAP_SERVERS)) \
     .option("subscribe",PROCESSED_NEWS_TOPIC) \
     .option("startingOffsets", "earliest") \
     .option("failOnDataLoss", "false") \
