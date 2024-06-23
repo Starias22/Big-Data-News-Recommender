@@ -28,7 +28,7 @@ FILTERED_NEWS_TOPIC = config.get("filtered_news_topic", "")
 PROCESSED_NEWS_TOPIC = config.get("processed_news_topic", "")
 INTERACTIONS_TOPIC = config.get("interactions_topic", "")
 NULL_REPLACEMENTS = config.get("null_replacements", {})
-KAFKA_BOOTSTRAP_SERVERS = config.get("kafka_bootstrap_servers", "")
+KAFKA_BOOTSTRAP_SERVERS = config.get("kafka_bootstrap_servers", [])
 SPARK_VERSION = config.get("spark_version", "")
 SENDER_ADDRESS=config.get("sender_address")
 PASSWORD=config.get("password")
@@ -56,10 +56,15 @@ def get_project_root():
 # Paths
 PROJECT_ROOT = get_project_root()
 SRC_PATH = PROJECT_ROOT / 'src'
-CATEGORIES_JSON_PATH = SRC_PATH / 'models/news_categorization_model/new_categories.json'
-CHECKPOINT_DIR = PROJECT_ROOT / 'checkpoint'
-FILTERED_RAW_NEWS_CHECKPOINT = CHECKPOINT_DIR / 'filtered_raw_news'
-GENERAL_CHECKPOINT = CHECKPOINT_DIR / 'general'
+CATEGORIES_JSON_PATH = SRC_PATH / 'trained_models/news_categorization_model/news_categories.json'
+NEWS_CATEGORIZATION_MODEL_PATH = SRC_PATH / 'trained_models/news_categorization_model/'
+
+FILTERED_NEWS_CHECKPOINT_DIR = SRC_PATH / 'stream_processors/checkpoint/filtered_news'
+PROCESSED_NEWS_CHECKPOINT_DIR = SRC_PATH / 'stream_processors/checkpoint/processed_news'
+
+#FILTERED_RAW_NEWS_CHECKPOINT = CHECKPOINT_DIR / 'filtered_raw_news'
+#GENERAL_CHECKPOINT = CHECKPOINT_DIR / 'general'
+SPARK_STREAM_CHECKPOINT_LOCATION=PROJECT_ROOT / 'src/stream_processors/checkpoint/'
 
 if __name__=='__main__':
 
