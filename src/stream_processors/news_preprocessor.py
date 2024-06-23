@@ -8,10 +8,10 @@ from pathlib import Path
 import sys
 
 # Add 'src' directory to the Python path
-#src_path = Path(__file__).resolve().parents[1]
-#sys.path.append(str(src_path))
+src_path = Path(__file__).resolve().parents[2]
+sys.path.append(str(src_path))
 
-#from ...config.config import NEWS_TOPIC_MODEL_PATH,NEWS_CATEGORISATION_MODEL_PATH
+from config.config import NEWS_CATEGORIZATION_MODEL_PATH
 
 # Download necessary NLTK data
 download('wordnet')
@@ -24,10 +24,13 @@ class NewsPreprocessor:
         # Initialize with user-defined lemmatization UDF
         self.lemmatize_udf = lemmatize_udf     
         # Load pre-trained LDA model for topic modeling
-        self.lda_model = PipelineModel.load('../trained_models/news_topic_model') 
+        #self.lda_model = PipelineModel.load('../trained_models/news_topic_model') 
         # Load pre-trained pipeline model for news categorization
-        self.categorization_pipeline = PipelineModel.load('../trained_models/news_categorization_model') 
+        #self.categorization_pipeline = PipelineModel.load('../trained_models/news_categorization_model') 
+        self.categorization_pipeline = PipelineModel.load(NEWS_CATEGORIZATION_MODEL_PATH) 
+
         # Define schema for JSON data
+
         self.schema= StructType([
             StructField("id", StringType(), True),
             StructField("title", StringType(), True),
@@ -45,10 +48,10 @@ class NewsPreprocessor:
         """
         Clean the raw articles by removing duplicate rows, rows with missing URL, content, or description.
         """
-        # Drop duplicate news based on the 'url' column
-        articles = raw_articles.dropDuplicates(subset=['url','id'])
+        # Drop duplicate news based on the id, url, title, description,
+        articles = raw_articles.dropDuplicates(subset=['id']).dropDuplicates(subset=['description']).dropDuplicates(subset=['url']).dropDuplicates(subset=['title'])
         # Drop articles missing essential fields
-        articles = articles.na.drop(subset=['url', 'content', 'description'])
+        articles = articles.na.drop(subset=['id','url', 'content', 'description','title'],how='any')
         
         return articles
 

@@ -7,13 +7,13 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk import WordNetLemmatizer
 from pathlib import Path
 import sys
-
+POLL_TIMEOUT_MS = 5000  # 30 seconds poll timeout
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 #print(src_path)
 from news_preprocessor import NewsPreprocessor
-from config.config import KAFKA_BOOTSTRAP_SERVERS,RAW_NEWS_TOPIC,FILTERED_NEWS_TOPIC,PROCESSED_NEWS_TOPIC
+from config.config import KAFKA_BOOTSTRAP_SERVERS,RAW_NEWS_TOPIC,FILTERED_NEWS_TOPIC,PROCESSED_NEWS_TOPIC,CATEGORIES_JSON_PATH,FILTERED_NEWS_CHECKPOINT_DIR,PROCESSED_NEWS_CHECKPOINT_DIR
 
 #from config.config import CATEGORIES_JSON_PATH
 
@@ -24,7 +24,7 @@ schema = StructType([
 ])
 
 # Load category mapping and config
-with open('../trained_models/news_categorization_model/news_categories.json', 'r') as f:
+with open(CATEGORIES_JSON_PATH, 'r') as f:
     category_mapping = json.load(f)
 
 # Convert keys to integers for category mapping
@@ -82,14 +82,18 @@ def process_raw_news_stream(servers=None,
         raw_news_topic=RAW_NEWS_TOPIC
         filtered_news_topic=FILTERED_NEWS_TOPIC
         processed_news_topic=PROCESSED_NEWS_TOPIC
-        
+        # Convert list of servers to a comma-separated string
+        servers_str = ",".join(servers)
+        print('@@@@@@@@@@@@@@@@@@@@@',servers_str)
     # Read data from Kafka topic
     kafka_df = spark.readStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers) \
+        .option("kafka.bootstrap.servers", servers_str) \
         .option("subscribe", raw_news_topic) \
+        .option("startingOffsets", "earliest") \
         .load()
-
+#.option("kafka.consumer.poll.timeout.ms", POLL_TIMEOUT_MS) \
+#.option("startingOffsets", "earliest") \
     # Deserialize JSON data
     news_df = kafka_df.selectExpr("CAST(value AS STRING) as json") \
         .select(from_json(col("json"), news_processor.schema).alias("data")) \
@@ -105,10 +109,12 @@ def process_raw_news_stream(servers=None,
     # Save the filtered news DataFrame to a temporary location as a stream
     filtered_news_query = raw_news_df.writeStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers) \
+        .option("kafka.bootstrap.servers", servers_str) \
         .option("topic", filtered_news_topic) \
-        .option("checkpointLocation", "checkpoint/filtered_news") \
+        .option("checkpointLocation", FILTERED_NEWS_CHECKPOINT_DIR) \
+        .trigger(once=True)\
         .start()
+# option("checkpointLocation", f"{SPARK_STREAM_CHECKPOINT_LOCATION}/filtered_news") \
 
     # Preprocess the filtered news
     preprocessed_news_df = news_processor.preprocess(filtered_news_df)
@@ -118,10 +124,6 @@ def process_raw_news_stream(servers=None,
 
     # Apply sentiment analysis
     df = preprocessed_news_df.withColumn("sentiment_score", sentiment_udf(preprocessed_news_df["description_filtered_str"]))
-
-    # Get topic distribution and drop unnecessary columns
-    #df = get_topic_distribution(df)
-    #df = df.drop('rawFeatures', 'features')
 
     # Categorize news articles
     df = categorize_news(df)
@@ -144,17 +146,30 @@ def process_raw_news_stream(servers=None,
 
     print('News processed successfully')
     print('Sending the news messages to Kafka')
+    # Function to process each batch
+    def process_batch(batch_df, batch_id):
+        print('QQQQQqqqqqqqqqqqqqq')
+        if batch_df.count() == 0:
+            print("No new data received. Stopping the query.")
+            query.stop()
+        else:
+            print('Not empty')
+#.foreachBatch(process_batch) \
     # Write the processed data to a Kafka topic
     query = processed_news_json_df.writeStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers) \
+        .option("kafka.bootstrap.servers", servers_str) \
         .option("topic", processed_news_topic) \
-        .option("checkpointLocation", "checkpoint/processed_news") \
+        .option("checkpointLocation", PROCESSED_NEWS_CHECKPOINT_DIR) \
+        .trigger(once=True)\
         .start()
+#.option("checkpointLocation", f"{SPARK_STREAM_CHECKPOINT_LOCATION}/processed_news") \
 
     # Await termination of the query
     filtered_news_query.awaitTermination()
+    print('We ae here')
     query.awaitTermination()
+    
 
 if __name__ == "__main__":
     process_raw_news_stream()
