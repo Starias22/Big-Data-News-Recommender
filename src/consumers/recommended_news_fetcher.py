@@ -11,7 +11,7 @@ from src.models.user import User
 from src.db.user_db import UserDB
 
 from src.models.filtered_news import FilteredNews
-from config.config import KAFKA_BOOTSTRAP_SERVERS,PROCESSED_NEWS_TOPIC
+from config.config import KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC
 
 def fetch_recommended_news(user_id,topics=None, servers=None, 
                              timeout_ms=5000):
@@ -22,7 +22,7 @@ def fetch_recommended_news(user_id,topics=None, servers=None,
     print('The recommended news ids:',recommended_news_ids)
 
     
-    topics = [PROCESSED_NEWS_TOPIC]
+    topics = [AVAILABLE_NEWS_TOPIC]
     servers = KAFKA_BOOTSTRAP_SERVERS
 
     # Initialize the consumer

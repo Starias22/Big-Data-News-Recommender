@@ -1,7 +1,6 @@
-import json
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json
-from pyspark.sql.types import StringType, StructType, StructField, IntegerType,DoubleType, StringType, DoubleType, ArrayType, MapType
+from pyspark.sql.types import StringType, StructType, StructField, IntegerType,DoubleType, StringType, DoubleType, ArrayType
 from pymongo import MongoClient
 from similarity import look_for_similarity
 from pathlib import Path
@@ -11,13 +10,13 @@ import sys
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 from src.db.interaction_db import InteractionDB
-from config.config import MONGO_DB_URI,MONGO_DB_NAME,KAFKA_BOOTSTRAP_SERVERS,PROCESSED_NEWS_TOPIC
+from config.config import MONGO_DB_URI,MONGO_DB_NAME,KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC
 
 from src.db.user_db import UserDB
 
 # Initialize Spark Session
 spark = SparkSession.builder \
-    .appName("ProcessedNewsConsumer") \
+    .appName("AvailableNewsRecommendation") \
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
     .getOrCreate()
 
@@ -63,11 +62,11 @@ def get_seen_and_liked_news(seen_news):
 kafka_df = spark.read \
     .format("kafka") \
     .option("kafka.bootstrap.servers", ",".join(KAFKA_BOOTSTRAP_SERVERS)) \
-    .option("subscribe",PROCESSED_NEWS_TOPIC) \
+    .option("subscribe",AVAILABLE_NEWS_TOPIC) \
     .option("startingOffsets", "earliest") \
     .option("failOnDataLoss", "false") \
     .load()
-
+# .option("kafka.group.id", "available_news_recommender_group") \ # Consumer group ID
 # Deserialize JSON data
 processed_news_df = kafka_df.selectExpr("CAST(value AS STRING)") \
     .select(from_json(col("value"), schema).alias("data")) \

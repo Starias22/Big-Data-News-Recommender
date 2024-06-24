@@ -114,7 +114,6 @@ def process_raw_news_stream(servers=None,
         .option("checkpointLocation", FILTERED_NEWS_CHECKPOINT_DIR) \
         .trigger(once=True)\
         .start()
-# option("checkpointLocation", f"{SPARK_STREAM_CHECKPOINT_LOCATION}/filtered_news") \
 
     # Preprocess the filtered news
     preprocessed_news_df = news_processor.preprocess(filtered_news_df)

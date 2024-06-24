@@ -24,7 +24,7 @@ class NewsProducer:
 
         
         servers=KAFKA_BOOTSTRAP_SERVERS
-        api_key=NEWSAPI_KEYS[2]
+        api_key=NEWSAPI_KEYS[0]
         topic=RAW_NEWS_TOPIC
         page=PAGE
         page_size=PAGE_SIZE
@@ -168,7 +168,7 @@ class NewsProducer:
 
         for lang in languages[:1]:
             results = []
-            for query in queries[:1]:
+            for query in queries[:]:
                 articles = self.fetch_articles(source, lang, query)
                 if articles:
                     results.extend(articles)
