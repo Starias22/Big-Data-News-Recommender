@@ -146,13 +146,7 @@ def process_raw_news_stream(servers=None,
     print('News processed successfully')
     print('Sending the news messages to Kafka')
     # Function to process each batch
-    def process_batch(batch_df, batch_id):
-        print('QQQQQqqqqqqqqqqqqqq')
-        if batch_df.count() == 0:
-            print("No new data received. Stopping the query.")
-            query.stop()
-        else:
-            print('Not empty')
+    
 #.foreachBatch(process_batch) \
     # Write the processed data to a Kafka topic
     query = processed_news_json_df.writeStream \

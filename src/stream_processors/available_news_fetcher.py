@@ -33,6 +33,8 @@ processed_news_schema = StructType([
     StructField("prediction", DoubleType(), True),
     StructField("sentiment_label", IntegerType(), True),
     StructField("sentiment_score", DoubleType(), True),
+    StructField("category", StringType(), True),
+
     StructField("features", features_schema, True),
 
 ])
@@ -55,7 +57,7 @@ def process_raw_news_stream():
         .load()
     
     # Print schema of incoming data for debugging
-    kafka_df.printSchema()
+    #kafka_df.printSchema()
     
     # Deserialize JSON data
     news_df = kafka_df.selectExpr("CAST(value AS STRING) as json") \
@@ -73,7 +75,7 @@ def process_raw_news_stream():
     recommended_news_query = news_df.writeStream \
         .format("kafka") \
         .option("kafka.bootstrap.servers", servers_str) \
-        .option("topic", anext) \
+        .option("topic", AVAILABLE_NEWS_TOPIC) \
         .option("checkpointLocation", AVAILABLE_NEWS_CHECKPOINT_DIR) \
         .trigger(once=True) \
         .start()
