@@ -15,7 +15,8 @@ NEWSAPI_KEYS = [
     config.get("__newsapi_key", ""),
     config.get("_newsapi_key", ""),
     config.get("___newsapi_key", ""),
-    config.get("newsapi_key", "")
+    config.get("newsapi_key", ""),
+    config.get("newsapi_key5", "")
 ]
 NEWSDATAAPI_KEY = config.get("newsdataapi_key", "")
 LANGUAGES = config.get("languages", [])
@@ -37,6 +38,7 @@ MONGO_DB_URI=config.get("mongo_db_uri")
 DISLIKED=config.get("disliked")
 SEEN=config.get("seen")
 LIKED=config.get("liked")
+AVAILABLE_NEWS_TOPIC=config.get("available_news_topic")
 
 # Existing config variables...
 
@@ -46,7 +48,7 @@ SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__
 # Path to new_categories.json
 CATEGORIES_JSON_PATH = os.path.join(SRC_PATH, 'models', 'news_categorization_model', 'new_categories.json')
 NEWS_TOPIC_MODEL_PATH = os.path.join(SRC_PATH, 'models', 'news_topic_model')
-NEWS_CATEGORISATION_MODEL_PATH = os.path.join(SRC_PATH, 'models', 'news_categorization_model')
+NEWS_CATEGORISATION_MODEL_PATH = os.path.join(SRC_PATH, 'trained_models', 'news_categorization_model')
 
 from pathlib import Path
 
@@ -60,6 +62,12 @@ CATEGORIES_JSON_PATH = SRC_PATH / 'trained_models/news_categorization_model/news
 NEWS_CATEGORIZATION_MODEL_PATH = SRC_PATH / 'trained_models/news_categorization_model/'
 
 FILTERED_NEWS_CHECKPOINT_DIR = SRC_PATH / 'stream_processors/checkpoint/filtered_news'
+AVAILABLE_NEWS_CHECKPOINT_DIR = SRC_PATH / 'stream_processors/checkpoint/available_news'
+AVAILABLE_NEWS_RECOMMENDER_CHECKPOINT_DIR = SRC_PATH / 'consumer/checkpoint/recommender'
+AVAILABLE_NEWS_CONSUMER_CHECKPOINT_DIR = SRC_PATH / 'consumer/checkpoint/test'
+
+
+
 PROCESSED_NEWS_CHECKPOINT_DIR = SRC_PATH / 'stream_processors/checkpoint/processed_news'
 
 #FILTERED_RAW_NEWS_CHECKPOINT = CHECKPOINT_DIR / 'filtered_raw_news'
@@ -79,6 +87,7 @@ if __name__=='__main__':
     print(f"RAW_NEWS_TOPIC: {RAW_NEWS_TOPIC}")
     print(f"FILTERED_NEWS_TOPIC: {FILTERED_NEWS_TOPIC}")
     print(f"PROCESSED_NEWS_TOPIC: {PROCESSED_NEWS_TOPIC}")
+    print(f"AVAILABLE_NEWS_TOPIC: {AVAILABLE_NEWS_TOPIC}")
     print(f"INTERACTIONS_TOPIC: {INTERACTIONS_TOPIC}")
     print(f"NULL_REPLACEMENTS: {NULL_REPLACEMENTS}")
     print(f"KAFKA_BOOTSTRAP_SERVERS: {KAFKA_BOOTSTRAP_SERVERS}")
