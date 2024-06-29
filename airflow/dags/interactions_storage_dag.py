@@ -1,24 +1,23 @@
-from pathlib import Path
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator # type: ignore
 from datetime import datetime, timedelta
 from airflow.utils.dates import days_ago
+CONSUMERS_PATH='~/Big-Data-News-Recommender/src/consumers/'
+STREAM_PROCESSOR_PATH='~/Big-Data-News-Recommender/src/stream_processors/'
+
 import sys
+from pathlib import Path
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-
 from config.config import START_HOUR
-
-
-PRODUCERS_PATH='~/Big-Data-News-Recommender/src/producers/'
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    #'start_date': datetime(2024, 6, 23,hour= 4, minute=15),
-    'start_date': days_ago(1,hour=START_HOUR),
+    #'start_date': datetime(2024, 6, 23,hour= 6, minute=15),
+    'start_date': days_ago(0,hour=START_HOUR+2),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 3,
@@ -27,20 +26,17 @@ default_args = {
 
 
 dag = DAG(
-    'news_production_dag',
+    'interactions_storage_dag',
     default_args=default_args,
-    description='A daily workflow for fetching news articles from multiples sources.',
+    description='A daily dag for storage of user interactions with the news articles.' ,
     #schedule_interval=timedelta(hours=1),
     schedule_interval=timedelta(days=1),
 )
 
-news_api_production_task = BashOperator(
-    task_id='news_api_production',
-    bash_command=f'python3 {PRODUCERS_PATH}news_api_producer.py',
+
+interactions_storage_task = BashOperator(
+    task_id='interactions_storage',
+    bash_command=f'python3 {CONSUMERS_PATH}interactions_saver.py',
     dag=dag,
 )
-google_news_production_task = BashOperator(
-    task_id='google_news_production',
-    bash_command=f'python3 {PRODUCERS_PATH}google_news_producer.py',
-    dag=dag,
-)
+
