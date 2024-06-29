@@ -1,7 +1,7 @@
 from pathlib import Path
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator # type: ignore
-from datetime import datetime, timedelta
+from datetime import timedelta
 from airflow.utils.dates import days_ago
 import sys
 # Add 'src' directory to the Python path
@@ -9,7 +9,7 @@ src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
 
-from config.config import START_HOUR
+from config.config import START_HOUR,START_DAYS_AGO
 
 
 PRODUCERS_PATH='~/Big-Data-News-Recommender/src/producers/'
@@ -18,7 +18,7 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     #'start_date': datetime(2024, 6, 23,hour= 4, minute=15),
-    'start_date': days_ago(1,hour=START_HOUR),
+    'start_date': days_ago(START_DAYS_AGO,hour=START_HOUR),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 3,

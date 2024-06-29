@@ -9,7 +9,9 @@ from pathlib import Path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from config.config import START_HOUR
+from config.config import START_HOUR,START_DAYS_AGO
+from src.utils import increment_hour
+
 
 PRODUCERS_PATH='~/Big-Data-News-Recommender/src/producers/'
 STREAM_PROCESSOR_PATH='~/Big-Data-News-Recommender/src/stream_processors/'
@@ -19,7 +21,7 @@ default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
     #'start_date': datetime(2024, 6, 23,hour= 5, minute=15),
-    'start_date': days_ago(1,hour=START_HOUR+1),
+    'start_date': days_ago(START_DAYS_AGO,hour=START_HOUR+1),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 3,
