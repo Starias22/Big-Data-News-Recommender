@@ -1,6 +1,9 @@
 import json
 import os
 
+#START_HOUR=18
+START_HOUR=3
+START_DAYS_AGO=1
 def load_config(filepath='config.json'):
     # Use absolute path to ensure we find the file
     abs_filepath = os.path.join(os.path.dirname(__file__), filepath)
@@ -45,10 +48,12 @@ AVAILABLE_NEWS_TOPIC=config.get("available_news_topic")
 # Resolve the path to the 'src' directory
 SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'src'))
 
+TRAINED_MODELS_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'trained_models'))
+
 # Path to new_categories.json
-CATEGORIES_JSON_PATH = os.path.join(SRC_PATH, 'models', 'news_categorization_model', 'new_categories.json')
-NEWS_TOPIC_MODEL_PATH = os.path.join(SRC_PATH, 'models', 'news_topic_model')
-NEWS_CATEGORISATION_MODEL_PATH = os.path.join(SRC_PATH, 'trained_models', 'news_categorization_model')
+CATEGORIES_JSON_PATH = os.path.join(TRAINED_MODELS_PATH, 'news_categorization_model', 'news_categories.json')
+#NEWS_TOPIC_MODEL_PATH = os.path.join(SRC_PATH, 'models', 'news_topic_model')
+NEWS_CATEGORISATION_MODEL_PATH = os.path.join(TRAINED_MODELS_PATH, 'news_categorization_model')
 
 from pathlib import Path
 
@@ -58,8 +63,8 @@ def get_project_root():
 # Paths
 PROJECT_ROOT = get_project_root()
 SRC_PATH = PROJECT_ROOT / 'src'
-CATEGORIES_JSON_PATH = SRC_PATH / 'trained_models/news_categorization_model/news_categories.json'
-NEWS_CATEGORIZATION_MODEL_PATH = SRC_PATH / 'trained_models/news_categorization_model/'
+#CATEGORIES_JSON_PATH = SRC_PATH / 'trained_models/news_categorization_model/news_categories.json'
+#NEWS_CATEGORIZATION_MODEL_PATH = SRC_PATH / 'trained_models/news_categorization_model/'
 
 FILTERED_NEWS_CHECKPOINT_DIR = SRC_PATH / 'stream_processors/checkpoint/filtered_news'
 AVAILABLE_NEWS_CHECKPOINT_DIR = SRC_PATH / 'stream_processors/checkpoint/available_news'
@@ -95,7 +100,7 @@ if __name__=='__main__':
     print(f"SRC_PATH: {SRC_PATH}")
     print(f"CATEGORIES_JSON_PATH: {CATEGORIES_JSON_PATH}")
     print(f"NEWS_CATEGORISATION_MODEL_PATH: {NEWS_CATEGORISATION_MODEL_PATH}")
-    print(f"NEWS_TOPIC_MODEL_PATH: {NEWS_TOPIC_MODEL_PATH}")
+    #print(f"NEWS_TOPIC_MODEL_PATH: {NEWS_TOPIC_MODEL_PATH}")
 
 
 
