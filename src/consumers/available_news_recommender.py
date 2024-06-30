@@ -10,7 +10,7 @@ import sys
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 from src.db.interaction_db import InteractionDB
-from config.config import MONGO_DB_URI,MONGO_DB_NAME,KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC
+from config.config import MONGO_DB_URI,MONGO_DB_NAME,KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC,PROCESSED_NEWS_TOPIC
 
 from src.db.user_db import UserDB
 
@@ -62,7 +62,7 @@ def get_seen_and_liked_news(seen_news):
 kafka_df = spark.read \
     .format("kafka") \
     .option("kafka.bootstrap.servers", ",".join(KAFKA_BOOTSTRAP_SERVERS)) \
-    .option("subscribe",AVAILABLE_NEWS_TOPIC) \
+    .option("subscribe",PROCESSED_NEWS_TOPIC) \
     .option("startingOffsets", "earliest") \
     .option("failOnDataLoss", "false") \
     .load()
@@ -75,7 +75,7 @@ processed_news_df = kafka_df.selectExpr("CAST(value AS STRING)") \
 
 # Sort the DataFrame in descending order based on publication_date
 processed_news_df = processed_news_df.orderBy(col("publication_date").desc())
-print('The processed news df is:')
+print('available news df is:')
 
 processed_news_df.show()
 # Initialize MongoDB client
@@ -116,7 +116,9 @@ for user in users:
         #(~col('news_id').isin(seen_and_liked_news_ids))
 
         )
-
+        print('I do not accept')
+    
+    print('I accept')
     # Filter processed news DataFrame based on user preferences
     filtered_news_df = processed_news_df.filter(
         (col('prediction').isin(categories)) 

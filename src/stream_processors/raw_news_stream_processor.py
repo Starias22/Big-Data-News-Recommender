@@ -91,7 +91,9 @@ def process_raw_news_stream(servers=None,
         .option("kafka.bootstrap.servers", servers_str) \
         .option("subscribe", raw_news_topic) \
         .option("startingOffsets", "earliest") \
+        .option("failOnDataLoss", "false") \
         .load()
+#.option("failOnDataLoss", "false") \
 #.option("kafka.consumer.poll.timeout.ms", POLL_TIMEOUT_MS) \
 #.option("startingOffsets", "earliest") \
     # Deserialize JSON data

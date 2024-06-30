@@ -12,14 +12,13 @@ from src.db.filtered_news_db import FilteredNewsDB
 from config.config import KAFKA_BOOTSTRAP_SERVERS,FILTERED_NEWS_TOPIC
 
 
-def persist_filtered_news(topics=[FILTERED_NEWS_TOPIC] ,
-       servers=KAFKA_BOOTSTRAP_SERVERS,timeout_ms=5000):
+def persist_filtered_news(timeout_ms=5000):
      
             
     # Initialize the consumer
     consumer = KafkaConsumer(
-        *topics,  # Unpack the list of topics
-        bootstrap_servers=servers,
+        FILTERED_NEWS_TOPIC,  # Unpack the list of topics
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         auto_offset_reset='earliest',  # Start reading from the earliest message
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
         consumer_timeout_ms=timeout_ms

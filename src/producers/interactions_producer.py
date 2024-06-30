@@ -29,6 +29,7 @@ if __name__ == "__main__":
     interaction_instance = Interaction(
         news_id='google_news_225',
         user_id='666d7c7cc2c9c814c5597193',
+        features=2222,
         action=LIKED
     )
     

@@ -24,7 +24,7 @@ class NewsProducer:
 
         
         servers=KAFKA_BOOTSTRAP_SERVERS
-        api_key=NEWSAPI_KEYS[0]
+        api_key=NEWSAPI_KEYS[2]
         topic=RAW_NEWS_TOPIC
         page=PAGE
         page_size=PAGE_SIZE
@@ -133,7 +133,6 @@ class NewsProducer:
         if source == 'google_news':
             articles_df.rename(columns={
             'urlToImage': 'img_url',
-            'publishedAt': 'publication_date',
             'datetime': 'publication_date',
             'link': 'url',
             'img': 'img_url',

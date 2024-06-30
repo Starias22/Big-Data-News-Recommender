@@ -37,7 +37,8 @@ news_consumer = KafkaConsumer(
     bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
     auto_offset_reset='earliest',
     value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-    consumer_timeout_ms=1000
+    consumer_timeout_ms=1000,
+    group_id='interaction_consumers_group'
 )
 
 print("Kafka Consumers Initialized")
@@ -77,9 +78,9 @@ spark = SparkSession.builder.appName("InteractionsApp").getOrCreate()
 
 # Define feature schema for DataFrame
 feature_schema = StructType([
-    StructField("size", IntegerType(), False),
-    StructField("indices", ArrayType(IntegerType()), False),
-    StructField("values", ArrayType(DoubleType()), False)
+    StructField("size", IntegerType(), True),
+    StructField("indices", ArrayType(IntegerType()), True),
+    StructField("values", ArrayType(DoubleType()), True)
 ])
 
 # Define schema for interactions DataFrame
@@ -115,10 +116,19 @@ combined_df = interactions_df.join(news_df, on='news_id', how='left')
 
 combined_df = combined_df.drop('features').withColumnRenamed('news_features', 'features')
 print('Combined df is',combined_df)
-combined_df.show()
+print('Combined df schema:')
+combined_df.printSchema()
+print('Combined df data:')
+combined_df.show(truncate=False)
+
 interaction_df=combined_df.select(['news_id','features','date']).dropDuplicates(subset=['news_id']).orderBy('date', ascending=True)
 
-interaction_df.show()
+#interaction_df.show()
+
+print('Interaction df schema:')
+interaction_df.printSchema()
+print('Interaction df data:')
+interaction_df.show(truncate=False)
 
 # Convert each row of the DataFrame into an Interaction object and insert into MongoDB
 for row in interaction_df.collect():
@@ -147,14 +157,29 @@ def deduplicate(actions):
         return non_neutral_actions[-1]  # Keep the latest non-neutral action
     return actions[-1]  # If no non-neutral actions, keep the latest action
 
+# Function to apply the deduplication logic
+def deduplicate(actions):
+    actions.sort(key=lambda x: x.date)  # Sort by date
+    non_neutral_actions = [action for action in actions if action.action != 0]
+    if non_neutral_actions:
+        return non_neutral_actions[-1]  # Keep the latest non-neutral action
+    return actions[-1]
+
 # Register the function as a UDF
 deduplicate_udf = udf(deduplicate, StructType([
     StructField("action", IntegerType(), True),
-    StructField("date", IntegerType(), True)
+    StructField("date", IntegerType(), True),
+    #StructField("features", feature_schema, True),
 ]))
 
 # Apply the deduplication function to the grouped data
 deduplicated_df = grouped_df.withColumn("deduplicated", deduplicate_udf(col("actions"))).select("user_id", "news_id", "deduplicated.*")
+
+# Join back with the news_df to get features
+final_df = deduplicated_df.join(news_df, on='news_id', how='left')
+
+# Apply the deduplication function to the grouped data
+#deduplicated_df = grouped_df.withColumn("deduplicated", deduplicate_udf(col("actions"))).select("user_id", "news_id", "deduplicated.*")
 
 # Group by `user_id` and collect the deduplicated interactions
 final_grouped_df = deduplicated_df.groupBy("user_id").agg(
@@ -162,6 +187,7 @@ final_grouped_df = deduplicated_df.groupBy("user_id").agg(
 )
 
 print('The final grouped df is')
+final_grouped_df.printSchema()
 final_grouped_df.show(truncate=False)
 
 # Collect the final grouped DataFrame into a list of rows
@@ -175,6 +201,7 @@ for row in final_grouped_rows:
     user_id = row['user_id']
     interactions = row['interactions']
     news_actions = {interaction['news_id']: interaction['action'] for interaction in interactions}
+    print('News actions:',news_actions)
     user_db.add_seen_news(user_id, news_actions)
 
 # Stop the Spark session

@@ -78,7 +78,8 @@ class WelcomeController:
         print(self.user.id)
         recommended_news=fetch_recommended_news(user_id=user_id)
         recommended_news=[news.to_dict() for news in recommended_news]
-        print(recommended_news)
+        #print('The first recommended news is:')
+        #print(recommended_news[0])
         
         
         return recommended_news

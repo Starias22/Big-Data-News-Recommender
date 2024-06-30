@@ -34,14 +34,14 @@ processed_news_schema = StructType([
     StructField("sentiment_label", IntegerType(), True),
     StructField("sentiment_score", DoubleType(), True),
     StructField("category", StringType(), True),
-
-    StructField("features", features_schema, True),
+    #StructField("features", features_schema, True),
 
 ])
+print('****************')
 
 # Initialize Spark Session with Kafka package
 spark = SparkSession.builder \
-    .appName("ProcessedNewsFetcher") \
+    .appName("AvailableNewsFetcher") \
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
     .getOrCreate()
 

@@ -11,7 +11,7 @@ import sys
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from config.config import NEWS_CATEGORIZATION_MODEL_PATH
+from config.config import NEWS_CATEGORISATION_MODEL_PATH
 
 # Download necessary NLTK data
 download('wordnet')
@@ -27,7 +27,7 @@ class NewsPreprocessor:
         #self.lda_model = PipelineModel.load('../trained_models/news_topic_model') 
         # Load pre-trained pipeline model for news categorization
         #self.categorization_pipeline = PipelineModel.load('../trained_models/news_categorization_model') 
-        self.categorization_pipeline = PipelineModel.load(NEWS_CATEGORIZATION_MODEL_PATH) 
+        self.categorization_pipeline = PipelineModel.load(NEWS_CATEGORISATION_MODEL_PATH) 
 
         # Define schema for JSON data
 
