@@ -7,6 +7,10 @@ import sys
 import os
 import datetime
 
+def increment_hour(current_hour, increment):
+    
+    next_hour = (current_hour + increment) % 24
+    return next_hour
 
 
 # Add the project root directory to the sys.path
