@@ -9,7 +9,15 @@ FROM apache/airflow:2.9.2-python3.10
 
 
 USER root
-RUN apt-get update && apt-get upgrade -y && sudo add-apt-repository ppa:webupd8team/java && apt-get install -y apt-transport-https
+
+# Update package index and install necessary tools
+RUN apt-get update \
+    && apt-get install -y apt-transport-https
+
+# Add the repository line to /etc/apt/sources.list
+RUN echo "deb http://deb.debian.org/debian/ sid main" >> /etc/apt/sources.list
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https
 
 RUN apt-get update && apt-get install -y openjdk-8-jdk
 
