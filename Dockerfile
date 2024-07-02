@@ -11,10 +11,10 @@ FROM apache/airflow:2.9.2-python3.10
 USER root
 RUN apt-get update && apt-get install -y apt-transport-https
 
-RUN apt-get update && apt-get install -y openjdk-21-jdk
+RUN apt-get update && apt-get install -y openjdk-8-jdk
 
 # Set JAVA_HOME
-ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 RUN echo $JAVA_HOME
 RUN export JAVA_HOME
 
