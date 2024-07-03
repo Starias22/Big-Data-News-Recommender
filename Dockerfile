@@ -7,7 +7,6 @@
 FROM apache/airflow:2.9.2-python3.10
 
 
-
 USER root
 
 # Update package index and install necessary tools
