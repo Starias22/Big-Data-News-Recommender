@@ -26,7 +26,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./../../
-          dockerfile:  ./../../spark-kafka-Dockerfile.yml
+          context: .
+          dockerfile: spark-kafka-Dockerfile.yml
           push: true
           tags: starias/spark-kafka:latest
