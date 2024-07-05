@@ -10,18 +10,16 @@ FROM apache/airflow:2.9.2-python3.10
 USER root
 
 # Update package index and install necessary tools
-RUN apt-get update \
-    && apt-get install -y apt-transport-https
+#RUN apt-get update \
+    #&& apt-get install -y apt-transport-https
 
 # Add the repository line to /etc/apt/sources.list
 RUN echo "deb http://deb.debian.org/debian/ sid main" >> /etc/apt/sources.list
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https
-
-RUN apt-get update && apt-get install -y openjdk-8-jdk
+RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https && apt-get install -y openjdk-21-jdk
 
 # Set JAVA_HOME
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/
 RUN echo $JAVA_HOME
 RUN export JAVA_HOME
 
@@ -51,12 +49,12 @@ USER airflow
 # CMD ["python3", "src/producers/google_news_producer.py"]
 
 # Copy requirements.txt to the image
-COPY requirements.txt /requirements.txt
+#COPY requirements.txt /requirements.txt
 
 # Install the required Python packages as the airflow user
 USER airflow
 #USER root
-RUN pip install --no-cache-dir -r /requirements.txt
+#RUN pip install --no-cache-dir -r /requirements.txt
 
 #docker build . --tag apache/airflow:2.9.2-python3.10
 #docker build . --tag bitnami/spark:latest
