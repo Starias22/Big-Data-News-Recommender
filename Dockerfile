@@ -4,7 +4,7 @@
 #
 
 # Stage 1: Build Java environment
-FROM apache/airflow:2.9.2-python3.10
+FROM apache/airflow:2.9.2-python3.11
 
 
 USER root
