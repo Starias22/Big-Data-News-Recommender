@@ -31,9 +31,7 @@ USER airflow
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --upgrade pip
-RUN pip install kafka-python
-# RUN pip install newsapi-python
-# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install kafka-python newsapi-python GoogleNews
 
 # Install Streamlit
 # RUN pip install streamlit
