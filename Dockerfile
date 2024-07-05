@@ -9,9 +9,6 @@ FROM apache/airflow:2.9.2-python3.10
 
 USER root
 
-# Update package index and install necessary tools
-#RUN apt-get update \
-    #&& apt-get install -y apt-transport-https
 
 # Add the repository line to /etc/apt/sources.list
 RUN echo "deb http://deb.debian.org/debian/ sid main" >> /etc/apt/sources.list
@@ -33,8 +30,8 @@ USER airflow
 # COPY . /app
 
 # Install any needed packages specified in requirements.txt
-# RUN pip install --upgrade pip
-# RUN pip install kafka-python-ng
+RUN pip install --upgrade pip
+RUN pip install kafka-python
 # RUN pip install newsapi-python
 # RUN pip install --no-cache-dir -r requirements.txt
 
