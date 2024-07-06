@@ -31,7 +31,7 @@ USER airflow
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --upgrade pip
-RUN pip install kafka-python newsapi-python GoogleNews apache-airflow-providers-apache-spark nltk pymongo
+RUN pip install kafka-python newsapi-python GoogleNews apache-airflow-providers-apache-spark nltk pymongo scipy
 
 # Install Streamlit
 # RUN pip install streamlit
