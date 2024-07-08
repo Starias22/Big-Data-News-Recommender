@@ -12,6 +12,5 @@ RUN pip install streamlit pymongo kafka-python
 # Copy app code and set working directory
 #COPY . .
 
-
 # Run Streamlit app.py when the container launches
 #ENTRYPOINT ["streamlit", "run", "app.py"]
