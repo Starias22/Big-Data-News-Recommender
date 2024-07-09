@@ -9,11 +9,12 @@ from GoogleNews import GoogleNews
 
 from pathlib import Path
 import sys
+import os
 
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
-from config.config import KAFKA_BOOTSTRAP_SERVERS,NEWSAPI_KEYS,RAW_NEWS_TOPIC,NULL_REPLACEMENTS,LANGUAGES,QUERY,PAGE,PAGE_SIZE
+from config.config import NEWSAPI_KEYS,RAW_NEWS_TOPIC,NULL_REPLACEMENTS,LANGUAGES,QUERY,PAGE,PAGE_SIZE,REDIS_HOST,KAFKA_BOOTSTRAP_SERVERS
 
 
 class NewsProducer:
@@ -22,8 +23,8 @@ class NewsProducer:
                  null_replacements=None,
                  languages=None,query=None):
 
-        
-        servers=KAFKA_BOOTSTRAP_SERVERS
+        servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS', KAFKA_BOOTSTRAP_SERVERS)
+        print(servers)
         api_key=NEWSAPI_KEYS[2]
         topic=RAW_NEWS_TOPIC
         page=PAGE
@@ -71,7 +72,7 @@ class NewsProducer:
             return int(json.loads(max_news_id)['value'])
 
     def db_connection(self,db) :
-        self.redis_client = redis.StrictRedis(host='localhost', port=6379, db=db)
+        self.redis_client = redis.StrictRedis(host=REDIS_HOST, port=6379, db=db)
 
 
     def update_max_news_id(self, news_id):
