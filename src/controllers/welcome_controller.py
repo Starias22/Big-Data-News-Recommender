@@ -8,7 +8,7 @@ from src.producers.interactions_producer import send_interaction
 #from src.db.interaction_db import InteractionDB
 from src.models.interaction import Interaction
 from datetime import datetime
-
+#ezechieladede@gmail.com
 import re
 from typing import Optional
 class WelcomeController:
@@ -87,5 +87,31 @@ class WelcomeController:
     def register_interaction(self,user_id,news_id,action):
         interaction=Interaction(user_id=user_id,news_id=news_id,action=action,date=int(datetime.now().timestamp()))
         send_interaction(interaction)
+
+
+    def get_user_categories(self, user_id):
+            # Fetch user categories from database or return an empty list
+            return self.user_db.retrieve_user_categories(user_id=user_id)
+            
+
+    def add_user_category(self, user_id, category):
+        # Add a new category for the user in the database
+        pass
+
+    def remove_user_category(self, user_id, category):
+        # Remove a category for the user from the database
+        pass
+
+    def get_user_sentiments(self, user_id):
+        # Fetch user sentiments from database or return an empty list
+        return []
+
+    def add_user_sentiment(self, user_id, sentiment):
+        # Add a new sentiment for the user in the database
+        pass
+
+    def remove_user_sentiment(self, user_id, sentiment):
+        # Remove a sentiment for the user from the database
+        pass
 
 
