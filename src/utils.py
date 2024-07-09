@@ -7,16 +7,19 @@ import sys
 import os
 import datetime
 
-def increment_hour(current_hour, increment):
-    
-    next_hour = (current_hour + increment) % 24
-    return next_hour
 
 
 # Add the project root directory to the sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config.config import SENDER_ADDRESS,PASSWORD
+
+def increment_hour(current_hour, increment):
+    
+    next_hour = (current_hour + increment) % 24
+    return next_hour
+
+
 def encrypt_password(password):
     password = password.encode('utf-8')  # Convert the password to bytes
     encrypted_passwd = hashlib.sha256(password).hexdigest()
@@ -31,6 +34,7 @@ def generate_otp():
     return code
 
 def send_email(receiver_addr,subject,body):
+    print('Hello guy')
     try:
         connection=SMTP('smtp.gmail.com',587)
         connection.starttls()
@@ -97,7 +101,4 @@ def format_duration(timestamp):
 #SMTPRecipientsRefused(senderrs)
 if __name__=="__main__":
     pass
-    #x=send_email(receiver_addr='ezechieladede@gmail.com',subject='Test',body='This is just for test')
-    #print(x)
-    #timestamp =1718713800
-    #print(format_duration(timestamp))
+   
