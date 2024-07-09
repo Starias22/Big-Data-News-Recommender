@@ -4,18 +4,28 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, udf, from_json, when
 from pyspark.sql.types import StringType, DoubleType, ArrayType, IntegerType, StructField, StructType
 from nltk.sentiment import SentimentIntensityAnalyzer
-from nltk import WordNetLemmatizer
+from nltk import WordNetLemmatizer,download,data
 from pathlib import Path
 import sys
+#curl -O <https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.13/3.3.0/spark-sql-kafka-0-10_2.13-3.3.0.jar>
+#org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1
+#curl -O <https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.1/spark-sql-kafka-0-10_2.12-3.5.1.jar>
+
 POLL_TIMEOUT_MS = 5000  # 30 seconds poll timeout
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 #print(src_path)
 from news_preprocessor import NewsPreprocessor
-from config.config import KAFKA_BOOTSTRAP_SERVERS,RAW_NEWS_TOPIC,FILTERED_NEWS_TOPIC,PROCESSED_NEWS_TOPIC,CATEGORIES_JSON_PATH,FILTERED_NEWS_CHECKPOINT_DIR,PROCESSED_NEWS_CHECKPOINT_DIR
+from config.config import KAFKA_BOOTSTRAP_SERVERS,RAW_NEWS_TOPIC,FILTERED_NEWS_TOPIC,PROCESSED_NEWS_TOPIC,CATEGORIES_JSON_PATH,FILTERED_NEWS_CHECKPOINT_DIR,PROCESSED_NEWS_CHECKPOINT_DIR,NLTK_DATA_PATH
 
 #from config.config import CATEGORIES_JSON_PATH
+
+from nltk.corpus import wordnet
+
+
+
+print('Downloaded****')
 
 schema = StructType([
     StructField("size", IntegerType(), False),
@@ -32,17 +42,19 @@ category_mapping = {int(k): v for k, v in category_mapping.items()}
 
 # Initialize Spark Session with Kafka package
 spark = SparkSession.builder \
-    .appName("RawNewsStreamProcessor") \
+    .appName("RawNewsStreamProcessingApp") \
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
-    .getOrCreate()
+        .getOrCreate()
 
 # Function to get sentiment score using VADER
 def get_sentiment_score(text):
+    data.path=[NLTK_DATA_PATH]
     sia = SentimentIntensityAnalyzer()
     if text:
         return sia.polarity_scores(text)['compound']
     else:
         return None
+
 
 # Initialize and broadcast lemmatizer
 lemmatizer = WordNetLemmatizer()
@@ -50,6 +62,8 @@ lemmatizer_broadcast = spark.sparkContext.broadcast(lemmatizer)
 
 # Lemmatization UDF
 def lemmatize_tokens(tokens):
+    data.path=[NLTK_DATA_PATH]
+   
     lemmatizer = lemmatizer_broadcast.value
     return [lemmatizer.lemmatize(token) for token in tokens]
 lemmatize_udf = udf(lemmatize_tokens, ArrayType(StringType()))
@@ -72,24 +86,16 @@ map_prediction_to_category_udf = udf(map_prediction_to_category, StringType())
 # Initialize NewsPreprocessor
 news_processor = NewsPreprocessor(lemmatize_udf)
 
-def process_raw_news_stream(servers=None,
-                            raw_news_topic=None,
-                            filtered_news_topic=None,
-                            processed_news_topic=None):
-    if servers is None:
-        
-        servers=KAFKA_BOOTSTRAP_SERVERS
-        raw_news_topic=RAW_NEWS_TOPIC
-        filtered_news_topic=FILTERED_NEWS_TOPIC
-        processed_news_topic=PROCESSED_NEWS_TOPIC
-        # Convert list of servers to a comma-separated string
-        servers_str = ",".join(servers)
-        print('@@@@@@@@@@@@@@@@@@@@@',servers_str)
+def process_raw_news_stream():
+    
+    
+    print('***************************')
+    
     # Read data from Kafka topic
     kafka_df = spark.readStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers_str) \
-        .option("subscribe", raw_news_topic) \
+        .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
+        .option("subscribe", RAW_NEWS_TOPIC) \
         .option("startingOffsets", "earliest") \
         .option("failOnDataLoss", "false") \
         .load()
@@ -111,10 +117,11 @@ def process_raw_news_stream(servers=None,
     # Save the filtered news DataFrame to a temporary location as a stream
     filtered_news_query = raw_news_df.writeStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers_str) \
-        .option("topic", filtered_news_topic) \
+        .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
+        .option("topic", FILTERED_NEWS_TOPIC) \
         .option("checkpointLocation", FILTERED_NEWS_CHECKPOINT_DIR) \
         .trigger(once=True)\
+        .option("failOnDataLoss", "false") \
         .start()
 
     # Preprocess the filtered news
@@ -153,18 +160,29 @@ def process_raw_news_stream(servers=None,
     # Write the processed data to a Kafka topic
     query = processed_news_json_df.writeStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers_str) \
-        .option("topic", processed_news_topic) \
+        .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
+        .option("topic", PROCESSED_NEWS_TOPIC) \
         .option("checkpointLocation", PROCESSED_NEWS_CHECKPOINT_DIR) \
         .trigger(once=True)\
         .start()
+    
+    
 #.option("checkpointLocation", f"{SPARK_STREAM_CHECKPOINT_LOCATION}/processed_news") \
 
     # Await termination of the query
     filtered_news_query.awaitTermination()
-    print('We ae here')
+    import time
+    print('We are here')
+    #print(query.status)
+    #time.sleep(60)
+    #print(query.status)
+    #query.stop()
     query.awaitTermination()
+    print('Streaming terminated')
+
     
+    spark.stop()
+    print('Spark application stopped')
 
 if __name__ == "__main__":
     process_raw_news_stream()

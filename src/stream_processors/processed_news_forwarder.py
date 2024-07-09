@@ -41,17 +41,17 @@ print('****************')
 
 # Initialize Spark Session with Kafka package
 spark = SparkSession.builder \
-    .appName("AvailableNewsFetcher") \
+    .appName("ProcessedNewsForwardingApp") \
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
     .getOrCreate()
 
 def process_raw_news_stream():
-    servers_str = ",".join(KAFKA_BOOTSTRAP_SERVERS)
+    
     
     # Read data from Kafka topic
     kafka_df = spark.readStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers_str) \
+        .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
         .option("subscribe", PROCESSED_NEWS_TOPIC) \
         .option("startingOffsets", "earliest") \
         .load()
@@ -74,7 +74,7 @@ def process_raw_news_stream():
     # Write stream to Kafka
     recommended_news_query = news_df.writeStream \
         .format("kafka") \
-        .option("kafka.bootstrap.servers", servers_str) \
+        .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
         .option("topic", AVAILABLE_NEWS_TOPIC) \
         .option("checkpointLocation", AVAILABLE_NEWS_CHECKPOINT_DIR) \
         .trigger(once=True) \

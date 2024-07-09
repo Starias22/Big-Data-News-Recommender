@@ -13,12 +13,7 @@ sys.path.append(str(src_path))
 
 from config.config import NEWS_CATEGORISATION_MODEL_PATH
 
-# Download necessary NLTK data
-download('wordnet')
-download('vader_lexicon')
-#download('punkt')
-#download('stopwords')
-
+# 
 class NewsPreprocessor:
     def __init__(self, lemmatize_udf): 
         # Initialize with user-defined lemmatization UDF
