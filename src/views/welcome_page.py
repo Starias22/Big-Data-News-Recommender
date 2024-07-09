@@ -2,8 +2,19 @@ import streamlit as st
 from src.controllers.welcome_controller import WelcomeController
 from config.config import SENDER_ADDRESS
 from src.utils import format_duration,format_source
+from src.views.settings_page import show_settings_page 
+
 import webbrowser
 from config.config import DISLIKED,SEEN,LIKED
+
+def log_interaction_and_open_link(user_id, news_id, action, url):
+    WelcomeController().register_interaction(user_id=user_id, news_id=news_id, action=action)
+    js = f"window.open('{url}');"
+    html = f"<script>{js}</script>"
+    st.markdown(html, unsafe_allow_html=True)
+
+def log_interaction(user_id, news_id, action):
+    WelcomeController().register_interaction(user_id=user_id, news_id=news_id, action=action)
 
 
 def show_recommended_news(controller):
@@ -39,6 +50,7 @@ def show_recommended_news(controller):
         with col1:
             st.write(f"{format_source(news['source_name'],news['author'])} {format_duration(news['publication_date'])}")
         with col2:
+            
             if st.button(f"👁️", key=f"view_{news['_id']}"):
                 webbrowser.open(news['url'])
                 print(f"Title clicked: {news['title']}")
@@ -90,6 +102,9 @@ def show_welcome_page():
 
     # If logged in, show recommended news
     if st.session_state.logged_in:
+        if st.button('Manage Preferences'):  # Example button for navigating to settings page
+            show_settings_page(WelcomeController())
+
         st.header('Recommended News')
         controller = WelcomeController(email=st.session_state.user_email)
         show_recommended_news(controller)
