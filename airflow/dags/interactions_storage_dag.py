@@ -1,44 +1,51 @@
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator # type: ignore
-from datetime import datetime, timedelta
-from airflow.utils.dates import days_ago
-CONSUMERS_PATH='~/Big-Data-News-Recommender/src/consumers/'
-STREAM_PROCESSOR_PATH='~/Big-Data-News-Recommender/src/stream_processors/'
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+
+from datetime import timedelta
 
 import sys
 from pathlib import Path
+
+import pendulum
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from config.config import START_HOUR,START_DAYS_AGO
-from src.utils import increment_hour
+from config.config import SRC_PATH,KAFKA_PACKAGES,START_HOUR,START_DAYS_AGO,ADMIN_EMAIL
+
+from src.airflow_email import success_email,failure_email
 
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    #'start_date': datetime(2024, 6, 23,hour= 6, minute=15),
-    'start_date': days_ago(START_DAYS_AGO-1,hour=START_HOUR+2),
-    'email_on_failure': False,
-    'email_on_retry': False,
+    'start_date': pendulum.today('UTC').add(days=-START_DAYS_AGO+1).replace(hour=START_HOUR+2),
+    'email_on_failure': True,
+    'email_on_success': True,
+    'email_on_retry': True,
     'retries': 3,
-    'retry_delay': timedelta(minutes=10),
+    'retry_delay': timedelta(minutes=15),
+    'email':ADMIN_EMAIL
 }
+
 
 
 dag = DAG(
     'interactions_storage_dag',
     default_args=default_args,
     description='A daily dag for storage of user interactions with the news articles.' ,
-    #schedule_interval=timedelta(hours=1),
     schedule_interval=timedelta(days=1),
+    catchup = False,
 )
 
-
-interactions_storage_task = BashOperator(
+interactions_storage_task = SparkSubmitOperator(
     task_id='interactions_storage',
-    bash_command=f'python3 {CONSUMERS_PATH}interactions_saver.py',
+    conn_id='spark-connection',
+    application=f'{SRC_PATH}/consumers/interactions_saver.py',
     dag=dag,
+    packages=KAFKA_PACKAGES,
+    deploy_mode="client",
+    on_success_callback = success_email,
+     on_failure_callback = failure_email,
 )
 

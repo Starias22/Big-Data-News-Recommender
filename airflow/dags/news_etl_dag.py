@@ -1,31 +1,34 @@
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator # type: ignore
-from datetime import datetime, timedelta
-from airflow.utils.dates import days_ago
+from airflow.operators.bash import BashOperator 
+from datetime import timedelta
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+
 import sys
 from pathlib import Path
+
+import pendulum
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from config.config import START_HOUR,START_DAYS_AGO
-from src.utils import increment_hour
+from config.config import START_HOUR,START_DAYS_AGO,SRC_PATH,KAFKA_PACKAGES,ADMIN_EMAIL
+from src.airflow_email import success_email,failure_email
 
 
-PRODUCERS_PATH='~/Big-Data-News-Recommender/src/producers/'
-STREAM_PROCESSOR_PATH='~/Big-Data-News-Recommender/src/stream_processors/'
-CONSUMERS_PATH='~/Big-Data-News-Recommender/src/consumers/'
+
+
 
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    #'start_date': datetime(2024, 6, 23,hour= 5, minute=15),
-    'start_date': days_ago(START_DAYS_AGO,hour=START_HOUR+1),
-    'email_on_failure': False,
-    'email_on_retry': False,
+    'start_date': pendulum.today('UTC').add(days=-START_DAYS_AGO).replace(hour=START_HOUR+1),
+    'email_on_failure': True,
+    'email_on_success': True,
+    'email_on_retry': True,
     'retries': 3,
-    'retry_delay': timedelta(minutes=10),
+    'retry_delay': timedelta(minutes=15),
+    'email':ADMIN_EMAIL,
 }
 
 
@@ -36,20 +39,28 @@ dag = DAG(
     +'It includes fetching news from RawNewsTopic, filtering news and sending them' 
     +'to FilteredNewsTopic, processing news and sending them to ProcessdeNewsTopic and also stroreg'
     +' of processed news',
-    #schedule_interval=timedelta(hours=1),
     schedule_interval=timedelta(days=1),
+    catchup = False,
 )
 
-raw_news_stream_processing_task = BashOperator(
+
+raw_news_stream_processing_task = SparkSubmitOperator(
     task_id='raw_news_stream_processing',
-    bash_command=f'python3 {STREAM_PROCESSOR_PATH}raw_news_stream_processor.py',
+    conn_id='spark-connection',
+    application=f'{SRC_PATH}/stream_processors/raw_news_stream_processor.py',
     dag=dag,
+    packages=KAFKA_PACKAGES,
+    deploy_mode="client",
+    on_success_callback = success_email,
+     on_failure_callback = failure_email,
 )
 
-filted_news_storage_task = BashOperator(
-    task_id='filted_news_storage',
-    bash_command=f'python3 {CONSUMERS_PATH}filtered_news_saver.py',
-    dag=dag,
-)
-raw_news_stream_processing_task>>filted_news_storage_task
 
+filtered_news_storage_task = BashOperator(
+    task_id='filtered_news_storage',
+    bash_command=f'python3 {SRC_PATH}/consumers/filtered_news_saver.py',
+    dag=dag,
+    on_success_callback = success_email,
+     on_failure_callback = failure_email,
+)
+raw_news_stream_processing_task>>filtered_news_storage_task
