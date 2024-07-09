@@ -16,7 +16,7 @@ from src.db.user_db import UserDB
 
 # Initialize Spark Session
 spark = SparkSession.builder \
-    .appName("AvailableNewsRecommendation") \
+    .appName("AvailableNewsRecommendationApp") \
     .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
     .getOrCreate()
 
@@ -58,10 +58,11 @@ def get_seen_and_liked_news(seen_news):
                 news_ids.append(news_id)
     return news_ids
 
+print('9999999999999999999999999999999999999999999999999999')
 # Read data from Kafka topic
 kafka_df = spark.read \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", ",".join(KAFKA_BOOTSTRAP_SERVERS)) \
+    .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS) \
     .option("subscribe",PROCESSED_NEWS_TOPIC) \
     .option("startingOffsets", "earliest") \
     .option("failOnDataLoss", "false") \
@@ -75,9 +76,9 @@ processed_news_df = kafka_df.selectExpr("CAST(value AS STRING)") \
 
 # Sort the DataFrame in descending order based on publication_date
 processed_news_df = processed_news_df.orderBy(col("publication_date").desc())
-print('available news df is:')
+#print('available news df is:')
 
-processed_news_df.show()
+#processed_news_df.show()
 # Initialize MongoDB client
 client = MongoClient(MONGO_DB_URI)
 db = client[MONGO_DB_NAME]
@@ -99,12 +100,12 @@ for user in users:
     filtered_interactions = interaction_db.retrieve_all_interactions(seen_and_liked_news_ids)
     filtered_interactions=[interaction.to_dict()['features'] for interaction in filtered_interactions]
 
-    print('The user id is:', user_id)
-    print('The email of the user is:', user.email)
-    print('The sentiments are:', sentiments)
-    print('Seen and liked news IDs:', seen_and_liked_news_ids)
+    #print('The user id is:', user_id)
+    #print('The email of the user is:', user.email)
+    #print('The sentiments are:', sentiments)
+    #print('Seen and liked news IDs:', seen_and_liked_news_ids)
 
-    print('Filtered interactions:',filtered_interactions)
+    #print('Filtered interactions:',filtered_interactions)
 
 
 
@@ -116,9 +117,9 @@ for user in users:
         #(~col('news_id').isin(seen_and_liked_news_ids))
 
         )
-        print('I do not accept')
+        #print('I do not accept')
     
-    print('I accept')
+    #print('I accept')
     # Filter processed news DataFrame based on user preferences
     filtered_news_df = processed_news_df.filter(
         (col('prediction').isin(categories)) 
@@ -127,18 +128,18 @@ for user in users:
 
 
     )
-    print('Filtered df is:')
+    #print('Filtered df is:')
     filtered_news_df.show()
 
 
     filtered_news = filtered_news_df.collect()
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!',filtered_news)
+    #print('!!!!!!!!!!!!!!!!!!!!!!!!!!',filtered_news)
     recommendations = []
 
     if not filtered_interactions:
         recommended_news_ids=[news["id"] for news in filtered_news]
     else:
-        print('In the else case')
+        #print('In the else case')
 
         for news in filtered_news:
             news_id = news["id"]

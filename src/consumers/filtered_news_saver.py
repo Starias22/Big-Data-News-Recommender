@@ -9,44 +9,52 @@ sys.path.append(str(src_path))
 
 from src.models.filtered_news import FilteredNews
 from src.db.filtered_news_db import FilteredNewsDB
-from config.config import KAFKA_BOOTSTRAP_SERVERS,FILTERED_NEWS_TOPIC
+from config.config import KAFKA_BOOTSTRAP_SERVERS,FILTERED_NEWS_TOPIC,TIME_OUT_MS
 
 
-def persist_filtered_news(timeout_ms=5000):
+def persist_filtered_news():
      
-            
     # Initialize the consumer
     consumer = KafkaConsumer(
         FILTERED_NEWS_TOPIC,  # Unpack the list of topics
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         auto_offset_reset='earliest',  # Start reading from the earliest message
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-        consumer_timeout_ms=timeout_ms
+        consumer_timeout_ms=TIME_OUT_MS
         
     )
 
     print("Kafka Consumer Initialized")
 
-    # Initialize MongoDB filtered news database
-    filtered_news_db = FilteredNewsDB()
+    
 
-    print(f"Connected to MongoDB")
-    n=0
+    filtered_news_list=[]
+
+    
+  
     # Consume messages from the subscribed topics
-    for n, message in enumerate(consumer):
+    for message in consumer:
         print('******')
         filtered_news_data = message.value
-        print(f"Received message {n + 1}: {filtered_news_data}")
+        print(f"Received message : {filtered_news_data}")
 
         # Deserialize the message into a FilteredNews object
         filtered_news_data['_id'] = filtered_news_data.pop('id')
         filtered_news = FilteredNews.from_dict_persist(filtered_news_data)
 
-        # Insert filtered news into MongoDB
-        result = filtered_news_db.create_filtered_news(filtered_news)
-        print(f"Inserted filtered news with ID: {result}")
+        filtered_news_list.append(filtered_news)
 
-    print(f"{n + 1} filtered news saved to MongoDB")
+
+    n= len(filtered_news_list)
+
+    if n ==0:
+        print('No filtered news registred in the last 24h')
+
+    elif FilteredNewsDB().create_many_filtered_news(filtered_news_list):
+        print(f"{n} filtered news saved to MongoDB")
+ 
+    else:
+        print('Not able to reach MongoDB')
 
 if __name__=="__main__":
     persist_filtered_news()

@@ -11,10 +11,9 @@ from src.models.user import User
 from src.db.user_db import UserDB
 
 from src.models.filtered_news import FilteredNews
-from config.config import KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC
+from config.config import KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC,TIME_OUT_MS
 
-def fetch_recommended_news(user_id,topics=None, servers=None, 
-                             timeout_ms=5000):
+def fetch_recommended_news(user_id,topics=None, servers=None):
 
     user = User(id=user_id)
     recommended_news_ids = UserDB().find_user_by_id(user.id).recommended_news
@@ -31,7 +30,7 @@ def fetch_recommended_news(user_id,topics=None, servers=None,
         bootstrap_servers=servers,
         auto_offset_reset='earliest',  # Start reading from the earliest message
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-        consumer_timeout_ms=timeout_ms  # Stop after timeout_ms of inactivity
+        consumer_timeout_ms=TIME_OUT_MS  # Stop after timeout_ms of inactivity
     )
 
     # Consume messages from the subscribed topics
@@ -70,7 +69,8 @@ def fetch_recommended_news(user_id,topics=None, servers=None,
     return recommended_news
 
 if __name__ == "__main__":
-    news = fetch_recommended_news(user_id='6675d6cbd31adca141eeeb1b')
+    pass
+    #news = fetch_recommended_news(user_id='6675d6cbd31adca141eeeb1b')
     #print(news)
-    print(len(news), 'recommended news')
+    #print(len(news), 'recommended news')
     #print(news[0].sentiment)

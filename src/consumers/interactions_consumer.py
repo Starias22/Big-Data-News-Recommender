@@ -26,10 +26,6 @@ consumer = KafkaConsumer(
 
 print("Kafka Consumer Initialized")
 
-# Initialize MongoDB interaction database
-interaction_db = InteractionDB()
-
-print(f"Connected to MongoDB")
 
 # Consume messages from the subscribed topics
 for n, message in enumerate(consumer):

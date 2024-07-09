@@ -17,7 +17,7 @@ from src.models.interaction import Interaction
 from src.db.interaction_db import InteractionDB
 from src.db.user_db import UserDB
 from src.models.interaction import Interaction
-from config.config import KAFKA_BOOTSTRAP_SERVERS, INTERACTIONS_TOPIC, PROCESSED_NEWS_TOPIC
+from config.config import KAFKA_BOOTSTRAP_SERVERS, INTERACTIONS_TOPIC, PROCESSED_NEWS_TOPIC,TIME_OUT_MS
 
 # List of topics to subscribe to
 topics = [INTERACTIONS_TOPIC]
@@ -28,7 +28,8 @@ interaction_consumer = KafkaConsumer(
     bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
     auto_offset_reset='earliest',  # Start reading from the earliest message
     value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-    consumer_timeout_ms=1000
+    consumer_timeout_ms=TIME_OUT_MS,
+    #group_id="interaction_saver_group"
 )
 
 # Initialize the consumer for processed news
@@ -38,7 +39,7 @@ news_consumer = KafkaConsumer(
     auto_offset_reset='earliest',
     value_deserializer=lambda x: json.loads(x.decode('utf-8')),
     consumer_timeout_ms=1000,
-    group_id='interaction_consumers_group'
+    #group_id='processed_news_consumer_group'
 )
 
 print("Kafka Consumers Initialized")
@@ -74,7 +75,7 @@ user_ids = UserDB().retrieve_user_ids()
 print('User IDs are:', user_ids)
 
 # Initialize Spark session
-spark = SparkSession.builder.appName("InteractionsApp").getOrCreate()
+spark = SparkSession.builder.appName("InteractionsStorageApp").getOrCreate()
 
 # Define feature schema for DataFrame
 feature_schema = StructType([
