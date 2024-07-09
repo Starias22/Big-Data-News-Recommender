@@ -1,16 +1,19 @@
 from bson import ObjectId
 from pymongo import MongoClient
+from typing import Dict, List, Optional
 import sys
 from pathlib import Path
 # Add 'src' directory to the Python path
-src_path = Path(__file__).resolve().parents[1]
+src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from models.user import User
-from utils import encrypt_password
-from typing import Dict, Optional
+from src.models.user import User
+from src.utils import encrypt_password
+from config.config import MONGO_DB_URI,MONGO_DB_NAME
+#"mongodb://localhost:27017/"
+#"mongodb://mongodb:27017/"
 class UserDB:
-    def __init__(self,uri="mongodb://localhost:27017/",db_name="news_recommendation_db"):
+    def __init__(self,uri=MONGO_DB_URI,db_name="news_recommendation_db"):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
 
@@ -67,3 +70,12 @@ class UserDB:
                 {"_id": ObjectId(user_id)},
                 {"$set": {"seen_news": user.seen_news}}
             )
+    
+    def retrieve_user_categories(self, user_id: str) -> Optional[List[int]]:
+        user_data = self.db.users.find_one({"_id": ObjectId(user_id)})
+
+        if user_data and 'categories' in user_data:
+            print('++++++++++++++++++++++++++++++++++++=')
+            print(user_data['categories'])
+            return user_data['categories']
+        return None

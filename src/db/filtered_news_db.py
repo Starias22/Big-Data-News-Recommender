@@ -6,18 +6,25 @@ from pathlib import Path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from src.models.filtered_news import FilteredNews  # Make sure to import the FilteredNews class from the appropriate module
+from src.models.filtered_news import FilteredNews  
 
 from config.config import MONGO_DB_NAME,MONGO_DB_URI
 class FilteredNewsDB:
     def __init__(self, uri=MONGO_DB_URI, db_name=MONGO_DB_NAME):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
+        #print(MONGO_DB_URI)
+        #print(MONGO_DB_NAME)
 
     def create_filtered_news(self, news):
         news_dict = news.to_dict_persist()
         result = self.db.filtered_news.insert_one(news_dict)
         return result.inserted_id
+    
+    def create_many_filtered_news(self, news_list):
+        news_dicts = [news.to_dict_persist() for news in news_list]
+        result = self.db.filtered_news.insert_many(news_dicts)
+        return result.inserted_ids
 
     def find_filtered_news_by_id(self, news_id):
         news_data = self.db.filtered_news.find_one({"news_id": news_id})
