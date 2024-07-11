@@ -17,7 +17,7 @@ from src.airflow_email import success_email,failure_email
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': pendulum.today('UTC').add(days=-START_DAYS_AGO).replace(hour=START_HOUR+3),
+    'start_date': pendulum.today('UTC').subtract(days=START_DAYS_AGO).replace(hour=START_HOUR+3),
     'email_on_failure': True,
     'email_on_success': True,
     'email_on_retry': True,

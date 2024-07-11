@@ -22,7 +22,7 @@ from src.airflow_email import success_email,failure_email
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': pendulum.today('UTC').add(days=-START_DAYS_AGO).replace(hour=START_HOUR+1),
+    'start_date': pendulum.today('UTC').subtract(days=START_DAYS_AGO).replace(hour=START_HOUR+1),
     'email_on_failure': True,
     'email_on_success': True,
     'email_on_retry': True,
@@ -45,7 +45,7 @@ dag = DAG(
 
 
 raw_news_stream_processing_task = SparkSubmitOperator(
-    task_id='raw_news_stream_processing',
+    task_id='raw_news_processing',
     conn_id='spark-connection',
     application=f'{SRC_PATH}/stream_processors/raw_news_stream_processor.py',
     dag=dag,
