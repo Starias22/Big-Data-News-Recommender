@@ -10,10 +10,9 @@ sys.path.append(str(src_path))
 from src.models.user import User
 from src.utils import encrypt_password
 from config.config import MONGO_DB_URI,MONGO_DB_NAME
-#"mongodb://localhost:27017/"
-#"mongodb://mongodb:27017/"
+
 class UserDB:
-    def __init__(self,uri=MONGO_DB_URI,db_name="news_recommendation_db"):
+    def __init__(self,uri=MONGO_DB_URI,db_name=MONGO_DB_NAME):
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
 
@@ -79,3 +78,43 @@ class UserDB:
             print(user_data['categories'])
             return user_data['categories']
         return None
+
+    def add_category_to_user(self, user_id: str, category_id: int):
+        user = self.find_user_by_id(user_id)
+
+        if user:
+            if 'categories' not in user.to_dict():
+                user.categories = []
+
+            if category_id not in user.categories:
+                user.categories.append(category_id)
+
+                self.db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"categories": user.categories}}
+                )
+
+    def remove_category_from_user(self, user_id: str, category_id: int):
+        user = self.find_user_by_id(user_id)
+
+        if user and 'categories' in user.to_dict():
+            if category_id in user.categories:
+                user.categories.remove(category_id)
+
+                self.db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"categories": user.categories}}
+                )
+
+# Usage example:
+if __name__ == "__main__":
+    user_db = UserDB()
+
+    # Add category to user
+    user_id = "6691b10a87c6e42972ce7404"  # Replace with actual user ID
+    category_id_to_add = 12  # Replace with actual category ID
+    user_db.add_category_to_user(user_id, category_id_to_add)
+
+    # Remove category from user
+    category_id_to_remove = 9  # Replace with actual category ID to remove
+    user_db.remove_category_from_user(user_id, category_id_to_remove)
