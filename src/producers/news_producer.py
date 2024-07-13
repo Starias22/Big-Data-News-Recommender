@@ -18,40 +18,25 @@ from config.config import NEWSAPI_KEYS,RAW_NEWS_TOPIC,NULL_REPLACEMENTS,LANGUAGE
 
 
 class NewsProducer:
-    def __init__(self,servers=None,api_key=None,topic=None,page=None,
-                 page_size=None,
-                 null_replacements=None,
-                 languages=None,query=None):
+    def __init__(self):
 
-        servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS', KAFKA_BOOTSTRAP_SERVERS)
-        print(servers)
-        api_key=NEWSAPI_KEYS[2]
-        topic=RAW_NEWS_TOPIC
-        page=PAGE
-        page_size=PAGE_SIZE
-        null_replacements=NULL_REPLACEMENTS
-        languages=LANGUAGES
-        query=QUERY
-
-            
-        self.topic=topic
-        self.page=page
-        self.page_size=page_size
-        self.null_replacements=null_replacements
-        self.languages=languages
-        #print(self.languages)
-        self.query=query
+        self.topic=RAW_NEWS_TOPIC
+        self.page=PAGE
+        self.page_size=PAGE_SIZE
+        self.null_replacements=NULL_REPLACEMENTS
+        self.languages=LANGUAGES
+        self.query=QUERY
         self.page=self.page       
         # Initialize Redis client
 
         # Initialize Kafka Producer
         self.producer = KafkaProducer(
-            bootstrap_servers=servers,
+            bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
             value_serializer=lambda v: json.dumps(v).encode('utf-8')
         )
         
         # Initialize NewsAPI client
-        self.newsapi = NewsApiClient(api_key=api_key)
+        self.newsapi = NewsApiClient(api_key=NEWSAPI_KEYS[0])
         
         # Get current time in UTC
         self.now = datetime.now(pytz.utc)
@@ -94,7 +79,6 @@ class NewsProducer:
                 "description": article['description'],
                 "content": article["content"],
                 "source_name": article['source_name'],
-                #"source_id": article['source_id'],
                 "url": article['url'],
                 "img_url": article['img_url'],
                 "publication_date": article['publication_date'],
@@ -152,7 +136,6 @@ class NewsProducer:
             }, inplace=True)
             fmt = "%Y-%m-%dT%H:%M:%SZ"
             articles_df['publication_date'] = articles_df['publication_date'].apply(lambda x: int(datetime.strptime(x, fmt).timestamp()))
-            #articles_df['source_id'] = articles_df['source'].apply(lambda x: x['id'] if x else None)
             articles_df['source_name'] = articles_df['source'].apply(lambda x: x['name'] if x else None)
             articles_df.drop(columns=['source'], inplace=True)
         
