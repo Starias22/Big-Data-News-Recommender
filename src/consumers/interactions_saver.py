@@ -179,9 +179,6 @@ deduplicated_df = grouped_df.withColumn("deduplicated", deduplicate_udf(col("act
 # Join back with the news_df to get features
 final_df = deduplicated_df.join(news_df, on='news_id', how='left')
 
-# Apply the deduplication function to the grouped data
-#deduplicated_df = grouped_df.withColumn("deduplicated", deduplicate_udf(col("actions"))).select("user_id", "news_id", "deduplicated.*")
-
 # Group by `user_id` and collect the deduplicated interactions
 final_grouped_df = deduplicated_df.groupBy("user_id").agg(
     collect_list(struct("news_id", "action", "date")).alias("interactions")

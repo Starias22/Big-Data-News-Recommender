@@ -9,7 +9,6 @@ import sys
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 from src.models.interaction import Interaction
-from src.db.interaction_db import InteractionDB
 from config.config import KAFKA_BOOTSTRAP_SERVERS,INTERACTIONS_TOPIC
 
 
