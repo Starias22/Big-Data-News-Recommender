@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 
 
-
-START_HOUR=19
-START_DAYS_AGO=1
+START_HOUR=3
+#START_HOUR=8
+START_DAYS_AGO=0
 def load_config(filepath='secret.json'):
     # Use absolute path to ensure we find the file
     abs_filepath = os.path.join(os.path.dirname(__file__), filepath)
@@ -53,13 +53,17 @@ SENDER_ADDRESS=config.get("sender_address")
 PASSWORD=config.get("password")
 ADMIN_EMAIL=config.get("admin_email")
 MONGO_DB_NAME="news_recommendation_db"
+
+#os.environ.pop('MONGO_DB_URI', None)
 MONGO_DB_URI=os.getenv("MONGO_DB_URI","mongodb://localhost:27017/")
+#print(888888888888888888888)
+print(MONGO_DB_URI)
+
+
 
 LOCALHOST="localhost"
 REDIS_HOST=os.getenv("REDIS_HOST",LOCALHOST)
-"""print(MONGO_DB_URI)
-print('++++++++++++')
-print(REDIS_HOST)"""
+
 TIME_OUT_MS=1000
 
 
@@ -82,15 +86,22 @@ SRC_PATH=str(os.getenv("SRC_PATH",path))
 """print('*************************')
 print(SRC_PATH)
 print(type(SRC_PATH))"""
-
-trained_models_path = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'trained_models'))
-TRAINED_MODELS_PATH=os.getenv("TRAINED_MODELS_PATH",trained_models_path)
-#print(TRAINED_MODELS_PATH)
+#os.environ.pop('TRAINED_MODELS_PATH', None)
+TRAINED_MODELS_PATH=os.getenv("TRAINED_MODELS_PATH",PROJECT_ROOT/'trained_models')
+print(TRAINED_MODELS_PATH)
 # Path to new_categories.json
-CATEGORIES_JSON_PATH = os.path.join(TRAINED_MODELS_PATH, 'news_categorization_model', 'news_categories.json')
 NEWS_CATEGORISATION_MODEL_PATH = os.path.join(TRAINED_MODELS_PATH, 'news_categorization_model')
 
+CATEGORIES_JSON_PATH = os.path.join(NEWS_CATEGORISATION_MODEL_PATH, 'news_categories.json')
+
 CHECKPOINT_DIR=os.getenv("CHECKPOINT_DIR",str(PROJECT_ROOT/'checkpoint-local/'))
+
+# Load category mapping and config
+with open(CATEGORIES_JSON_PATH, 'r') as f:
+    category_mapping = json.load(f)
+
+# Convert keys to integers for category mapping
+CATEGORIES_MAPPING = {int(k): v for k, v in category_mapping.items()}
 
 #print(CHECKPOINT_DIR)
 
@@ -106,9 +117,9 @@ FILTERED_NEWS_CHECKPOINT_DIR = CHECKPOINT_DIR +'/filtered_news/'
 AVAILABLE_NEWS_CHECKPOINT_DIR = CHECKPOINT_DIR+ '/available_news/'
 AVAILABLE_NEWS_RECOMMENDER_CHECKPOINT_DIR = SRC_PATH +'/consumer/checkpoint/recommender'
 PROCESSED_NEWS_CHECKPOINT_DIR = CHECKPOINT_DIR + '/processed_news/'
-SPARK_STREAM_CHECKPOINT_LOCATION=PROJECT_ROOT / 'src/stream_processors/checkpoint/'
+SPARK_STREAM_CHECKPOINT_LOCATION=PROJECT_ROOT / 'src/processors/checkpoint/'
 NLTK_DATA_PATH=str(PROJECT_ROOT)+'/nltk_data'
-#NLTK_DATA_PATH=os.getenv("NLTK_DATA_PATH",str(PROJECT_ROOT)+'/nltk_data')
+
 
 
 if __name__=='__main__':
