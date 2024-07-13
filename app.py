@@ -1,4 +1,3 @@
-import streamlit as st
 from src.views.welcome_page import show_welcome_page
 
 def main():
