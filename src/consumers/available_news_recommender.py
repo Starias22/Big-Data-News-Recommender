@@ -10,7 +10,7 @@ import sys
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 from src.db.interaction_db import InteractionDB
-from config.config import MONGO_DB_URI,MONGO_DB_NAME,KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC,PROCESSED_NEWS_TOPIC
+from config.config import MONGO_DB_URI,MONGO_DB_NAME,KAFKA_BOOTSTRAP_SERVERS,PROCESSED_NEWS_TOPIC
 
 from src.db.user_db import UserDB
 
@@ -58,7 +58,6 @@ def get_seen_and_liked_news(seen_news):
                 news_ids.append(news_id)
     return news_ids
 
-print('9999999999999999999999999999999999999999999999999999')
 # Read data from Kafka topic
 kafka_df = spark.read \
     .format("kafka") \
@@ -66,6 +65,7 @@ kafka_df = spark.read \
     .option("subscribe",PROCESSED_NEWS_TOPIC) \
     .option("startingOffsets", "earliest") \
     .option("failOnDataLoss", "false") \
+    .option("kafka.group.id", "available_news_recommender_group")\
     .load()
 # .option("kafka.group.id", "available_news_recommender_group") \ # Consumer group ID
 # Deserialize JSON data
@@ -155,10 +155,6 @@ for user in users:
         recommended_news_ids = [values[0] for values in recommendations]
 
         print('%%%%%%%%%%The recommendations are: ',recommendations)
-        #result = [row.asDict() for row in filtered_news_df.collect()]
-
-        # Collect news IDs that match user preferences
-        #recommended_news_ids = [row.id for row in filtered_news_df.select("id").collect()]
         
     print('Recommended News ids for:',user.email,':',recommended_news_ids)
 

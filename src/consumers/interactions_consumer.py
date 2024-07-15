@@ -9,29 +9,30 @@ import sys
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 from src.models.interaction import Interaction
-from config.config import KAFKA_BOOTSTRAP_SERVERS,INTERACTIONS_TOPIC
+from config.config import KAFKA_BOOTSTRAP_SERVERS,INTERACTIONS_TOPIC,TIME_OUT_MS
 
-
-# List of topics to subscribe to
-topics = [INTERACTIONS_TOPIC]
 
 # Initialize the consumer
 consumer = KafkaConsumer(
-    *topics,  # Unpack the list of topics
+    INTERACTIONS_TOPIC, 
     bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
     auto_offset_reset='earliest',  # Start reading from the earliest message
-    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+    value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+    consumer_timeout_ms=TIME_OUT_MS,
+    group_id="interactions_consumer_group",
+    enable_auto_commit=False  # Disable automatic offset committing
 )
 
 print("Kafka Consumer Initialized")
 
-
+n=0
 # Consume messages from the subscribed topics
-for n, message in enumerate(consumer):
+for message in consumer:
     interaction_data = message.value
     print(f"Received message {n + 1} from {INTERACTIONS_TOPIC}: {interaction_data}")
 
     # Deserialize the message into an Interaction object
     interaction = Interaction.from_dict(interaction_data)
+    n+=1
 
-print(f"Processed {n + 1} messages")
+print(f"Processed {n} messages")
