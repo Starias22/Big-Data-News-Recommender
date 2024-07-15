@@ -94,15 +94,15 @@ class WelcomeController:
             return self.user_db.retrieve_user_categories(user_id=user_id)
             
 
-    def add_user_category(self, user_id, category):
-        self.user_db.add_category_to_user(user_id=user_id,category_id=category)
+    def add_user_category(self, user_id, category_id):
+        self.user_db.add_category_to_user(user_id=user_id,category_id=category_id)
 
         # Add a new category for the user in the database
         
 
-    def remove_user_category(self, user_id, category):
+    def remove_user_category(self, user_id, category_id):
         # Remove a category for the user from the database
-        self.user_db.remove_category_from_user(user_id=user_id,category_id=category)
+        self.user_db.remove_category_from_user(user_id=user_id,category_id=category_id)
 
     def get_user_sentiments(self, user_id):
         # Fetch user sentiments from database or return an empty list
