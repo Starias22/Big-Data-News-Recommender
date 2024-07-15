@@ -83,8 +83,8 @@ class UserDB:
         user = self.find_user_by_id(user_id)
 
         if user:
-            if 'categories' not in user.to_dict():
-                user.categories = []
+            
+           
 
             if category_id not in user.categories:
                 user.categories.append(category_id)
@@ -97,11 +97,12 @@ class UserDB:
     def remove_category_from_user(self, user_id: str, category_id: int):
         user = self.find_user_by_id(user_id)
 
-        if user and 'categories' in user.to_dict():
-            if category_id in user.categories:
-                user.categories.remove(category_id)
+        print(88888888888888888888888)
+        print(user)
+        if category_id in user.categories:
+            user.categories.remove(category_id)
 
-                self.db.users.update_one(
+            self.db.users.update_one(
                     {"_id": ObjectId(user_id)},
                     {"$set": {"categories": user.categories}}
                 )
@@ -111,10 +112,10 @@ if __name__ == "__main__":
     user_db = UserDB()
 
     # Add category to user
-    user_id = "6691b10a87c6e42972ce7404"  # Replace with actual user ID
-    category_id_to_add = 12  # Replace with actual category ID
-    user_db.add_category_to_user(user_id, category_id_to_add)
+    user_id = "6692f7bdfecf94edfeccafa1"  # Replace with actual user ID
+    category_id_to_add = 1  # Replace with actual category ID
+    #user_db.add_category_to_user(user_id, category_id_to_add)
 
     # Remove category from user
-    category_id_to_remove = 9  # Replace with actual category ID to remove
+    category_id_to_remove = 1  # Replace with actual category ID to remove
     user_db.remove_category_from_user(user_id, category_id_to_remove)
