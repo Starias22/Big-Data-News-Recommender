@@ -6,3 +6,4 @@
 /usr/bin/kafka-topics --describe --bootstrap-server localhost:9092 --topic ProcessedNewsTopic
 /usr/bin/kafka-topics --describe --bootstrap-server localhost:9092 --topic AvailableNewsTopic
 /usr/bin/kafka-topics --describe --bootstrap-server localhost:9092 --topic InteractionsTopic
+/usr/bin/kafka-topics --describe --bootstrap-server localhost:9092 --topic __consumer_offsets
