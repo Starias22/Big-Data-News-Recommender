@@ -1,0 +1,453 @@
+x-airflow-image: &airflow_image starias/airflow-spark
+x-kafka-image: &kafka_image confluentinc/cp-kafka:latest
+
+x-spark-common-properties: &spark_common_properties
+  image: starias/spark-kafka
+  volumes:
+   - .jobs:/opt/bitnami/spark/jobs
+  networks:
+    - kafka
+    - backend
+  restart: always
+  
+x-spark-worker-environment: &spark_worker_environment
+  SPARK_MODE: worker
+  SPARK_WORKER_CORES: 2
+  SPARK_WORKER_MEMORY: 8G
+  SPARK_MASTER_URL: spark://spark-master:7077
+  TRAINED_MODELS_PATH: ${TRAINED_MODELS_PATH}
+
+
+x-environment: &airflow_environment
+  - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+  - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
+  - AIRFLOW__CELERY__BROKER_URL=redis://:@redis:6379/2
+  - AIRFLOW__CORE__FERNET_KEY=''
+  #- AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS=False
+  - AIRFLOW__DETABASE__LOAD_DEFAULT_CONNECTIONS=False
+  - AIRFLOW__CORE__LOAD_EXAMPLES=False
+  - AIRFLOW__CORE__STORE_DAG_CODE=True
+  - AIRFLOW__CORE__STORE_SERIALIZED_DAGS=True
+  - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
+  - AIRFLOW_CONN_POSTGRES_DEFAULT=postgresql://airflow:airflow@postgres/airflow
+  - AIRFLOW__CORE__FERNET_KEY=EJ7tt4r06HhjniZKjNICTqaOGotA2Jfa9EF7KyW-7Wc=
+  - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+  - AIRFLOW__CELERY__WORKERS=2
+  - AIRFLOW__CELERY__WORKER_CONCURRENCY=2
+  - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+  - CHECKPOINT_DIR=${CHECKPOINT_DIR}
+  - REDIS_HOST=${REDIS_HOST}
+  - MONGO_DB_URI=${MONGO_DB_URI}
+  - AIRFLOW__CORE__DEFAULT_TIMEZONE=UTC
+  - AIRFLOW__EMAIL__EMAIL_BACKEND=airflow.utils.email.send_email_smtp
+  - AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
+  - AIRFLOW__SMTP__START_TLS=False
+  - AIRFLOW__SMTP__SMTP_SSL=False
+  - AIRFLOW__SMTP__SMTP_USER_FILE=/run/secrets/smtp_user
+  - AIRFLOW__SMTP__SMTP_USER=your_email@gmail.com 
+  - AIRFLOW__SMTP__SMTP_PASSWORD=your_smtp_password
+  - AIRFLOW__SMTP__SMTP_PASSWORD_FILE=/run/secrets/smtp_password
+  - AIRFLOW__SMTP__SMTP_PORT=587
+  - AIRFLOW__SMTP__SMTP_MAIL_FROM=your_email@gmail.com
+  - AIRFLOW__SMTP__SMTP_MAIL_FROM_FILE=/run/secrets/smtp_user
+  - TRAINED_MODELS_PATH=${TRAINED_MODELS_PATH}
+  
+services:
+  spark-master:
+    <<: *spark_common_properties
+    container_name: spark-master
+    restart: always
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    command: bin/spark-class org.apache.spark.deploy.master.Master
+    volumes:
+      - ./trained_models:/opt/trained_models/
+      - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
+      - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
+      - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/
+    networks:
+      - backend
+      - kafka
+
+    environment:
+      - TRAINED_MODELS_PATH=${TRAINED_MODELS_PATH}
+      #- SPARK_MODE=master
+      #- SPARK_RPC_AUTHENTICATION_ENABLED=no
+      #- SPARK_RPC_ENCRYPTION_ENABLED=no
+
+  spark-worker1:
+    <<: *spark_common_properties
+    container_name: spark-worker1
+    
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    depends_on:
+      - spark-master
+    environment: *spark_worker_environment
+    volumes:
+      - ./trained_models:/opt/trained_models
+      - ./nltk_data:/opt/nltk_data/
+      - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
+      - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
+      - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/
+
+  
+  spark-worker2:
+    <<: *spark_common_properties
+    container_name: spark-worker2
+    
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    depends_on:
+      - spark-master
+    environment: *spark_worker_environment
+    volumes:
+      - ./trained_models:/opt/trained_models/
+      - ./nltk_data:/opt/nltk_data/
+      - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
+      - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
+      - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/
+
+  spark-worker3:
+    <<: *spark_common_properties
+    container_name: spark-worker3
+    
+    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    depends_on:
+      - spark-master
+    environment: *spark_worker_environment
+    volumes:
+      - ./trained_models:/opt/trained_models
+      - ./nltk_data:/opt/nltk_data/
+      - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
+      - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
+      - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/  
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    volumes:
+      - ./data/redis:/data
+  
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    #environment:
+      #- MONGO_INITDB_ROOT_USERNAME=admin
+      #- MONGO_INITDB_ROOT_PASSWORD=password
+
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/mongodb:/data/db  
+    networks:
+      - backend
+
+  #mongo-express:
+    #image: mongo-express:latest
+    #container_name: mongo-express
+    #depends_on:
+      #- mongodb
+    #environment:
+      #- ME_CONFIG_MONGODB_URL=${MONGO_DB_URI}
+      #- ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      #- ME_CONFIG_MONGODB_ADMINPASSWORD=password
+    #ports:
+      #- "8081:8081"
+    #networks:
+      #- backend
+
+  zookeeper:
+    restart: always
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - ./data//zookeeper/data:/var/lib/zookeeper/data
+      - ./data/zookeeper/log:/var/lib/zookeeper/log
+    networks:
+      - kafka
+
+  kafka-broker1:
+    image: *kafka_image
+    depends_on:
+      - zookeeper
+    restart: always
+    container_name: kafka-broker1
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker1:9092  # Use service name for internal Docker DNS
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_LOG_DIRS: /broker
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'  # Disable auto topic creation
+    volumes:
+      
+      - ./data/kafka/log/broker1:/broker
+      - ./scripts:/scripts
+    #command: ["bash", "-c", "/scripts/create_topics.sh"]
+
+    networks:
+      - kafka
+
+  kafka-broker2:
+    restart: always
+    image: *kafka_image
+    depends_on:
+      - zookeeper
+    container_name: kafka-broker2
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker2:9093  # Use service name for internal Docker DNS
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_LOG_DIRS: /broker
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'  # Disable auto topic creation
+    volumes:
+      - ./data/kafka/log/broker2:/broker
+    networks:
+      - kafka
+
+  kafka-broker3:
+    restart: always
+    image: *kafka_image
+    depends_on:
+      - zookeeper
+    container_name: kafka-broker3
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker3:9094  # Use service name for internal Docker DNS
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094
+      KAFKA_LOG_DIRS: /broker
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'  # Disable auto topic creation
+    volumes:
+      - ./data/kafka/log/broker3:/broker
+      
+    networks:
+      - kafka
+  
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    volumes:
+      - ./kafka-ui/config.yml:/etc/kafkaui/dynamic_config.yaml
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    depends_on:
+      - kafka-broker1
+      - kafka-broker2
+      - kafka-broker3
+    networks:
+      - kafka
+    ports:
+      - '7070:8080'
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider localhost:8080 || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    networks:
+      - backend
+      
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+
+  airflow-flower:
+        
+        image: *airflow_image
+        container_name: airflow-flower
+        restart: always
+        depends_on:
+            - redis
+        environment: *airflow_environment
+            # - REDIS_PASSWORD=redispass
+        ports:
+            - "5555:5555"
+        command: celery flower
+        networks:
+          - backend
+
+
+  airflow-init:
+    container_name: airflow-init
+    image: *airflow_image
+    depends_on:
+      - postgres
+      #- redis
+      #- kafka-broker1
+      #- kafka-broker2
+      #- kafka-broker3
+      
+    
+      
+      #- spark-master
+    environment: *airflow_environment
+      
+
+    entrypoint: >
+      /bin/bash -c
+      "airflow db migrate && \
+       airflow users create --username your_username --firstname your_firstname --lastname your_lastname --role Admin --email your_email  --password your_password"
+      
+    networks:
+      - backend
+      - kafka
+    
+
+  airflow-webserver:
+    restart: always
+    container_name: airflow-webserver
+    image: *airflow_image
+    
+    depends_on:
+      #- postgres
+      - airflow-init
+      - kafka-broker1
+      - kafka-broker2
+      - kafka-broker3
+      #- spark-master
+    environment: *airflow_environment
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./trained_models:/opt/trained_models/
+      - ./data/airflow-logs:/opt/airflow/logs
+      - ./config:/opt/config
+    command: webserver
+    networks:
+      - backend
+      - kafka
+    secrets:
+      - smtp_user
+      - smtp_password
+
+  airflow-scheduler:
+    container_name: airflow-scheduler 
+    image: *airflow_image
+    depends_on:
+      #- postgres
+      - airflow-init
+      #- kafka-broker1
+      #- kafka-broker2
+      #- kafka-broker3
+      #- spark-master
+    environment: *airflow_environment
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./trained_models:/opt/trained_models/
+      - ./data/airflow-logs:/opt/airflow/logs
+      - ./config:/opt/config
+      - ./src:/opt/src      
+    command: scheduler
+    networks:
+      - backend
+      - kafka
+    secrets:
+      - smtp_user
+      - smtp_password
+
+  airflow-worker:
+    container_name: airflow-worker
+    image: *airflow_image
+    depends_on:
+      - airflow-scheduler
+    environment: *airflow_environment
+    networks:
+      - backend
+      - kafka
+    secrets:
+      - smtp_user
+      - smtp_password
+
+
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags/
+      - ./data/airflow-logs:/opt/airflow/logs
+      - ./config/:/opt/config/
+      - ./src/:/opt/src/
+      - ./scripts:/opt/scripts/
+      - ./trained_models/:/opt/trained_models/
+      - /opt/bitnami/spark/jars/:/opt/bitnami/spark/jars/
+      - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
+      - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
+      - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/
+    command: celery worker
+
+  newsengine-client:
+    image: starias/newsengine-client 
+    container_name: newsengine-client
+    depends_on:
+      - kafka-broker1
+      - kafka-broker2
+      - kafka-broker3
+      - mongodb
+      - spark-master
+      #- airflow-webserver
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app  # Mount the current directory to /app in the container
+    environment:
+      - PYTHON_ENV=development
+      - MONGO_DB_URI=${MONGO_DB_URI}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+    networks:
+      - backend
+      - kafka
+    entrypoint: >
+      streamlit run /app/app.py
+
+networks:
+  backend:
+    name: backend-network 
+    driver: bridge
+  kafka:
+    name: kafka-network  
+    driver: bridge
+
+secrets:
+   smtp_user:
+     file: secrets/smtp_user.txt
+   smtp_password:
+     file: secrets/smtp_password.txt
+
+volumes:
+  postgres_data:
+
+  
+  
+
+    
