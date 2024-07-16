@@ -17,7 +17,7 @@ from src.models.interaction import Interaction
 from src.db.interaction_db import InteractionDB
 from src.db.user_db import UserDB
 from src.models.interaction import Interaction
-from config.config import KAFKA_BOOTSTRAP_SERVERS, INTERACTIONS_TOPIC, PROCESSED_NEWS_TOPIC,TIME_OUT_MS
+from config.config import KAFKA_BOOTSTRAP_SERVERS, INTERACTIONS_TOPIC, PROCESSED_NEWS_TOPIC,GROUP_TIME_OUT_MS
 
 # Initialize Spark session
 
@@ -28,7 +28,7 @@ def store_interactions():
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         auto_offset_reset='earliest',  # Start reading from the earliest message
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-        consumer_timeout_ms=TIME_OUT_MS,
+        consumer_timeout_ms=GROUP_TIME_OUT_MS,
         group_id="interactions_saver_group",
         enable_auto_commit=False  # Disable automatic offset committing
     )
@@ -65,7 +65,7 @@ def store_interactions():
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         auto_offset_reset='earliest',
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-        consumer_timeout_ms=TIME_OUT_MS,
+        consumer_timeout_ms=GROUP_TIME_OUT_MS,
         group_id='processed_news_consumer_group',
         enable_auto_commit=False  # Disable automatic offset committing
     )

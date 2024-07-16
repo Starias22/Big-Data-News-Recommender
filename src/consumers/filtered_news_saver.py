@@ -20,7 +20,7 @@ def persist_filtered_news():
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         auto_offset_reset='earliest',  # Start reading from the earliest message
         value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-        consumer_timeout_ms=TIME_OUT_MS,
+        consumer_timeout_ms=5*TIME_OUT_MS,
         group_id="filtered_news_saver_group",
         enable_auto_commit=False  # Disable automatic offset committing
 
