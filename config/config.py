@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 
 
-START_HOUR=3
+START_HOUR=2
 #START_HOUR=8
-START_DAYS_AGO=0
+START_DAYS_AGO=1
 def load_config(filepath='secret.json'):
     # Use absolute path to ensure we find the file
     abs_filepath = os.path.join(os.path.dirname(__file__), filepath)
@@ -65,6 +65,7 @@ LOCALHOST="localhost"
 REDIS_HOST=os.getenv("REDIS_HOST",LOCALHOST)
 
 TIME_OUT_MS=1000
+GROUP_TIME_OUT_MS=5000
 
 
 DISLIKED=-1
