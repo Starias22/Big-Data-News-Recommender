@@ -6,7 +6,7 @@ on:
       - main
       - master 
     paths:
-      - ./../../../Dockerfile
+      - Dockerfile
 jobs:
   docker:
     runs-on: ubuntu-latest
