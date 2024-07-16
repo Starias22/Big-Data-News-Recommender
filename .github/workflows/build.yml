@@ -5,7 +5,8 @@ on:
     branches:
       - main
       - master 
-
+    paths:
+      - path/to/your/specific/file
 jobs:
   docker:
     runs-on: ubuntu-latest
