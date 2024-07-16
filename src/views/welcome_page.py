@@ -1,11 +1,11 @@
 import streamlit as st
 from src.controllers.welcome_controller import WelcomeController
 from config.config import SENDER_ADDRESS
-from src.utils import format_duration,format_source
+from src.utils import format_duration, format_source
 from src.views.settings_page import show_settings_page 
 
 import webbrowser
-from config.config import DISLIKED,SEEN,LIKED
+from config.config import DISLIKED, SEEN, LIKED
 
 def log_interaction_and_open_link(user_id, news_id, action, url):
     WelcomeController().register_interaction(user_id=user_id, news_id=news_id, action=action)
@@ -16,13 +16,22 @@ def log_interaction_and_open_link(user_id, news_id, action, url):
 def log_interaction(user_id, news_id, action):
     WelcomeController().register_interaction(user_id=user_id, news_id=news_id, action=action)
 
-
 def show_recommended_news(controller):
     # Fetch recommended news based on user_id using the controller
     recommended_news = controller.get_recommended_news(user_id=st.session_state.user_id)
-    print('****************************************************')
-    print(recommended_news)
-    for news in recommended_news:
+    
+    # Initialize session state for news display and pagination
+    if 'news_displayed' not in st.session_state:
+        st.session_state.news_displayed = []
+    if 'page_number' not in st.session_state:
+        st.session_state.page_number = 0
+    
+    # Pagination logic
+    start_idx = st.session_state.page_number * 20
+    end_idx = start_idx + 20
+    current_news = recommended_news[start_idx:end_idx]
+    
+    for news in current_news:
         st.write(news['category'])
         
         if news['img_url'] is not None:  # Check if the image URL is not None
@@ -34,58 +43,51 @@ def show_recommended_news(controller):
                 </div>
                 """, unsafe_allow_html=True
             )
-        #st.write(f'***{news["title"]}***')
+
         st.markdown(
-    f"""
-    <h3 style='text-align: center;'>
-        {news['title']}
-    </h3>
-    """,
-    unsafe_allow_html=True
-)
+            f"""
+            <h3 style='text-align: center;'>
+                {news['title']}
+            </h3>
+            """,
+            unsafe_allow_html=True
+        )
 
         # Display news details with icons aligned to the right
         col1, col2, col3, col4, col5 = st.columns([8, 1, 1, 1, 1])
         
         with col1:
-            st.write(f"{format_source(news['source_name'],news['author'])} {format_duration(news['publication_date'])}")
+            st.write(f"{format_source(news['source_name'], news['author'])} {format_duration(news['publication_date'])}")
+        
         with col2:
-            
             if st.button(f"👁️", key=f"view_{news['_id']}"):
                 webbrowser.open(news['url'])
                 print(f"Title clicked: {news['title']}")
-                print('You are the user',st.session_state.user_id)
-                
-                WelcomeController().register_interaction(user_id=st.session_state.user_id,
-                                                news_id=news['_id'],action=SEEN)
+                print('You are the user', st.session_state.user_id)
+                WelcomeController().register_interaction(user_id=st.session_state.user_id, news_id=news['_id'], action=SEEN)
 
         with col3:
             if st.button('👍', key=f"like_{news['_id']}"):
-                WelcomeController().register_interaction(user_id=st.session_state.user_id,
-                                                news_id=news['_id'],action=LIKED)
+                WelcomeController().register_interaction(user_id=st.session_state.user_id, news_id=news['_id'], action=LIKED)
         
         with col4:
             if st.button('👎', key=f"dislike_{news['_id']}"):
-                WelcomeController().register_interaction(user_id=st.session_state.user_id,
-                                                news_id=news['_id'],action=DISLIKED)
-
-        
+                WelcomeController().register_interaction(user_id=st.session_state.user_id, news_id=news['_id'], action=DISLIKED)
 
         with col5:
             if st.button('⋮', key=f"menu_{news['_id']}"):
                 pass
-                #st.session_state[f"menu_{news['_id']}"] = True
                 
-        # Check session state for button clicks
-        #if st.session_state.get(f"view_{news['_id']}"):
-            #print(f"Title clicked: {news['title']}")
-            #st.session_state[f"view_{news['_id']}"] = False  # Reset state
-
         st.write(news['sentiment_score'])
-
-        # Separator
         st.markdown("---")
 
+    # Load more button logic
+    if len(recommended_news) > end_idx:
+        if st.button('Load More'):
+            st.session_state.page_number += 1
+            st.experimental_rerun()
+    else:
+        st.write("No more news to load.")
 
 def show_welcome_page():
     # Check if the user is logged in
@@ -143,7 +145,7 @@ def show_welcome_page():
                         st.session_state.logged_in = True
                         st.session_state.user_email = user.email
                         st.session_state.user_id = user.id
-                        print('The user id is',user.id)
+                        print('The user id is', user.id)
                         st.success(f'Welcome back, {user.firstname}!')
                         st.rerun()
                     else:
