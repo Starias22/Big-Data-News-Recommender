@@ -22,6 +22,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
 #### A Linux distribution
 #### Python 3.x
 #### pip
+### Docker
 
 Check installation
 ```sh
@@ -33,149 +34,157 @@ If not installed, install it
 sudo apt install python3-pip
 ```
 
-#### Java>=8
+### Clone the 
 
-##### Installation
 
-A version of Java newer or equal to 8 need to be installed.
+1. **Clone the repository:**
 
-We will need Java to build our Kafka source using Gradle, which works with at least Java 8.
+   ```sh
+   git clone https://github.com/Starias22/Big-Data-News-Recommender.git
+   cd Big-Data-News-Recommender
+   ```
 
-Personally I used Java 21.
+2. **Set up the virtual environment:**
 
-First of all check if you have Java 21 installed.
+   ```sh
+   python3 -m venv big_data_env
+   source big_data_env/bin/activate 
+   ```
 
-```sh
-java -version
+3. **Install the required packages:**
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+4. **Download the models folder**
+   
+Download the `trained_models` zip file  from  [my drive](https://drive.google.com/drive/folders/1xyo_IqACn7A9cOo8sq9H2FeBptWwPM8y?usp=drive_link) , unzip it and put the extracted folder  in the current working directory(the repository)
+
+6. **Generate a NewsAPI key**
+
+You need a NewsAPI key. You can generate one [here](https://newsapi.org/register).
+
+After filling the requested information you will have a new key generated. Copy and paste it in a safe place.
+5. **Set up your config.json file**
+
+   Rename the file config/config_template.json to config/config.json and replace the value of the key "news_api_key" from "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" to the key you have just generated.
+
+
+#### Create Necessary Directories
+
+First, create a `data` directory and navigate into it. Within the `data` directory, create subdirectories for Zookeeper, Kafka brokers, checkpoints, Redis, PostgreSQL, and MongoDB. Additionally, create a directory for Airflow logs.
+
+```bash
+# Create the main data directory and navigate into it
+mkdir data
+cd data
+
+# Create directories for Zookeeper
+mkdir -p zookeeper/data/
+mkdir -p zookeeper/log/
+
+# Create directories for Kafka brokers
+mkdir -p kafka/log/broker1/
+mkdir -p kafka/log/broker2/
+mkdir -p kafka/log/broker3/
+
+# Create directories for checkpoints
+mkdir -p checkpoint/filtered_news/
+mkdir -p checkpoint/available_news/
+mkdir -p checkpoint/processed_news/
+
+# Create directory for Redis
+mkdir redis/
+
+# Create directory for PostgreSQL
+mkdir postgres
+
+# Create directory for MongoDB
+mkdir mongodb/
+
+# Create directory for Airflow logs
+mkdir airflow-logs/
+
+# Navigate back to the parent directory
+cd ..
 ```
 
-If you don't have any version of Java installed use this command to install Java21
+### Set Permissions
 
-```sh
-sudo apt install openjdk-21-jdk
+Set appropriate permissions for the created directories to ensure that the services can read from and write to these directories. Zookeeper and Kafka directories will have full permissions (777), while Redis, PostgreSQL, and MongoDB directories will have read, write, and execute permissions for the owner and read and execute permissions for others (755).
+
+```bash
+# Set permissions for Zookeeper directories
+chmod -R 777 data/zookeeper/data/
+chmod -R 777 data/zookeeper/log/
+
+# Set permissions for Kafka broker directories
+chmod -R 777 data/kafka/log/broker1/
+chmod -R 777 data/kafka/log/broker2/
+chmod -R 777 data/kafka/log/broker3/
+
+# Set permissions for checkpoint directories
+chmod -R 777 data/checkpoint/filtered_news/
+chmod -R 777 data/checkpoint/available_news/
+chmod -R 777 data/checkpoint/processed_news/
+
+# Set permissions for Redis directory
+chmod -R 755 data/redis/
+
+# Set permissions for PostgreSQL directory
+chmod -R 755 data/postgres/
+
+# Set permissions for MongoDB directory
+chmod -R 755 data/mongodb/
+
+# Set permissions for Airflow logs directory
+chmod -R 777 data/airflow-logs/
 ```
 
-Check your Java version
+### Initialize Airflow
 
-```sh
-java -version
-```
-![Alt text](resources/java_version.png)
+ Before starting the full Docker Compose setup, initialize Airflow. This step ensures that the necessary database migrations and initial setup are completed. Tipically, this creates an initial airflow user.
 
-- If you have a version of Java greater than 8 and different from 21, go to the [Java-Gradle compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html) and note the Gradle version compatible with your Java version. 
+ ```bash
+ docker compose up airflow-init -d
+ ```
 
-- Otherwise, install Java21
+ ### Start All Services
 
-  For the following let us suppose you have installed. Java 21
-
-##### Home configuration
-
-Now that Java is instaled we need to set it as default and to configure the home path
-
-1. Set Java 21 as default by running the following command, which will prompt you yo selet the Java version you want to select as the fault.
-
-```sh
-    sudo update-alternatives --config java
+```bash
+docker compose up -d
 ```
 
-2. Now we will configure Java home path
+### Acess Kafka and create topics
 
-In my case, this is the path to my Java21: /usr/lib/jvm/java-21-openjdk-amd64/
+#### Acess kafka-brocker 1
 
-We will edit Java home in .bashrc file.
-
-```sh
-   nano .bashrc
+```bash
+docker exec -it kafka-broker1 bash
 ```
 
-Add the following line to your .bashrc
+#### Create the topics
 
-```sh
-export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64/
+```bash
+/scripts/create_topics.sh 
+```
+ 
+#### Describe the topics (Optional)
+
+You can describe the topics by running the following command.
+
+```bash
+/scripts/describe_topics.sh
 ```
 
-Then save the file and exit.
-
-Now apply the modification by executing the following command
-
-```sh
-   source .bashrc
-```
-
-3. Check Java version by running the command
-
-```sh
-   java -version
-```
-
-4. Check Java home path
-
- ```sh
-   echo $JAVA_HOME
-```
-
-Java 21 should be your default Java now.
-
-
-#### Redis
-
-We need Redis to store metadata in our application.
-
-- Run the following commands to get Redis installed
-
-```sh
-sudo apt install curl
-curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
-
-echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
-sudo apt-get update
-sudo apt-get install redis
-```
-
-You can run `redis-cli` to check Redis installation and then  <kbd>Ctrl</kbd> + <kbd>D</kbd> to exit Redis CLI.
-
-- For other installation alternatives, go to [Redis installation on Linux](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-linux/).
-
-If you want to configure redis to automatically start at rebbot, run the following command
-
-```sh
-sudo systemctl status redis-server
-```
-
-Run the following command to enshure the configuration was sucessfull. You should see `enabled`.
-
-```sh
-sudo systemctl is-enabled redis-server
-```
-
-#### MongoDB
-
-We need MongoDB to store users data, filtered news and data about users interactions with news.
-
-- To install MongoDB, go to [Mongo installation on Ubuntu](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/) and follow the steps described.
-
-
-You can run `mongosh` to ensure everything is OK and then  <kbd>Ctrl</kbd> + <kbd>D</kbd> to exit mongo shell.
-
-
-If you want to configure MongoDB to automatically start at reboot (if not done yet), run the following command
-
-```sh
-sudo systemctl status mongod
-```
-
-Run the following command to enshure the configuration was sucessfull. You should see `enabled`.
-
-```sh
-sudo systemctl is-enabled mongod
-```
 
 #### Virtual Environment (recommended)
 
 Install venv for virtual environments.
 
 ```sh
-   sudo apt install python3-venv
+sudo apt install python3-venv
 ```
 
 ### Steps
@@ -246,76 +255,8 @@ After filling the requested information you will have a new key generated. Copy 
    cd kafka-3.7.0-src
    ```
 
-4. **Build Kafka:**
 
-   The Kafka source you've just installed needs to be built using Gradle. Do it with the following command.
 
-   ```sh
-   ./gradlew jar -PscalaVersion=2.13.12
-   ```
-   where 2.13.12 needs to be replaced with a Gradle version compatible with your Java. It will take some time. Just wait.
-
-5. **Configure and start Zookeeper:**
-
-   Kafka requires Zookeeper to be running. But first we need to configure zookeeper properties file.
-   
-   But first make a copy
-
-   ```sh
-   cp config/zookeeper.properties config/zookeeper.properties.templates
-   ```
-
-   Open config/zookeeper.properties and change the line `dataDir=/tmp/zookeeper` to `dataDir=zookeeper-dir`
-
-   This allows Zookeeper to store metada on a persistant location rather than a temporay directory where the metadata like cluster id are lost and re-created after system reboot.
-
-   Start Zookeeper with the following command:
-
-   ```sh
-   bin/zookeeper-server-start.sh config/zookeeper.properties
-   ```
-
-6. **Configure and start Kafka:**
-
-Like Zookeeper we need to configure Kafka properties such as the topics we create remain even after system reboot.
-
-We need to change Kafka logs directory. But first make a copy
-
-```sh
-cp config/server.properties config/server.properties.templates
-```
-
-Open `config/server.properties` and change `log.dirs=/tmp/kafka-logs` to `log.dirs=kafka-logs`
-
-Start a Kafka server with the following command:
-
-   ```sh
-   bin/kafka-server-start.sh config/server.properties
-   ```
- 
-7. **Create Kafka topics:**
-
-Create the following Kafka topics and list them
-
-```sh
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 4 --replication-factor 1
-```
- 
-```sh
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic FilteredNewsTopic --partitions 4 --replication-factor 1
-```
-
-```sh
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic ProcessedNewsTopic --partitions 4 --replication-factor 1
-```
-
-```sh
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic InteractionsTopic --partitions 4 --replication-factor 1
-```
-
-```sh
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
-```
 
 
  
