@@ -24,38 +24,47 @@ The Big Data News Recommender is a system designed to provide personalized news 
 #### pip
 ### Docker
 
-Check installation
-```sh
-pip --version
-```
-If not installed, install it
-
-```sh
-sudo apt install python3-pip
-```
-
-### Clone the 
-
-
-1. **Clone the repository:**
+### Clone the repository
 
    ```sh
    git clone https://github.com/Starias22/Big-Data-News-Recommender.git
    cd Big-Data-News-Recommender
    ```
 
-2. **Set up the virtual environment:**
+### Download the necesssary NLTK data
+
+NLTK is used to process the news description. You need to download the necessasy NLTK data. But firstly, NLTK needs to be installed.
+
+1. **Set up a virtual environment:**
 
    ```sh
    python3 -m venv big_data_env
    source big_data_env/bin/activate 
    ```
 
-3. **Install the required packages:**
+2. **Install NLTK:**
 
    ```sh
-   pip install -r requirements.txt
+   pip install nltk
    ```
+
+3. **Download NLTK data:**
+
+Run the following command to download the necessary NLTK data.
+
+```python3
+python3 download_nltk_data.py
+```
+
+You should have the necessary NLTK data downloaded into `nltk_data` folder of the project root.
+
+4. **Check the downloaded data**
+
+```bash
+ls nltk_data/
+```
+You should see `corpora` and `sentiment` folders in the `nltk_data` folder.
+
 
 4. **Download the models folder**
    
