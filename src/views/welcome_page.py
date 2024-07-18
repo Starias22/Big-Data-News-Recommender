@@ -7,14 +7,8 @@ from src.views.settings_page import show_settings_page
 import webbrowser
 from config.config import DISLIKED, SEEN, LIKED
 
-def log_interaction_and_open_link(user_id, news_id, action, url):
-    WelcomeController().register_interaction(user_id=user_id, news_id=news_id, action=action)
-    js = f"window.open('{url}');"
-    html = f"<script>{js}</script>"
-    st.markdown(html, unsafe_allow_html=True)
 
-def log_interaction(user_id, news_id, action):
-    WelcomeController().register_interaction(user_id=user_id, news_id=news_id, action=action)
+
 
 def show_recommended_news(controller):
     # Fetch recommended news based on user_id using the controller
@@ -211,7 +205,9 @@ def show_welcome_page():
                                 email=register_email,
                                 password=register_password
                             )
-                            st.session_state.user_email = controller.register()
+                            #st.session_state.user_email = controller.register()
+                            st.session_state.user_id = controller.register()
+
                             st.success(f'Registration completed! Your email has been verified successfully, {register_firstname}!')
                             st.session_state.logged_in = True
                             st.rerun()
