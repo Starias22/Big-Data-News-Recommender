@@ -130,6 +130,18 @@ In the `secret.json` file replace the value of  the
 
 - `admin_email` field by the admin email. The admin email is the mail address airflow send task execution informations to using the `sender_address`  Google email address. 
 
+### Kafka-ui config file
+
+You need to personalize the Kafka UI config file. This is required by the Kafka UI to work.
+
+First of all make a copy of the `kafka-ui/config_template.yml`.
+
+```bash
+cp kafka-ui/config_template.yml kafka-ui/config.yml
+```
+
+Then set your username and password in the `kafka-ui/config.yml`. You will use them to sign in into Kaka UI.
+
 ### Docker compose file configuration
 
 You need to configure your `docker-compose.yml` file.
@@ -155,7 +167,9 @@ cp docker-compose-template.yml docker-compose.yml
 
 `airflow-init` and replace the email address by the admin email address. Use the same email address as the value you set for  `admin_email` during the configuration of `the secret.json` file.
 
-There are other values that you may want to personalize. There are the firstanme, lastname, username, and password.
+You should also set your username and password.
+
+You may also want to set your firstname and lastname.
 
 #### Create Necessary Directories
 
