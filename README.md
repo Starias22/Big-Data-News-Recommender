@@ -400,144 +400,141 @@ Now everything is ready.
 
 ### Trigger DAGs 
 
+#### Trigger news producers DAG
 
-### Run the raw news stream processor
+![alt text](resources/news-production-dag.png)
 
-Run spark raw news stream processor.
+Click on the news producer DAG and trigger it.
 
-The raw news stream processor:
+![alt text](resources/trigger-news-producer.png)
 
-- Gets news messages from **RawNewsTopic**
-- Filters the news to remove news without URL, content or description and also duplicate news
-- Sends the filtered news to **FilteredNewsTopic**
-- Preprocesses the filtered news by performing cleaning, tokennization, lemmatization and stopwords removal
-- Processes the preprocessed news by performing sentiment analysis, topic detection and categorization on the description field of the news
-- Send the processed news to **ProcessedNewsTopic**
 
-```sh
-   python3 raw_news_stream_processor.py
+Make sure it runned successfully. You should see something like the image below.
+
+![alt text](resources/news-producer-success.png)
+
+Now go to Kafka UI and click on Topics. You will see that there are raw news messages produced to the RawNewsTopic, as can be seen on the figure below.
+
+![alt text](resources/raw-news-topic.png)
+
+Now acess RawNewsTopic->Messages
+
+![alt text](resources/raw-news-topic-messages.png)
+
+Then click on any message and you will see the message fields
+
+![alt text](resources/raw-news-topic-message-fields.png)
+
+#### Trigger news ETL DAG
+
+![alt text](resources/news-etl-dag.png)
+
+As done above with the news producer DAG, trigger the news ETL DAG.
+
+Then make sure it runned successfully and here also acess Kafka UI->FilteredNewsTopic->Messages.
+
+Then select any message.
+
+You will see something like.
+
+![alt text](resources/filtered-news-topic-message-field.png)
+
+
+Acess Kafka UI->ProcessedNewsTopic->Messages.
+
+Then select any message.
+
+You will see something like.
+
+![alt text](resources/processed-news-topic-message-field-1.png)
+
+![alt text](resources/processed-news-topic-message-field-2.png)
+![alt text](resources/processed-news-topic-message-field-3.png)
+
+Run  the following command to acess MongoDB container shell
+
+```bash
+docker exec -it mongodb mongosh 
 ```
 
-### Run raw news consumer
+Swith to the news recommendation database
 
-Move to src/consumer and run raw news consumer.
+```bash
+use use news_recommendation_db
+```
+Find and count MongoDB filtered news documents 
 
-```sh
-python3 raw_news_consumer.py
+```bash
+db.filtered_news.find()
 ```
 
-This etrieves raw news messages from **RawNewsTopic**
-
-### Run news producers 
-
-Keep the raw news stream processor running and open another window.
-
-To run news producers, move to scr/producers and run the following commands
-
- ```sh
-   python3 news_api_producer.py
+```bash
+db.filtered_news.countDocuments()
 ```
 
- ```sh
-   python3 google_news_producer.py
+This is what our previous news message looks like in MongoDB
+
+![alt text](resources/filtered-news-document.png)
+
+
+The next DAG is the interactions storage DAG. But since there is no user interaction for now let us go to the news recommendation DAG but before, let us create a user
+
+### Create a user
+
+To create a user acess the newsengine-client container via via [localhost:8501](http://localhost:8501).
+
+Fill the form and the OTP required.
+
+Now that a user is created let us trigger the news recommendation DAG
+
+### Trigger news recommendation DAG
+
+Trigger the DAG, makesure it runned sucessfully and go to  Kafka UI->AvailableNewsTopic->Messages.
+
+A message of that topic looks like 
+![alt text](resources/available-news-topic-message-fields.png)
+
+
+Now that the news are recommended this is what the user document looks like.
+
+```bash
+db.users.find()
 ```
 
-These news producers will retrieve news using News API and Gooogle news and then send them to **RawNewsTopic**
-
-As news messages arrivse, the raw news stream processor will be processing them.
+![alt text](resources/user-document.png)
 
 
-### Run filtered news saver
+### Login to user account
 
-Move to src/consumer and run filtered news saver.
+Login to user account and see the recommended news, interact with the recommended news and go to Kafka UI->InteractionTopic->Messages
 
-```sh
-python3 filtered_news_saver.py
+An ineraction message looks like
+
+
+![alt text](resources/interactions-topic-message-fields.png)
+
+Run streamlit app manually to be able to visialize the news on it's source
+
+```bash
+streamlit run app.py
 ```
 
-This retrieves filtered news messages from **FilteredNewsTopic** and insert them into the collection **filtered_news** of the **news_recommendation_db** in MongoDB.
+### Trigger the interactions storage DAG
 
-You can run the following command in mongosh to check the inserted filtered news
+Trigger the interactions storage DAG to get the interactions stored and look at the user profile once again
 
-1. Open a mongo shell using mongosh
-
-   ```sh
-   mongosh
-   ```
-
-2. Switch to **news_recommendation_db**
-
-   ```sh
-    use news_recommendation_db
-   ```
-
-3. Show the collections available
-
-```sh
-   show collections
+```bash
+db.users.find()
 ```
 
-   You should see `filtered_news` listed.
-
-4. List all filtered news
-
-   ```sh
-    db.filtered_news.find()
-   ```
-
-### Run the application
-
-Move to the root directory of the project and execute the following command to run the application.
-
-```sh
-   streamlit run app.py
-```
-
-### Register a user
-
-Register at least one user with a valid email address and confirm the verification code.
-
-### Run processed news recommender
-
-Move to src/consumer and run the following command.
-
-```sh
-python3 processed_news_recommender.py
-```
-
-The processed news recommender retrieves processed news messages from **ProcessedNewsTopic** and recommend them to each user in the users collection based on their preferences of categories, sentiments and similarities with already seen news.
-
-### Navigation
- Now go the the application web page, login to an user account created above and see the recommended news.
+![alt text](resources/user-document.png)
 
 
-## Pipeline Overview
+Now that all DAGs have been triggered, go to your admin email address box and you should see the tasks execution emails.
 
-### Schema
-            
-### Detailed Description
+![alt text](resources/email.png)
 
-1. **News Producers**:
-    - **Sources**: News articles are fetched from various sources such as NewsAPI and Google News.
-    - **Kafka Topic**: These news articles are published to the `RawNewsTopic` Kafka topic.
 
-2. **Raw News Stream Processor**:
-    - **Task**: The processor reads raw news from the `RawNewsTopic`, filters out articles without URLs, content, or descriptions, and removes duplicates.
-    - **Output**: Filtered news is then published to the `FilteredNewsTopic`.
-    - **Preprocessing**: Additionally, it performs text preprocessing such as cleaning, tokenization, lemmatization, and stopwords removal.
-    - **Processing**: It conducts sentiment analysis, topic detection, and categorization of the news articles.
-    - **Kafka Topic**: Processed news articles are published to the `ProcessedNewsTopic`.
-
-3. **Filtered News Saver**:
-    - **Task**: This component consumes messages from the `FilteredNewsTopic` and saves the filtered news articles to a MongoDB collection `filtered_news`.
-
-4. **Processed News Recommender**:
-    - **Task**: This component consumes messages from the `ProcessedNewsTopic` and generates personalized news recommendations for users based on their preferences (categories, sentiments) and similarities with previously seen news.
-    - **Output**: Recommendations are then sent to each user's profile, making them available for viewing on the application.
-
-## Reset
-
-In case you want to reset everything, follow the steps desribed [here](./RESET.md)
 ## Contributing
 
 We welcome contributions! Please follow these steps:
