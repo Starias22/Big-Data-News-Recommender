@@ -270,9 +270,13 @@ You can describe the topics by running the following command.
 
 ### Check topics creation
 
-Go to Kafka UI to access check the topics are effectively created.
+Go to Kafka UI to check the topics creation
 
 Kafka UI is accessible via [localhost:7070](http://localhost:7070).
+
+You should see something like
+
+![Kafka-UI-Topics](resources/kafka-ui-topics.png)
 
 
 ### Acess Spark master
@@ -280,6 +284,8 @@ Kafka UI is accessible via [localhost:7070](http://localhost:7070).
 You can acess Spark master via [localhost:9090](http://localhost:9090).
 
 You should see the three Spark workers alive.
+
+![Spark Master](resources/spark-master.png)
 
 
 ### Configure start hour and start days ago
