@@ -69,7 +69,7 @@ class WelcomeController:
     def register(self):
         user=self.user_db.create_user(self.user)
     
-        return user.email
+        return user.id
 
 
     def get_recommended_news(self,user_id):
