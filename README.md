@@ -7,10 +7,33 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Kafka Setup](#kafka-setup)
+- [Installation and Configurations](#installation-and-onfigurations)
+  - [Prerequisites](#prerequisites)
+  - [Clone the repository](#clone-the-repository)
+  - [Download the trained models folder](#download-the-trained-models-folder)
+  - [Download the necessary NLTK data](#download-the-necessary-nltk-data)
+  - [Generate a NewsAPI key](#generate-a-newsapi-key)
+  - [Email configuration](#email-configuration)
+  - [Secret JSON file configuration](#secret-json-file-configuration)
+  - [Docker compose file configuration](#docker-compose-file-configuration)
+  - [Create Necessary Directories](#create-necessary-directories)
+  - [Set Permissions](#set-permissions)
+  - [Initialize Airflow](#initialize-airflow)
+  - [Start All Services](#start-all-services)
+  - [Access Kafka and create topics](#access-kafka-and-create-topics)
 - [Usage](#usage)
+  - [Run the raw news stream processor](#run-the-raw-news-stream-processor)
+  - [Run raw news consumer](#run-raw-news-consumer)
+  - [Run news producers](#run-news-producers)
+  - [Run filtered news saver](#run-filtered-news-saver)
+  - [Run the application](#run-the-application)
+  - [Register a user](#register-a-user)
+  - [Run processed news recommender](#run-processed-news-recommender)
+  - [Navigation](#navigation)
 - [Pipeline Overview](#pipeline-overview)
+  - [Schema](#schema)
+  - [Detailed Description](#detailed-description)
+- [Reset](#reset)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
@@ -22,7 +45,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
 #### A Linux distribution
 #### Python 3.x
 #### pip
-### Docker
+#### Docker and Docker Compose
 
 ### Clone the repository
 
@@ -30,6 +53,10 @@ The Big Data News Recommender is a system designed to provide personalized news 
    git clone https://github.com/Starias22/Big-Data-News-Recommender.git
    cd Big-Data-News-Recommender
    ```
+
+### Download the trained models folder
+   
+Download the `trained_models` zip file  from  [my drive](https://drive.google.com/drive/folders/1qI7ojkrH3gJ3DySCI0V8ol_6k4VqXy8c?usp=sharing) , unzip it and put the extracted folder  in the current working directory(the repository)
 
 ### Download the necesssary NLTK data
 
@@ -66,19 +93,69 @@ ls nltk_data/
 You should see `corpora` and `sentiment` folders in the `nltk_data` folder.
 
 
-4. **Download the models folder**
-   
-Download the `trained_models` zip file  from  [my drive](https://drive.google.com/drive/folders/1xyo_IqACn7A9cOo8sq9H2FeBptWwPM8y?usp=drive_link) , unzip it and put the extracted folder  in the current working directory(the repository)
 
-6. **Generate a NewsAPI key**
+### Generate a NewsAPI key
 
 You need a NewsAPI key. You can generate one [here](https://newsapi.org/register).
 
 After filling the requested information you will have a new key generated. Copy and paste it in a safe place.
-5. **Set up your config.json file**
 
-   Rename the file config/config_template.json to config/config.json and replace the value of the key "news_api_key" from "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" to the key you have just generated.
 
+### Email configuration
+
+You need to configure a Google email address. This email address will be used to send One Time Password to users during registration. It will also be used by Airflow for email sending at the end of each task.
+
+You have to create an app password. You can follow [this tutorial](https://itsupport.umd.edu/itsupport?id=kb_article_view&sysparm_article=KB0015112) to do it.
+
+By the end of this step, you should have an app password created. Copy and store it in a safe place.
+
+
+### Secret JSON file configuration
+
+You need to configure your secret.json file.
+
+First of all make a copy of the secret JSON template
+
+```bash
+cp config/secret_template.json config/secret.json
+```
+
+In the `secret.json` file replace the value of  the
+
+- `newsapi_key`  field by the NewsAPI key you've generated above.
+
+- `sender_address` field by the Google email address you used to generate app password in the previous step
+
+- `password` field by the app password you've generated in the above
+
+- `admin_email` field by the admin email. The admin email is the mail address airflow send task execution informations to using the `sender_address`  Google email address. 
+
+### Docker compose file configuration
+
+You need to configure your `docker-compose.yml` file.
+
+- First of all make a copy of the docker compose template
+
+```bash
+cp docker-compose-template.yml docker-compose.yml
+```
+
+- Open the `docker-compose.yml` file 
+
+- Go to the  the airlow environment block ie 
+
+`x-environment: &airflow_environment` and replace
+
+1. the value of the `AIRFLOW__SMTP__SMTP_USER` and `AIRFLOW__SMTP__SMTP_MAIL_FROM` variables by the Google email address, your email sender address
+
+2. the value of the `AIRFLOW__SMTP__SMTP_MAIL_FROM` variable by the app password you've generated
+
+
+- Go to the  the airlow initialization service  ie 
+
+`airflow-init` and replace the email address by the admin email address. Use the same email address as the value you set for  `admin_email` during the configuration of `the secret.json` file.
+
+There are other values that you may want to personalize. There are the firstanme, lastname, username, and password.
 
 #### Create Necessary Directories
 
@@ -187,88 +264,6 @@ You can describe the topics by running the following command.
 /scripts/describe_topics.sh
 ```
 
-
-#### Virtual Environment (recommended)
-
-Install venv for virtual environments.
-
-```sh
-sudo apt install python3-venv
-```
-
-### Steps
-
-1. **Clone the repository:**
-
-   ```sh
-   git clone https://github.com/Starias22/Big-Data-News-Recommender.git
-   cd Big-Data-News-Recommender
-   ```
-
-2. **Set up the virtual environment:**
-
-   ```sh
-   python3 -m venv big_data_env
-   source big_data_env/bin/activate 
-   ```
-
-3. **Install the required packages:**
-
-   ```sh
-   pip install -r requirements.txt
-   ```
-
-4. **Download the models folder**
-   
-Download the `trained_models` zip file  from  [my drive](https://drive.google.com/drive/folders/1xyo_IqACn7A9cOo8sq9H2FeBptWwPM8y?usp=drive_link) , unzip it and put the extracted folder  in the current working directory(the repository)
-
-6. **Generate a NewsAPI key**
-
-You need a NewsAPI key. You can generate one [here](https://newsapi.org/register).
-
-After filling the requested information you will have a new key generated. Copy and paste it in a safe place.
-5. **Set up your config.json file**
-
-   Rename the file config/config_template.json to config/config.json and replace the value of the key "news_api_key" from "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" to the key you have just generated.
-
-## Kafka Setup
-
-### Steps
-
-1. **Download Kafka:**
-
-   Download Kafka from [Apache Kafka Downloads](https://kafka.apache.org/downloads).
-
-   Or use wget to download Kafka 3.7.0, which is the latest version of Kafka at the moment we are editing this file.
-
-   ```sh
-   wget https://downloads.apache.org/kafka/3.7.0/kafka-3.7.0-src.tgz
-   ```
-
-2. **Extract Kafka:**
-
-   Extract the downloaded archive to your preferred directory. You can put it in your current working directory.
-
-   ```sh
-   tar -xvf kafka-3.7.0-src.tgz
-   ```
-
-   Now you can move the compressed file downloaded from the repository.
-
-    ```sh
-   mv kafka-3.7.0-src.tgz ..
-   ```
-   Then move to the extracted folder.
-
-   ```sh
-   cd kafka-3.7.0-src
-   ```
-
-
-
-
-
- 
 ## Usage
 
 
@@ -385,21 +380,7 @@ The processed news recommender retrieves processed news messages from **Processe
 ## Pipeline Overview
 
 ### Schema
-
-```plaintext
-        +---------------------+               +-----------------------+               +----------------------+               +----------------------+
-        |  News Producers     |  ------->     |   Raw News Stream     |  ------->     |  Filtered News Saver |  ------->     | Processed News       |
-        |  (NewsAPI, Google)  |               |   Processor           |               |                      |               | Recommender          |
-        +---------------------+               +-----------------------+               +----------------------+               +----------------------+
-                  |                                      |                                    |                                   |
-                  |                                      |                                    |                                   |
-                  v                                      v                                    v                                   v
-        +---------------------+               +-----------------------+               +----------------------+               +----------------------+
-        |   RawNewsTopic      |               |   FilteredNewsTopic   |               |   ProcessedNewsTopic |               | Recommendations to    |
-        +---------------------+               +-----------------------+               +----------------------+               | User Profiles         |
-                                                                                                                            +----------------------+
-```
-
+            
 ### Detailed Description
 
 1. **News Producers**:
