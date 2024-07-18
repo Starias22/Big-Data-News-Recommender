@@ -10,7 +10,10 @@ from utils import encrypt_password,is_empty
 
 class User:
     def __init__(self, id=None, firstname=None, lastname=None, email=None,password=None,
-                 categories=[i for i in range(12)], sentiments=[0,-1,1], seen_news=[],
+                 #categories=[i for i in range(12)],
+                 categories=[1,5,7,8,10,11],
+                   sentiments=[0,-1,1], 
+                   seen_news=[],
                  ansa=True,creation_date=int(datetime.now().timestamp()),recommended_news=[]):
         self.id = id
         self.firstname = firstname
@@ -36,8 +39,8 @@ class User:
             "sentiments": self.sentiments,
             "seen_news": self.seen_news,
             "ansa":self.ansa,
-            
-            
+            #"recommended_news":[]
+                
         }
 
     @staticmethod
