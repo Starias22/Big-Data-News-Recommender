@@ -274,17 +274,21 @@ Go to Kafka UI to check the topics creation
 
 Kafka UI is accessible via [localhost:7070](http://localhost:7070).
 
-You should see something like
+You should see  a login page
+
+![alt text](resources/kafka-ui-login.png)
+
+Fill your login informations, those you set in your kafka-ui/config.yml file.
+
+After logging in, you should see something like the following image, after cliccking on **Topics**
 
 ![Kafka-UI-Topics](resources/kafka-ui-topics.png)
-
 
 ### Acess Spark master
 
 You can acess Spark master via [localhost:9090](http://localhost:9090).
 
 You should see the three Spark workers alive.
-
 ![Spark Master](resources/spark-master.png)
 
 
@@ -308,6 +312,10 @@ In our case we set `START_HOUR` to 2 since we need our news production to starts
 ### Acess  airflow-webserver
 
 Go to airflow-webserver. It is  is accessible via [localhost:8080](http://localhost:8080)
+
+![airflow-login-page.png](resources/airflow-login-page.png)
+
+On the logging page provide the logging informations you set in the airflow initialization command in the docker-compose.
 
 #### Configure connection to Spark cluster
 
