@@ -39,7 +39,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
 - [Contact Information](#contact-information)
 - [Acknowledgments](#acknowledgments)
 
-## Installation
+## Installation and Configurations
 
 ### Prerequisites
 #### A Linux distribution
@@ -264,7 +264,38 @@ You can describe the topics by running the following command.
 /scripts/describe_topics.sh
 ```
 
+### Check topics creation
+
+Go to Kafka UI to access check the topics are effectively created.
+
+Kafka UI is accessible via [localhost:7070](http://localhost:7070).
+
+
+### Acess Spark master
+
+You can acess Spark master via [localhost:9090](http://localhost:9090).
+
+You should see the three Spark workers alive.
+
+
+### Configure start hour ans start days ago
+
+You need to configure two variables in the config/config.py file.
+
+- `START_HOUR`: This is the hour you need the news production start. I should be in [0-20]
+
+In our case we set `START_HOUR` to 2 since we need our news production to starts at 2 AM. You may do the same for now.
+
+- `START_DAYS_AGO`: The value of this variable depends on the day you want to DAGs start running, at the specified  `START_DAYS_AGO`, and should be less than or equal to 0. For exaple if you want it to run
+  - the currrent day, set it to 0
+  - tomorrow ie in one day, set it to -1 
+  - in two days, set it to -2 
+  - in three days, set it to -3
+  - in two days, set it to -n
 ## Usage
+
+
+
 
 
 ### Run the raw news stream processor
