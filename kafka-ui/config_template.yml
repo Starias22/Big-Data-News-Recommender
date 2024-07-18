@@ -1,0 +1,13 @@
+auth:
+  type: LOGIN_FORM
+
+spring:
+  security:
+    user:
+      name: your_username
+      password: your_password
+
+kafka:
+  clusters:
+    - bootstrapServers: kafka-broker1:9092,kafka-broker2:9093,kafka-broker3:9094
+      name: kafka
