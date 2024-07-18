@@ -236,6 +236,10 @@ chmod -R 777 data/airflow-logs/
  docker compose up airflow-init -d
  ```
 
+Acess airflow-init logs and assure that the intitialization was sucessful.
+![alt text](image.png)
+
+
  ### Start All Services
 
 ```bash
@@ -278,7 +282,7 @@ You can acess Spark master via [localhost:9090](http://localhost:9090).
 You should see the three Spark workers alive.
 
 
-### Configure start hour ans start days ago
+### Configure start hour and start days ago
 
 You need to configure two variables in the config/config.py file.
 
@@ -287,15 +291,89 @@ You need to configure two variables in the config/config.py file.
 In our case we set `START_HOUR` to 2 since we need our news production to starts at 2 AM. You may do the same for now.
 
 - `START_DAYS_AGO`: The value of this variable depends on the day you want to DAGs start running, at the specified  `START_DAYS_AGO`, and should be less than or equal to 0. For exaple if you want it to run
-  - the currrent day, set it to 0
-  - tomorrow ie in one day, set it to -1 
-  - in two days, set it to -2 
-  - in three days, set it to -3
-  - in two days, set it to -n
+  - the currrent day, set it to 1
+  - tomorrow ie in one(1) day, set it to 0
+  - in two(2) days, set it to -1 
+  - in three(3) days, set it to -2
+  - in four(4) days, set it to -3
+  - in $n$ days, set it to $-(n-1)$
+
+
+### Acess  airflow-webserver
+
+Go to airflow-webserver. It is  is accessible via [localhost:8080](http://localhost:8080)
+
+#### Configure connection to Spark cluster
+
+We need to create a connection to our Spark cluster in the Airflow admin. This allows Airflow to run some tasks using the Spark cluster.
+
+On airflow ebserver, go to Admin connections
+
+![alt text](image-1.png)
+
+You should see this page
+
+![alt text](image-2.png)
+Then click on the Add a new record button, ie the plus button
+
+![alt text](image-3.png)
+
+You then need to fill the fields to get the connection created. 
+
+As you can see, the connection id and the connection type are reequired
+
+![alt text](image-4.png)
+
+![alt text](image-5.png)
+
+![alt text](image-6.png)
+
+Set the connection id to spark-connection and the connection type to Spark
+
+Two more fielda are available now and should be filled. There are the host and the port.
+
+Set the host to spark://spark-master and the port to 7077
+
+![alt text](image-7.png)
+
+![alt text](image-8.png)
+
+The description field is optional. 
+
+![alt text](image-10.png)
+
+Then click on the save button
+
+![alt text](image-9.png)
+
+![alt text](image-11.png)
+
+You should see
+
+![alt text](image-12.png)
+
+
+### Access DAGs
+
+![alt text](image-13.png)
+ Click on DAGs to access DAGs
+
+ As you can see in the figure below there are four DAGs
+
+ ![alt text](image-14.png)
+
+
+### Active the DAGs
+
+Currently, the DAGs are paused. They wont never be executed until you active them
+
+For each DAG, click on the Pause/Unpause DAG toggle to get it activated.
+
+Now everything is ready.
+
 ## Usage
 
-
-
+### Trigger DAGs 
 
 
 ### Run the raw news stream processor
