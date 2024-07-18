@@ -237,7 +237,7 @@ chmod -R 777 data/airflow-logs/
  ```
 
 Acess airflow-init logs and assure that the intitialization was sucessful.
-![alt text](image.png)
+![alt text](resources/airflow-init-logs.png)
 
 
  ### Start All Services
@@ -309,14 +309,15 @@ We need to create a connection to our Spark cluster in the Airflow admin. This a
 
 On airflow webserver, go to Admin->connections
 
-![alt text](resources/airflow_admin_connection.png)
+![Airflow admin connection](resources/airflow-admin-connection.png)
 
 You should see this page
 
-![alt text](image-16.png)
+![Create connection](resources/create-connection.png)
+
 Then click on the **Add a new record button**, ie the plus button. You will be redirected to the following page.
 
-![alt text](image-17.png)
+![Spark connection-1](resources/spark-connection-1.png)
 
 You then need to fill the fields to get the connection created. 
 
@@ -324,11 +325,9 @@ As you can see, the **connection id** and the **connection type** are required
 
 Set the connection id to spark-connection and the connection type to Spark
 
-![alt text](image-4.png)
+![Spark connection-2](resources/spark-connection-2.png)
 
-
-![alt text](image-6.png)
-
+![Spark connection-3](resources/spark-connection-3.png)
 
 
 Two more fielda are available now and should be filled. There are the ***Host*** and the ***Port***.
@@ -337,23 +336,25 @@ Set the host to `spark://spark-master` and the port to `7077`, as done in the fi
 
 Click on the save button 
 
-![alt text](image-11.png)
+![Spark connection-4](resources/spark-connection-4.png)
+
 
 You should see something like
 
-![alt text](image-12.png)
+![Spark connection-5](resources/spark-connection-5.png)
+
 
 
 ### Access DAGs
 
 Click on DAGs to access DAGs
 
-![alt text](image-13.png)
+![Click on DAGs](resources/click-dags.png)
 
 
  As you can see in the figure below there are four DAGs
 
- ![alt text](image-14.png)
+ ![DAGs list](resources/dags-list.png)
 
 
 ### Active the DAGs
