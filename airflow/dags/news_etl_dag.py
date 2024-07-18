@@ -44,7 +44,7 @@ dag = DAG(
 )
 
 
-raw_news_stream_processing_task = SparkSubmitOperator(
+raw_news_processing_task = SparkSubmitOperator(
     task_id='raw_news_processing',
     conn_id='spark-connection',
     application=f'{SRC_PATH}/processors/raw_news_processor.py',
@@ -63,4 +63,4 @@ filtered_news_storage_task = BashOperator(
     on_success_callback = success_email,
      on_failure_callback = failure_email,
 )
-raw_news_stream_processing_task>>filtered_news_storage_task
+raw_news_processing_task>>filtered_news_storage_task
