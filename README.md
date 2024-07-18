@@ -357,11 +357,14 @@ Click on DAGs to access DAGs
  ![DAGs list](resources/dags-list.png)
 
 
-### Active the DAGs
+### Activate the DAGs
 
 Currently, the DAGs are paused. They wont never be executed until you active them
 
 For each DAG, click on the ***Pause/Unpause DAG*** toggle to get it activated.
+
+ ![Activate DAGs](resources/activate-dags.png)
+
 
 Now everything is ready.
 
