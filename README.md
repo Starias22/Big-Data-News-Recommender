@@ -307,56 +307,49 @@ Go to airflow-webserver. It is  is accessible via [localhost:8080](http://localh
 
 We need to create a connection to our Spark cluster in the Airflow admin. This allows Airflow to run some tasks using the Spark cluster.
 
-On airflow ebserver, go to Admin connections
+On airflow webserver, go to Admin->connections
 
-![alt text](image-1.png)
+![alt text](resources/airflow_admin_connection.png)
 
 You should see this page
 
-![alt text](image-2.png)
-Then click on the Add a new record button, ie the plus button
+![alt text](image-16.png)
+Then click on the **Add a new record button**, ie the plus button. You will be redirected to the following page.
 
-![alt text](image-3.png)
+![alt text](image-17.png)
 
 You then need to fill the fields to get the connection created. 
 
-As you can see, the connection id and the connection type are reequired
-
-![alt text](image-4.png)
-
-![alt text](image-5.png)
-
-![alt text](image-6.png)
+As you can see, the **connection id** and the **connection type** are required
 
 Set the connection id to spark-connection and the connection type to Spark
 
-Two more fielda are available now and should be filled. There are the host and the port.
+![alt text](image-4.png)
 
-Set the host to spark://spark-master and the port to 7077
 
-![alt text](image-7.png)
+![alt text](image-6.png)
 
-![alt text](image-8.png)
 
-The description field is optional. 
 
-![alt text](image-10.png)
+Two more fielda are available now and should be filled. There are the ***Host*** and the ***Port***.
 
-Then click on the save button
+Set the host to `spark://spark-master` and the port to `7077`, as done in the figure below. The description field is optional. 
 
-![alt text](image-9.png)
+Click on the save button 
 
 ![alt text](image-11.png)
 
-You should see
+You should see something like
 
 ![alt text](image-12.png)
 
 
 ### Access DAGs
 
+Click on DAGs to access DAGs
+
 ![alt text](image-13.png)
- Click on DAGs to access DAGs
+
 
  As you can see in the figure below there are four DAGs
 
@@ -367,7 +360,7 @@ You should see
 
 Currently, the DAGs are paused. They wont never be executed until you active them
 
-For each DAG, click on the Pause/Unpause DAG toggle to get it activated.
+For each DAG, click on the ***Pause/Unpause DAG*** toggle to get it activated.
 
 Now everything is ready.
 
