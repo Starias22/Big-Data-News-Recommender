@@ -370,7 +370,7 @@ After logging in, you should see something like the following image, after clicc
 
 ![Kafka-UI-Topics](resources/kafka-ui-topics.png)
 
-### Acess Spark Master
+### Access Spark Master
 
 You can acess Spark master via [localhost:9090](http://localhost:9090).
 
