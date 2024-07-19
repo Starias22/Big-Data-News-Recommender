@@ -553,7 +553,7 @@ The next DAG is the interactions storage DAG. But since there is no user interac
 
 ### Create a User
 
-To create a user access the newsengine-client container via via [localhost:8501](http://localhost:8501).
+To create a user access the newsengine-client container via [localhost:8501](http://localhost:8501).
 
 Fill the form and the OTP required.
 
