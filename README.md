@@ -7,9 +7,10 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 ## Table of Contents
 
-- [Architecture and Pipeline Overview](#architecture-and-pipeline)
-
-- [Installation and Configurations](#installation-and-onfigurations)
+- [Architecture and Pipeline Overview](#architecture-and-pipeline-overview)
+  - [Schema](#schema)
+  - [Detailed Description](#detailed-description)
+- [Installation and Configurations](#installation-and-configurations)
   - [Prerequisites](#prerequisites)
   - [Clone the repository](#clone-the-repository)
   - [Download the trained models folder](#download-the-trained-models-folder)
@@ -17,33 +18,38 @@ The Big Data News Recommender is a system designed to provide personalized news 
   - [Generate a NewsAPI key](#generate-a-newsapi-key)
   - [Email configuration](#email-configuration)
   - [Secret JSON file configuration](#secret-json-file-configuration)
+  - [Kafka-ui config file](#kafka-ui-config-file)
   - [Docker compose file configuration](#docker-compose-file-configuration)
   - [Create Necessary Directories](#create-necessary-directories)
   - [Set Permissions](#set-permissions)
   - [Initialize Airflow](#initialize-airflow)
   - [Start All Services](#start-all-services)
   - [Access Kafka and create topics](#access-kafka-and-create-topics)
+  - [Check topics creation](#check-topics-creation)
+  - [Access Spark master](#access-spark-master)
+  - [Configure start hour and start days ago](#configure-start-hour-and-start-days-ago)
+  - [Access airflow-webserver](#access-airflow-webserver)
+  - [Configure connection to Spark cluster](#configure-connection-to-spark-cluster)
+  - [Access DAGs](#access-dags)
+  - [Activate the DAGs](#activate-the-dags)
 - [Usage](#usage)
-  - [Run the raw news stream processor](#run-the-raw-news-stream-processor)
-  - [Run raw news consumer](#run-raw-news-consumer)
-  - [Run news producers](#run-news-producers)
-  - [Run filtered news saver](#run-filtered-news-saver)
-  - [Run the application](#run-the-application)
-  - [Register a user](#register-a-user)
-  - [Run processed news recommender](#run-processed-news-recommender)
-  - [Navigation](#navigation)
-- [Pipeline Overview](#pipeline-overview)
-  - [Schema](#schema)
-  - [Detailed Description](#detailed-description)
-- [Reset](#reset)
+  - [Trigger DAGs](#trigger-dags)
+    - [Trigger news producers DAG](#trigger-news-producers-dag)
+    - [Trigger news ETL DAG](#trigger-news-etl-dag)
+    - [Trigger news recommendation DAG](#trigger-news-recommendation-dag)
+    - [Trigger the interactions storage DAG](#trigger-the-interactions-storage-dag)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
 - [Acknowledgments](#acknowledgments)
 
+
 ## Architecture and Pipeline Overview
 
+### Schema
 ![alt text](resources/architecture.png)
+
+### Detailed Description
 
 
 
