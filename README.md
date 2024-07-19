@@ -617,6 +617,23 @@ Access the Spark Master once again and you will see that the four Spark applicat
 
 ![alt text](resources/spark-master-apps.png)
 
+You can acess Airflow flower, which is celery workers user interface. It is available on [localhost:5555](http://localhost:5555).
+
+You should see something like this.
+
+![alt text](resources/celery.png)
+
+
+
+
+You can stop your services if you want
+
+```bash
+docker compose down
+```
+
+And fi you start it again you will remark data the data of your services are persisted effectively.
+
 ## Contributing
 
 We welcome contributions! Please follow these steps:
