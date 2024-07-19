@@ -322,7 +322,7 @@ chmod -R 777 data/airflow-logs/
  docker compose up airflow-init -d
  ```
 
-Acess airflow-init logs and assure that the intitialization was sucessful.
+Access airflow-init logs and assure that the intitialization was sucessful.
 ![alt text](resources/airflow-init-logs.png)
 
 
@@ -332,9 +332,9 @@ Acess airflow-init logs and assure that the intitialization was sucessful.
 docker compose up -d
 ```
 
-### Acess Kafka and Create Topics
+### Access Kafka and Create Topics
 
-#### Acess kafka-brocker 1
+#### Access kafka-brocker 1
 
 ```bash
 docker exec -it kafka-broker1 bash
@@ -372,7 +372,7 @@ After logging in, you should see something like the following image, after clicc
 
 ### Access Spark Master
 
-You can acess Spark master via [localhost:9090](http://localhost:9090).
+You can access Spark master via [localhost:9090](http://localhost:9090).
 
 You should see the three Spark workers alive.
 ![Spark Master](resources/spark-master.png)
@@ -395,7 +395,7 @@ In our case we set `START_HOUR` to 2 since we need our news production to starts
   - in $n$ days, set it to $-(n-1)$
 
 
-### Acess  airflow-webserver
+### Access  airflow-webserver
 
 Go to airflow-webserver. It is  is accessible via [localhost:8080](http://localhost:8080)
 
@@ -489,7 +489,7 @@ Now go to Kafka UI and click on Topics. You will see that there are raw news mes
 
 ![alt text](resources/raw-news-topic.png)
 
-Now acess RawNewsTopic->Messages
+Now access RawNewsTopic->Messages
 
 ![alt text](resources/raw-news-topic-messages.png)
 
@@ -503,7 +503,7 @@ Then click on any message and you will see the message fields
 
 As done above with the news producer DAG, trigger the news ETL DAG.
 
-Then make sure it runned successfully and here also acess Kafka UI->FilteredNewsTopic->Messages.
+Then make sure it runned successfully and here also access Kafka UI->FilteredNewsTopic->Messages.
 
 Then select any message.
 
@@ -512,7 +512,7 @@ You will see something like.
 ![alt text](resources/filtered-news-topic-message-field.png)
 
 
-Acess Kafka UI->ProcessedNewsTopic->Messages.
+Access Kafka UI->ProcessedNewsTopic->Messages.
 
 Then select any message.
 
@@ -523,7 +523,7 @@ You will see something like.
 ![alt text](resources/processed-news-topic-message-field-2.png)
 ![alt text](resources/processed-news-topic-message-field-3.png)
 
-Run  the following command to acess MongoDB container shell
+Run  the following command to access MongoDB container shell
 
 ```bash
 docker exec -it mongodb mongosh 
@@ -553,7 +553,7 @@ The next DAG is the interactions storage DAG. But since there is no user interac
 
 ### Create a User
 
-To create a user acess the newsengine-client container via via [localhost:8501](http://localhost:8501).
+To create a user access the newsengine-client container via via [localhost:8501](http://localhost:8501).
 
 Fill the form and the OTP required.
 
