@@ -613,6 +613,9 @@ Now that all DAGs have been triggered, go to your admin email address box and yo
 
 ![alt text](resources/email.png)
 
+Access the Spark Master once again and you will see that the four Spark applications have been executed.
+
+![alt text](resources/spark-master-apps.png)
 
 ## Contributing
 
