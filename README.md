@@ -7,7 +7,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 ## Table of Contents
 
-- [Architecture and Pipeline Description](#architecture-and-pipeline-overview)
+- [Architecture and Pipeline Description](#architecture-and-pipeline-description)
   - [Schema](#schema)
   - [Components Presentation](#components-presentation)
   - [Pipeline Comprehensive Description](#pipeline-comprehensive-description)
