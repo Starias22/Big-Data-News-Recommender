@@ -432,7 +432,7 @@ Set the connection id to `spark-connection` and the connection type to Spark
 
 Two more fielda are available now and should be filled. There are the ***Host*** and the ***Port***.
 
-Set the host to `spark://spark-master` and the port to `7077`, as done in the figure below. The description field is optional. 
+Set the host to `spark://spark-master` and the port to `7077`, as done in the figure below. The description field is optional.  You can set it to `A Connection to a Spark Standalone Cluster`
 
 Click on the save button 
 
