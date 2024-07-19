@@ -7,49 +7,107 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 ## Table of Contents
 
-- [Architecture and Pipeline Overview](#architecture-and-pipeline-overview)
+- [Architecture and Pipeline Description](#architecture-and-pipeline-overview)
   - [Schema](#schema)
-  - [Detailed Description](#detailed-description)
+  - [Components Presentation](#components-presentation)
+  - [Pipeline Comprehensive Description](#pipeline-comprehensive-description)
 - [Installation and Configurations](#installation-and-configurations)
   - [Prerequisites](#prerequisites)
   - [Clone the repository](#clone-the-repository)
-  - [Download the trained models folder](#download-the-trained-models-folder)
-  - [Download the necessary NLTK data](#download-the-necessary-nltk-data)
-  - [Generate a NewsAPI key](#generate-a-newsapi-key)
-  - [Email configuration](#email-configuration)
-  - [Secret JSON file configuration](#secret-json-file-configuration)
-  - [Kafka-ui config file](#kafka-ui-config-file)
-  - [Docker compose file configuration](#docker-compose-file-configuration)
+  - [Download the Trained Models Folder](#download-the-trained-models-folder)
+  - [Download the Necessary NLTK Data](#download-the-necessary-nltk-data)
+  - [Generate a NewsAPI Key](#generate-a-newsapi-key)
+  - [Email Configuration](#email-configuration)
+  - [Secret JSON File Configuration](#secret-json-file-configuration)
+  - [Kafka-UI Configuration File](#kafka-ui-configuration-file)
+  - [Docker Compose file Configuration](#docker-compose-file-configuration)
   - [Create Necessary Directories](#create-necessary-directories)
   - [Set Permissions](#set-permissions)
   - [Initialize Airflow](#initialize-airflow)
   - [Start All Services](#start-all-services)
-  - [Access Kafka and create topics](#access-kafka-and-create-topics)
-  - [Check topics creation](#check-topics-creation)
-  - [Access Spark master](#access-spark-master)
+  - [Access Kafka and Create Topics](#access-kafka-and-create-topics)
+  - [Check Topics Creation](#check-topics-creation)
+  - [Access Spark Master](#access-spark-master)
   - [Configure start hour and start days ago](#configure-start-hour-and-start-days-ago)
   - [Access airflow-webserver](#access-airflow-webserver)
-  - [Configure connection to Spark cluster](#configure-connection-to-spark-cluster)
+  - [Configure Connection to Spark Cluster](#configure-connection-to-spark-cluster)
   - [Access DAGs](#access-dags)
   - [Activate the DAGs](#activate-the-dags)
 - [Usage](#usage)
   - [Trigger DAGs](#trigger-dags)
     - [Trigger news producers DAG](#trigger-news-producers-dag)
-    - [Trigger news ETL DAG](#trigger-news-etl-dag)
-    - [Trigger news recommendation DAG](#trigger-news-recommendation-dag)
-    - [Trigger the interactions storage DAG](#trigger-the-interactions-storage-dag)
+    - [Trigger News ETL DAG](#trigger-news-etl-dag)
+    - [Trigger News Recommendation DAG](#trigger-news-recommendation-dag)
+    - [Trigger the Interactions Storage DAG](#trigger-the-interactions-storage-dag)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
 - [Acknowledgments](#acknowledgments)
 
 
-## Architecture and Pipeline Overview
+## Architecture and Pipeline Description
 
 ### Schema
 ![alt text](resources/architecture.png)
 
-### Detailed Description
+
+### Components Presentation
+
+#### Producers
+
+- **Google News Producer**: Fetches news from Google News.
+- **News API Producer**: Fetches news from another News API.
+- **Interactions Producer**: Sends user interactions (like, dislike, etc.) to Kafka.
+
+#### Redis
+
+- Interacts with the Producers to manage state or caching.
+
+#### Kafka Ecosystem
+
+**Topics**:
+- Raw News Topic
+- Filtered News Topic
+- Processed News Topic
+- Available News Topic
+- Interactions Topic
+
+These topics are used to organize and manage the flow of different types of data.
+
+#### Spark Processors
+
+- **Raw News Processor**: Processes raw news data.
+- **Processed News Forwarder**: Forwards processed news data to appropriate topics.
+
+#### Spark Cluster
+
+- Provides distributed processing power for the Spark processors.
+
+#### Consumers
+
+- **Available News Recommender**: Recommends news to users based on availability.
+- **Interactions Saver**: Saves user interactions to MongoDB.
+- **Filtered News Saver**: Saves filtered news to MongoDB.
+- **Recommended News Fetcher**: Fetches recommended news for users.
+
+#### MongoDB
+
+- Stores data on users, filtered news, and interactions.
+
+#### News Engine Client
+
+- The interface through which users interact with the system.
+- Communicates with Kafka and MongoDB to display news and manage user interactions.
+
+#### User
+
+- The end-user who interacts with the News Engine Client to view and interact with recommended news.
+
+
+
+### Pipeline Comprehensive Description
+
+
 
 
 
@@ -68,11 +126,11 @@ The Big Data News Recommender is a system designed to provide personalized news 
    cd Big-Data-News-Recommender
    ```
 
-### Download the trained models folder
+### Download the Trained Models Folder
    
 Download the `trained_models` zip file  from  [my drive](https://drive.google.com/drive/folders/1qI7ojkrH3gJ3DySCI0V8ol_6k4VqXy8c?usp=sharing) , unzip it and put the extracted folder  in the current working directory(the repository)
 
-### Download the necesssary NLTK data
+### Download the Necesssary NLTK Data
 
 NLTK is used to process the news description. You need to download the necessasy NLTK data. But firstly, NLTK needs to be installed.
 
@@ -108,14 +166,14 @@ You should see `corpora` and `sentiment` folders in the `nltk_data` folder.
 
 
 
-### Generate a NewsAPI key
+### Generate a NewsAPI Key
 
 You need a NewsAPI key. You can generate one [here](https://newsapi.org/register).
 
 After filling the requested information you will have a new key generated. Copy and paste it in a safe place.
 
 
-### Email configuration
+### Email Configuration
 
 You need to configure a Google email address. This email address will be used to send One Time Password to users during registration. It will also be used by Airflow for email sending at the end of each task.
 
@@ -124,7 +182,7 @@ You have to create an app password. You can follow [this tutorial](https://itsup
 By the end of this step, you should have an app password created. Copy and store it in a safe place.
 
 
-### Secret JSON file configuration
+### Secret JSON File Configuration
 
 You need to configure your secret.json file.
 
@@ -144,7 +202,7 @@ In the `secret.json` file replace the value of  the
 
 - `admin_email` field by the admin email. The admin email is the mail address airflow send task execution informations to using the `sender_address`  Google email address. 
 
-### Kafka-ui config file
+### Kafka-UI Configuration File
 
 You need to personalize the Kafka UI config file. This is required by the Kafka UI to work.
 
@@ -156,7 +214,7 @@ cp kafka-ui/config_template.yml kafka-ui/config.yml
 
 Then set your username and password in the `kafka-ui/config.yml`. You will use them to sign in into Kaka UI.
 
-### Docker compose file configuration
+### Docker Compose File Configuration
 
 You need to configure your `docker-compose.yml` file.
 
@@ -274,7 +332,7 @@ Acess airflow-init logs and assure that the intitialization was sucessful.
 docker compose up -d
 ```
 
-### Acess Kafka and create topics
+### Acess Kafka and Create Topics
 
 #### Acess kafka-brocker 1
 
@@ -282,13 +340,13 @@ docker compose up -d
 docker exec -it kafka-broker1 bash
 ```
 
-#### Create the topics
+#### Create the Topics
 
 ```bash
 /scripts/create_topics.sh 
 ```
  
-#### Describe the topics (Optional)
+#### Describe the Topics (Optional)
 
 You can describe the topics by running the following command.
 
@@ -296,7 +354,7 @@ You can describe the topics by running the following command.
 /scripts/describe_topics.sh
 ```
 
-### Check topics creation
+### Check Topics Creation
 
 Go to Kafka UI to check the topics creation
 
@@ -312,7 +370,7 @@ After logging in, you should see something like the following image, after clicc
 
 ![Kafka-UI-Topics](resources/kafka-ui-topics.png)
 
-### Acess Spark master
+### Acess Spark Master
 
 You can acess Spark master via [localhost:9090](http://localhost:9090).
 
@@ -345,7 +403,7 @@ Go to airflow-webserver. It is  is accessible via [localhost:8080](http://localh
 
 On the logging page provide the logging informations you set in the airflow initialization command in the docker-compose.
 
-#### Configure connection to Spark cluster
+#### Configure Connection to Spark Cluster
 
 We need to create a connection to our Spark cluster in the Airflow admin. This allows Airflow to run some tasks using the Spark cluster.
 
@@ -414,7 +472,7 @@ Now everything is ready.
 
 ### Trigger DAGs 
 
-#### Trigger news producers DAG
+#### Trigger News Producers DAG
 
 ![alt text](resources/news-production-dag.png)
 
@@ -439,7 +497,7 @@ Then click on any message and you will see the message fields
 
 ![alt text](resources/raw-news-topic-message-fields.png)
 
-#### Trigger news ETL DAG
+#### Trigger News ETL DAG
 
 ![alt text](resources/news-etl-dag.png)
 
@@ -493,7 +551,7 @@ This is what our previous news message looks like in MongoDB
 
 The next DAG is the interactions storage DAG. But since there is no user interaction for now let us go to the news recommendation DAG but before, let us create a user
 
-### Create a user
+### Create a User
 
 To create a user acess the newsengine-client container via via [localhost:8501](http://localhost:8501).
 
@@ -501,7 +559,7 @@ Fill the form and the OTP required.
 
 Now that a user is created let us trigger the news recommendation DAG
 
-### Trigger news recommendation DAG
+### Trigger News Recommendation DAG
 
 ![alt text](resources/news-recommendation-dag.png)
 
