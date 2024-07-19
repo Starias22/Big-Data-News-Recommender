@@ -423,7 +423,7 @@ You then need to fill the fields to get the connection created.
 
 As you can see, the **connection id** and the **connection type** are required
 
-Set the connection id to spark-connection and the connection type to Spark
+Set the connection id to `spark-connection` and the connection type to Spark
 
 ![Spark connection-2](resources/spark-connection-2.png)
 
