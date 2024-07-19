@@ -489,7 +489,11 @@ Now that a user is created let us trigger the news recommendation DAG
 
 ### Trigger news recommendation DAG
 
-Trigger the DAG, makesure it runned sucessfully and go to  Kafka UI->AvailableNewsTopic->Messages.
+![alt text](resources/news-recommendation-dag.png)
+
+
+
+Trigger the DAG, make sure it runned sucessfully and go to  Kafka UI->AvailableNewsTopic->Messages.
 
 A message of that topic looks like 
 ![alt text](resources/available-news-topic-message-fields.png)
@@ -520,6 +524,9 @@ streamlit run app.py
 ```
 
 ### Trigger the interactions storage DAG
+
+![alt text](resources/interactions-storage-dag.png)
+
 
 Trigger the interactions storage DAG to get the interactions stored and look at the user profile once again
 
