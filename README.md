@@ -138,7 +138,7 @@ The following image show the configuaration of each.
 
 #### Spark Cluster
 
-- Provides distributed processing power for the Spark processors.
+- Provides distributed processing power for the Spark processors and some consumers.
 
 #### Consumers
 
