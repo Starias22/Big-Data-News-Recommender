@@ -591,7 +591,7 @@ docker exec -it mongodb mongosh
 Swith to the news recommendation database
 
 ```bash
-use use news_recommendation_db
+use news_recommendation_db
 ```
 Find and count MongoDB filtered news documents 
 
