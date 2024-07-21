@@ -65,7 +65,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 #### Kafka Ecosystem
 
-**Kafka components**:
+##### Kafka Components
 
 - 3 Kafka brockers: kafka-broker1, kafka-broker2, kafka-broker3:
 Kafka brokers handle message streams. For each topic, one broker is a leader and the others
@@ -80,7 +80,7 @@ A service for managing Kafka brokers. Zookeeper has several functions:
   failure of one leader broker.
 3. Coordinate communications between Kafka brokers.
 
-**Topics**:
+##### Kafka Topics
 - Raw News Topic
 
 This topic contains unprocessed, raw news articles collected from various sources. The data is in its original form as received from the news producers.
