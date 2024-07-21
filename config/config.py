@@ -2,10 +2,8 @@ import json
 import os
 from pathlib import Path
 
-
 START_HOUR=2
-#START_HOUR=8
-START_DAYS_AGO=1
+START_DAYS_AGO=0 
 def load_config(filepath='secret.json'):
     # Use absolute path to ensure we find the file
     abs_filepath = os.path.join(os.path.dirname(__file__), filepath)
