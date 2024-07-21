@@ -140,6 +140,8 @@ The following image show the configuaration of each.
 
 - Provides distributed processing power for the Spark processors and some consumers.
 
+- Components: A master and 3 worker nodes
+
 #### Consumers
 
 - **Available News Recommender**: Recommends news to users based on availability.
