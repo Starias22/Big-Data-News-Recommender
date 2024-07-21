@@ -55,15 +55,30 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 #### Producers
 
-- **Google News Producer**: Fetches news from Google News.
-- **News API Producer**: Fetches news from another News API.
-- **Interactions Producer**: Sends user interactions (like, dislike, etc.) to Kafka.
+- **Google News Producer**: Fetches news from Google News and publish them in a standard format into RawNewsTopic.
+- **News API Producer**: Fetches news from News API and publish them in a standard format into RawNewsTopic.
+- **Interactions Producer**: Sends user interactions (like, dislike, etc.) to Kafka INteractionTopic.
 
 #### Redis
 
-- Interacts with the Producers to manage state or caching.
+- Use for metada storage by news producers.
 
 #### Kafka Ecosystem
+
+**Kafka components**:
+
+- 3 Kafka brockers: kafka-broker1, kafka-broker2, kafka-broker3:
+Kafka brokers handle message streams. For each topic, one broker is a leader and the others
+are followers for each partition. The leader broker handles all read and write requests for
+the partition while the followers replicate the data.
+
+- Zookeeper
+
+A service for managing Kafka brokers. Zookeeper has several functions:
+1. Store metadata about Kafka brokers, topics, and partitions and which broker is the leader of which partitions and which brokers are followers of which partitions.
+2. Coordinate partition leader election at start-up and reelection process in case of
+  failure of one leader broker.
+3. Coordinate communications between Kafka brokers.
 
 **Topics**:
 - Raw News Topic
