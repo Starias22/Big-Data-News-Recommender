@@ -3,4 +3,4 @@ FROM python:3.11-slim
 EXPOSE 8501
 # Install any needed packages
 RUN pip install --upgrade pip
-RUN pip install streamlit pymongo kafka-python --upgrade
+RUN pip install streamlit=1.36.0 pymongo kafka-python
