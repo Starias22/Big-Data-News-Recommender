@@ -44,7 +44,9 @@ NULL_REPLACEMENTS = {
         "https://removed.com": None
 }
 
-KAFKA_BOOTSTRAP_SERVERS=os.getenv("KAFKA_BOOTSTRAP_SERVERS","localhost:9092,localhost:9093,localhost:9094")
+KAFKA_BOOTSTRAP_SERVERS=os.getenv("KAFKA_BOOTSTRAP_SERVERS","localhost:9092")
+#KAFKA_BOOTSTRAP_SERVERS=os.getenv("KAFKA_BOOTSTRAP_SERVERS","localhost:9092,localhost:9093,localhost:9094")
+
 
 SPARK_VERSION = "3.5.1"
 SENDER_ADDRESS=config.get("sender_address")

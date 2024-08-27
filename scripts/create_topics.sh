@@ -1,5 +1,5 @@
 #!/bin/bash
-replication_factor=3
+replication_factor=1
 # Create Kafka topics with specified retention times
 /usr/bin/kafka-topics --bootstrap-server localhost:9092 --create --topic RawNewsTopic --partitions 6 --replication-factor $replication_factor --config retention.ms=$((2 * 3600 * 1000)) --if-not-exists  # 2 hours in milliseconds
 /usr/bin/kafka-topics --bootstrap-server localhost:9092 --create --topic FilteredNewsTopic --partitions 6 --replication-factor $replication_factor --config retention.ms=$((2 * 3600 * 1000)) --if-not-exists  # 2 hours in milliseconds
