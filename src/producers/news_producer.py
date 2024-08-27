@@ -151,7 +151,7 @@ class NewsProducer:
 
         for lang in languages[:1]:
             results = []
-            for query in queries[:]:
+            for query in queries[:1]:
                 articles = self.fetch_articles(source, lang, query)
                 if articles:
                     results.extend(articles)

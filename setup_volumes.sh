@@ -24,11 +24,10 @@ cd ..
 
 
 # Set permissions for Zookeeper directories
-chmod -R 777 data/checkpoint/{filtered_news,available_news,processed_news}/
+chmod -R 777 data/zookeeper/{data,log}/
 
 # Set permissions for Kafka broker directories
 chmod -R 777 data/kafka/log/{broker1,broker2,broker3}/
-
 
 # Set permissions for checkpoint directories
 chmod -R 777 data/checkpoint/{filtered_news,available_news,processed_news}/
