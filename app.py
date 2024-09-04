@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash,sess
 from src.controllers.welcome_controller import WelcomeController
 from src.utils import format_duration, format_source
 from config.config import CATEGORIES_MAPPING
+from config.messages import *
 from src.utils import get_category_id
 
 app = Flask(__name__)
@@ -61,7 +62,7 @@ def login():
 def logout():
     # Clear all session data
     session.clear()
-    flash('You have been logged out successfully.', 'success')
+    flash(SUCCESS_LOGOUT, 'success')
     return redirect(url_for('login'))
 
 @app.route('/news-preferences', methods=['GET', 'POST'])
@@ -76,14 +77,14 @@ def news_preferences():
             category_label = request.form['remove_category']
             category_id=get_category_id(label=category_label)
             controller.remove_user_category(user_id=session['user_id'], category_id=category_id)
-            flash(f'Category removed!', 'success')
+            flash(SUCCESS_CATEGORY_REMOVED, 'success')
         elif 'add_category' in request.form:
             
             category_label = request.form['add_category']
             category_id=get_category_id(label=category_label)
             #return str(category_id)
             controller.add_user_category(user_id=session['user_id'], category_id=category_id)
-            flash(f'Category added successfully!', 'success')
+            flash(SUCCESS_CATEGORY_ADDED, 'success')
         elif 'add_sentiment' in request.form:
             new_sentiment = request.form['new_sentiment']
             controller.add_user_sentiment(user_id=session['user_id'], sentiment=new_sentiment)
@@ -136,20 +137,20 @@ def register():
         reg_code = controller.valid_new_user()
         print("reg code is",reg_code)
         if reg_code == 1:
-            flash('Please fill in all the fields.', 'error')
+            flash(ERROR_MISSING_FIELDS, 'error')
         elif reg_code == 2:
-            flash('Invalid email address.', 'error')
+            flash(ERROR_INVALID_EMAIL, 'error')
         elif reg_code == 3:
-            flash('At least 6 characters required for password!', 'error')
+            flash(ERROR_WEAK_PASSWORD, 'error')
         elif reg_code == 4:
-            flash('The two passwords do not match!', 'error')
+            flash(ERROR_PASSWORD_MISMATCH, 'error')
         elif reg_code == 5:
-            flash('Email address already in use!', 'error')
+            flash(ERROR_EMAIL_IN_USE, 'error')
         elif reg_code == 0:
             otp = controller.send_verification_email()
             print(otp)
             if otp == 1:
-                flash('Email not sent! Are you sure your email address is correct?', 'error')
+                flash(ERROR_EMAIL_NOT_SENT, 'error')
             else:
                 session['otp'] = otp
                 session['registration_complete'] = True
@@ -162,7 +163,7 @@ def register():
                 flash(f'Thank you, {register_firstname}! A 6-digit confirmation code has been sent to your email address ({register_email}).', 'success')
                 return redirect(url_for('verify_otp'))
         else:
-            flash('Unknown error.', 'error')
+            flash(ERROR_UNKNOWN, 'error')
     
     return render_template('register.html')
 
@@ -192,7 +193,7 @@ def verify_otp():
 
             return redirect(url_for('login'))
         else:
-            flash('Incorrect confirmation code. Please try again.', 'error')
+            flash(WARNING_INVALID_OTP, 'error')
     
     
     if 'registration_complete' in session :
