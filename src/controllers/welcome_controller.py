@@ -49,12 +49,11 @@ class WelcomeController:
             return 4
         if self.user_db.find_user_by_email(self.user.email) :
             return 5 # Email add already in use
-        
-        #self.user_db.create_user(self.user)
         return 0
     
     def send_verification_email(self):
         otp =generate_otp()
+        body=f"Your 6-digit verification code is: {otp}"
         sent=send_email(receiver_addr=self.user.email,subject="Email verification",body=body)
         if sent:
             return otp
