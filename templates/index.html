@@ -4,31 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to NewsEngine</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
-        .btn {
-            background-color: #007BFF;
-            color: white;
-            width: 80%;
-            padding: 10px;
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .welcome-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        .welcome-container h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        .welcome-container h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #6c757d;
+        }
+        .welcome-container p {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .welcome-container .btn {
+            width: 100%;
+            padding: 12px;
             font-size: 18px;
             margin: 10px 0;
-            display: block;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Welcome to NewsEngine</h1>
-    <h2>Your personalized news recommendation system</h2>
+    <div class="welcome-container">
+        <h1>Welcome to NewsEngine</h1>
+        <h2>Your personalized news recommendation system</h2>
 
-    <p>Discover the latest news articles tailored to your interests.<br>
-    Sign in to get personalized recommendations or register to create an account.</p>
+        <p>Discover the latest news articles tailored to your interests.<br>
+        Sign in to get personalized recommendations or register to create an account.</p>
 
-    <a href="{{ url_for('login') }}" class="btn">Login</a>
-    <a href="{{ url_for('register') }}" class="btn">Register</a>
+        <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-secondary">Register</a>
+    </div>
 
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
