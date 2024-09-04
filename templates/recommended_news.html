@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommended News</title>
+    <!-- Bootstrap CSS (Optional, for styling) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .news-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .news-image {
+            max-width: 100%;
+            height: auto;
+        }
+        .news-content {
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Recommended News</h1>
+
+        {% if news %}
+            <div class="news-list">
+                {% for item in news %}
+                    <div class="news-item">
+                        {% if item.img_url %}
+                            <div class="text-center">
+                                <img src="{{ item.img_url }}" alt="News Image" class="news-image">
+                            </div>
+                        {% endif %}
+                        <h3 class="text-center">{{ item.title }}</h3>
+                        <div class="news-content">
+                            <p>{{ item.source_name }} - {{ item.author }} | {{ format_duration(item.publication_date) }}</p>
+                            <p>{{ item.sentiment_score }}</p>
+                            <div class="text-right">
+                                <a href="{{ item.url }}" class="btn btn-primary" target="_blank">👁️ View</a>
+                                <a href="{{ url_for('like_news', news_id=item.id) }}" class="btn btn-success">👍 Like</a>
+                                <a href="{{ url_for('dislike_news', news_id=item.id) }}" class="btn btn-danger">👎 Dislike</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="text-center mt-4">
+                {% if page_number > 0 %}
+                    <a href="{{ url_for('recommended_news', page=page_number - 1) }}" class="btn btn-secondary">Previous</a>
+                {% endif %}
+                {% if news|length >= 20 %}
+                    <a href="{{ url_for('recommended_news', page=page_number + 1) }}" class="btn btn-primary">Next</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>No news available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS (Optional, for interactive components) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
