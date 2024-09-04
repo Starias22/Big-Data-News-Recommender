@@ -4,43 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recommended News</title>
-    <!-- Bootstrap CSS (Optional, for styling) -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         .news-item {
             border-bottom: 1px solid #ddd;
-            padding: 10px 0;
+            padding: 15px 0;
         }
         .news-image {
             max-width: 100%;
             height: auto;
+            border-radius: 8px;
         }
         .news-content {
             padding: 10px 0;
         }
+        .news-title {
+            margin-top: 15px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #007BFF;
+        }
+        .news-category {
+            margin-bottom: 10px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
+{% extends "base.html" %}
+
+{% block title %}Login - NewsApp{% endblock %}
+
+{% block content %}
     <div class="container">
-        <h1 class="mt-4">Recommended News</h1>
+        <h1 class="my-4 text-center">Recommended News</h1>
 
         {% if news %}
             <div class="news-list">
                 {% for item in news %}
-                    <div class="news-item">
-                        {% if item.img_url %}
-                            <div class="text-center">
+                    <div class="news-item row">
+                        <div class="col-md-4 text-center">
+                            {% if item.img_url %}
                                 <img src="{{ item.img_url }}" alt="News Image" class="news-image">
-                            </div>
-                        {% endif %}
-                        <h3 class="text-center">{{ item.title }}</h3>
-                        <div class="news-content">
-                            <p>{{ item.source_name }} - {{ item.author }} | {{ format_duration(item.publication_date) }}</p>
-                            <p>{{ item.sentiment_score }}</p>
-                            <div class="text-right">
-                                <a href="{{ item.url }}" class="btn btn-primary" target="_blank">👁️ View</a>
-                                <a href="{{ url_for('like_news', news_id=item.id) }}" class="btn btn-success">👍 Like</a>
-                                <a href="{{ url_for('dislike_news', news_id=item.id) }}" class="btn btn-danger">👎 Dislike</a>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="news-category text-center">{{ item.category }}</div>
+                            <h4 class="news-title text-center">{{ item.title }}</h4>
+                            <div class="news-content text-center">
+                                <p>{{ format_source(item.source_name, item.author) }} | {{ format_duration(item.publication_date) }}</p>
+                                <p><strong>Sentiment Score:</strong> {{ item.sentiment_score }}</p>
                             </div>
                         </div>
                     </div>
@@ -57,9 +73,10 @@
                 {% endif %}
             </div>
         {% else %}
-            <p>No news available.</p>
+            <p class="text-center">No news available.</p>
         {% endif %}
     </div>
+    {% endblock %}
 
     <!-- Bootstrap JS (Optional, for interactive components) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
