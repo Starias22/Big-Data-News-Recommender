@@ -2,16 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, flash,sess
 from src.controllers.welcome_controller import WelcomeController
 from src.utils import format_duration, format_source
 from config.config import CATEGORIES_MAPPING
-
-
-def get_category_id(label, categories_mapping=CATEGORIES_MAPPING):
-    for category_id, category_label in categories_mapping.items():
-        if category_label == label:
-            return category_id
-    return None  # Return None if the label is not found
+from src.utils import get_category_id
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
+
 @app.route('/')
 def home():
     if request.method == 'GET':

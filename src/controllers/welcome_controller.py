@@ -30,11 +30,6 @@ class WelcomeController:
         if not re.match(email_regex, self.user.email):
             return 2  # Invalid email address
         user=self.user_db.authenticate(self.user)
-        
-        if user is None:
-            return None
-        #print('The user is')
-        #user.display()
         return user
         
 
@@ -60,7 +55,6 @@ class WelcomeController:
     
     def send_verification_email(self):
         otp =generate_otp()
-        body = f'Your 6-digit verification code is: {otp}'
         sent=send_email(receiver_addr=self.user.email,subject="Email verification",body=body)
         if sent:
             return otp
@@ -74,8 +68,6 @@ class WelcomeController:
 
     def get_recommended_news(self,user_id):
         self.user.display()
-        print(self.user.email)
-        print(self.user.id)
         recommended_news=fetch_recommended_news(user_id=user_id)
         recommended_news=[news.to_dict() for news in recommended_news]
         #print('The first recommended news is:')

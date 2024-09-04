@@ -3,6 +3,7 @@ import secrets
 from smtplib import SMTP
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from config.config import CATEGORIES_MAPPING
 import sys
 import os
 import datetime
@@ -13,6 +14,12 @@ import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config.config import SENDER_ADDRESS,PASSWORD
+
+def get_category_id(label, categories_mapping=CATEGORIES_MAPPING):
+    for category_id, category_label in categories_mapping.items():
+        if category_label == label:
+            return category_id
+    return None  # Return None if the label is not found
 
 def increment_hour(current_hour, increment):
     
