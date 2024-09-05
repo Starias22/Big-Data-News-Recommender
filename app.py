@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash,session
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from src.controllers.welcome_controller import WelcomeController
 from src.utils import format_duration, format_source
 from config.config import CATEGORIES_MAPPING
 from config.messages import *
 from src.utils import get_category_id
+ERROR_MESSAGE_CATEGORY='error'
+SUCCESS_MESSAGE_CATEGORY='success'
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
@@ -20,49 +22,39 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    
+    email=password=None
     if request.method == 'POST':
         # Get form data
         email = request.form['email']
         password = request.form['password']
         controller = WelcomeController(email=email, password=password)
-        print(controller)
-        print('+++++++++++++++++++++')
-
         user = controller.login()
-        print(user)
-        print('*********')
-        
         if user == 1:
-            return 'Please fill in both the email and password fields.'
+            flash(ERROR_MISSING_FIELDS, ERROR_MESSAGE_CATEGORY)
         elif user == 2:
-            #return 'Invalid email address.'
-            flash('Invalid email address.', 'error')
+            flash(ERROR_INVALID_EMAIL, ERROR_MESSAGE_CATEGORY)
         elif user is None:
-            #return redirect(url_for('recommended_news'))
-            flash('Incorrect email or password!', 'error')
-            #return 'Email or password incorrect.'
+            flash(ERROR_INCORRECT_CREDENTIALS, ERROR_MESSAGE_CATEGORY)
         elif user:
-            #return user.id
-            session['user_email']=user.email
             session['user_id']=user.id
             session['logged_in'] = True
-            flash(f'Welcome back, {user.firstname}!', 'success')
+            flash(f'{SUCCESS_LOGIN}, {user.firstname}!', SUCCESS_MESSAGE_CATEGORY)
             return redirect(url_for('recommended_news'))
         else:
-            return 'Unknown error.'
-    if request.method == 'GET':
-        if 'logged_in' not in session or not session['logged_in']:
-            # Render the login page for GET request
-            return render_template('login.html')
-        else:
-            return redirect(url_for('recommended_news'))
+            flash(ERROR_UNKNOWN,ERROR_MESSAGE_CATEGORY)
+    #if request.method == 'GET':
+    if 'logged_in' not in session:
+        # Render the login page for GET request
+        return render_template('login.html', email=email, password=password)
+    else:
+        return redirect(url_for('recommended_news'))
 
 @app.route('/logout')
 def logout():
-    # Clear all session data
-    session.clear()
-    flash(SUCCESS_LOGOUT, 'success')
+    if 'logged_in' in session:
+        # Clear all session data
+        session.clear()
+        flash(SUCCESS_LOGOUT, SUCCESS_MESSAGE_CATEGORY)
     return redirect(url_for('login'))
 
 @app.route('/news-preferences', methods=['GET', 'POST'])
@@ -77,22 +69,22 @@ def news_preferences():
             category_label = request.form['remove_category']
             category_id=get_category_id(label=category_label)
             controller.remove_user_category(user_id=session['user_id'], category_id=category_id)
-            flash(SUCCESS_CATEGORY_REMOVED, 'success')
+            flash(SUCCESS_CATEGORY_REMOVED, SUCCESS_MESSAGE_CATEGORY)
         elif 'add_category' in request.form:
             
             category_label = request.form['add_category']
             category_id=get_category_id(label=category_label)
             #return str(category_id)
             controller.add_user_category(user_id=session['user_id'], category_id=category_id)
-            flash(SUCCESS_CATEGORY_ADDED, 'success')
+            flash(SUCCESS_CATEGORY_ADDED, SUCCESS_MESSAGE_CATEGORY)
         elif 'add_sentiment' in request.form:
             new_sentiment = request.form['new_sentiment']
             controller.add_user_sentiment(user_id=session['user_id'], sentiment=new_sentiment)
-            flash(f'Sentiment added successfully!', 'success')
+            flash(f'Sentiment added successfully!', SUCCESS_MESSAGE_CATEGORY)
         elif 'remove_sentiment' in request.form:
             sentiment = request.form['remove_sentiment']
             controller.remove_user_sentiment(user_id=session['user_id'], sentiment=sentiment)
-            flash(f'Sentiment removed!', 'success')
+            flash(f'Sentiment removed!', SUCCESS_MESSAGE_CATEGORY)
     
     
     # Fetch user categories and sentiments
@@ -137,20 +129,20 @@ def register():
         reg_code = controller.valid_new_user()
         print("reg code is",reg_code)
         if reg_code == 1:
-            flash(ERROR_MISSING_FIELDS, 'error')
+            flash(ERROR_MISSING_FIELDS, ERROR_MESSAGE_CATEGORY)
         elif reg_code == 2:
-            flash(ERROR_INVALID_EMAIL, 'error')
+            flash(ERROR_INVALID_EMAIL, ERROR_MESSAGE_CATEGORY)
         elif reg_code == 3:
-            flash(ERROR_WEAK_PASSWORD, 'error')
+            flash(ERROR_WEAK_PASSWORD, ERROR_MESSAGE_CATEGORY)
         elif reg_code == 4:
-            flash(ERROR_PASSWORD_MISMATCH, 'error')
+            flash(ERROR_PASSWORD_MISMATCH, ERROR_MESSAGE_CATEGORY)
         elif reg_code == 5:
-            flash(ERROR_EMAIL_IN_USE, 'error')
+            flash(ERROR_EMAIL_IN_USE, ERROR_MESSAGE_CATEGORY)
         elif reg_code == 0:
             otp = controller.send_verification_email()
             print(otp)
             if otp == 1:
-                flash(ERROR_EMAIL_NOT_SENT, 'error')
+                flash(ERROR_EMAIL_NOT_SENT, ERROR_MESSAGE_CATEGORY)
             else:
                 session['otp'] = otp
                 session['registration_complete'] = True
@@ -163,7 +155,7 @@ def register():
                 flash(f'Thank you, {register_firstname}! A 6-digit confirmation code has been sent to your email address ({register_email}).', 'success')
                 return redirect(url_for('verify_otp'))
         else:
-            flash(ERROR_UNKNOWN, 'error')
+            flash(ERROR_UNKNOWN, ERROR_MESSAGE_CATEGORY)
     
     return render_template('register.html')
 
@@ -193,7 +185,7 @@ def verify_otp():
 
             return redirect(url_for('login'))
         else:
-            flash(WARNING_INVALID_OTP, 'error')
+            flash(WARNING_INVALID_OTP, ERROR_MESSAGE_CATEGORY)
     
     
     if 'registration_complete' in session :
@@ -206,7 +198,7 @@ def recommended_news():
     if 'logged_in' not in session or not session['logged_in']:
         return redirect(url_for('login'))
 
-    controller = WelcomeController(email=session['user_email'])
+    controller = WelcomeController()
     recommended_news = controller.get_recommended_news(user_id=session['user_id'])
     
     # Pagination logic
@@ -215,9 +207,7 @@ def recommended_news():
     end_idx = start_idx + 20
     current_news = recommended_news[start_idx:end_idx]
 
-    return render_template('recommended_news.html', news=current_news, page_number=page_number, format_duration = format_duration, format_source = format_source)
-
-
-
-#if __name__ == '__main__':
-    #app.run()
+    return render_template('recommended_news.html', 
+                           news=current_news, page_number=page_number, 
+                           format_duration = format_duration, 
+                           format_source = format_source)
