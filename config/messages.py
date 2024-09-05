@@ -1,3 +1,4 @@
+"""This module defines messages to display accross the Flask application interfaces"""
 # Success messages
 SUCCESS_REGISTRATION = 'Your registration was successful!'
 SUCCESS_LOGIN = 'Welcome back'
