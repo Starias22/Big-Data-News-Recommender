@@ -1,20 +1,16 @@
-from pathlib import Path
-from airflow import DAG
-from airflow.operators.bash import BashOperator 
-from datetime import timedelta
-import pendulum
+"""This is the module for news production DAG"""
 import sys
+from pathlib import Path
+from datetime import timedelta
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+import pendulum
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-
 from config.config import SRC_PATH,START_HOUR,START_DAYS_AGO,ADMIN_EMAIL
 from src.airflow_email import success_email,failure_email
-
-
-
-
 
 default_args = {
     'owner': 'airflow',
@@ -27,8 +23,6 @@ default_args = {
     'retry_delay': timedelta(minutes=15),
     'email':ADMIN_EMAIL
 }
-
-
 
 dag = DAG(
     'news_production_dag',
