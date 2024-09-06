@@ -12,10 +12,11 @@ app.secret_key = 'your_secret_key'  # Set a secret key for session management
 
 @app.route('/',methods=["GET"])
 def home():
+    # Not logged in, show welcome page
     if 'logged_in' not in session or not session['logged_in']:
-        # Render the login page for GET request
+        # Render the login page
         return render_template('index.html')
-    else:
+    else: # Already logged in, show recommended news
         return redirect(url_for('recommended_news'))
     
 
