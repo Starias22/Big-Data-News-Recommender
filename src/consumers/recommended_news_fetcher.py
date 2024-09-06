@@ -15,7 +15,7 @@ from config.config import KAFKA_BOOTSTRAP_SERVERS,AVAILABLE_NEWS_TOPIC,TIME_OUT_
 
 def fetch_recommended_news(user_id,topics=None, servers=None):
 
-    user = User(id=user_id)
+    user = User(user_id=user_id)
     recommended_news_ids = UserDB().find_user_by_id(user.id).recommended_news
     recommended_news = []
     print('The recommended news ids:',recommended_news_ids)
