@@ -10,14 +10,13 @@ SUCCESS_MESSAGE_CATEGORY='success'
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
 
-@app.route('/')
+@app.route('/',methods=["GET"])
 def home():
-    if request.method == 'GET':
-        if 'logged_in' not in session or not session['logged_in']:
-            # Render the login page for GET request
-            return render_template('index.html')
-        else:
-            return redirect(url_for('recommended_news'))
+    if 'logged_in' not in session or not session['logged_in']:
+        # Render the login page for GET request
+        return render_template('index.html')
+    else:
+        return redirect(url_for('recommended_news'))
     
 
 @app.route('/login', methods=['GET', 'POST'])
