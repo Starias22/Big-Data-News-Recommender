@@ -53,12 +53,12 @@
 
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+                <input type="password" id="password" name="password" class="form-control" value="{{ request.form.get('password', '') }}" required>
             </div>
 
             <div class="form-group">
                 <label for="password_confirm">Confirm Password:</label>
-                <input type="password" id="password_confirm" name="password_confirm" class="form-control" required>
+                <input type="password" id="password_confirm" name="password_confirm" class="form-control" value="{{ request.form.get('password_confirm', '') }}" required>
             </div>
 
             <button type="submit" class="btn btn-primary">Register</button>

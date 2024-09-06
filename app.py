@@ -109,25 +109,22 @@ def news_preferences():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    print("Hello everyone")
+    email=password=None
     if request.method == 'POST':
-        register_firstname = request.form.get('firstname').strip()
-        register_lastname = request.form.get('lastname').strip()
-        register_email = request.form.get('email').strip()
-        register_password = request.form.get('password').strip()
-        register_password_confirm = request.form.get('password_confirm').strip()
-        print('+++++++++++++++++++++++++++')
+        firstname = request.form.get('firstname').strip()
+        lastname = request.form.get('lastname').strip()
+        email = request.form.get('email').strip()
+        password = request.form.get('password').strip()
+        password_confirm = request.form.get('password_confirm').strip()
         
         controller = WelcomeController(
-            firstname=register_firstname,
-            lastname=register_lastname,
-            email=register_email,
-            password=register_password,
-            password_confirm=register_password_confirm
+            firstname=firstname,
+            lastname=lastname,
+            email=email,
+            password=password,
+            password_confirm=password_confirm
         )
-        print(controller)
         reg_code = controller.valid_new_user()
-        print("reg code is",reg_code)
         if reg_code == 1:
             flash(ERROR_MISSING_FIELDS, ERROR_MESSAGE_CATEGORY)
         elif reg_code == 2:
@@ -140,19 +137,18 @@ def register():
             flash(ERROR_EMAIL_IN_USE, ERROR_MESSAGE_CATEGORY)
         elif reg_code == 0:
             otp = controller.send_verification_email()
-            print(otp)
             if otp == 1:
                 flash(ERROR_EMAIL_NOT_SENT, ERROR_MESSAGE_CATEGORY)
             else:
                 session['otp'] = otp
-                session['registration_complete'] = True
+                #session['registration_complete'] = True
                 session['register_details'] = {
-                    "firstname": register_firstname,
-                    "lastname": register_lastname,
-                    "email": register_email,
-                    "password": register_password
+                    "firstname": firstname,
+                    "lastname": lastname,
+                    "email": email,
+                    "password": password
                 }
-                flash(f'Thank you, {register_firstname}! A 6-digit confirmation code has been sent to your email address ({register_email}).', 'success')
+                flash(f'Thank you, {firstname}! A 6-digit confirmation code has been sent to your email address ({email}).', SUCCESS_MESSAGE_CATEGORY)
                 return redirect(url_for('verify_otp'))
         else:
             flash(ERROR_UNKNOWN, ERROR_MESSAGE_CATEGORY)
@@ -172,14 +168,10 @@ def verify_otp():
                 email=register_details["email"],
                 password=register_details["password"]
             )
-            user_id = controller.register()
-            #session['user_id'] = user_id
+            controller.register()
             flash(f'Registration completed! Your email has been verified successfully, {register_details["firstname"]}!', 'success')
-            #session['logged_in'] = True
-            session['user_registered'] = True
-            
             # Clear registration state
-            session.pop('registration_complete', None)
+            #session.pop('registration_complete', None)
             session.pop('otp', None)
             session.pop('register_details', None)
 
@@ -188,7 +180,7 @@ def verify_otp():
             flash(WARNING_INVALID_OTP, ERROR_MESSAGE_CATEGORY)
     
     
-    if 'registration_complete' in session :
+    if 'register_details' in session :
             return render_template('verify_otp.html')
     else:
             return redirect(url_for('register'))
