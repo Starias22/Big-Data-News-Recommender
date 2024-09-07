@@ -201,7 +201,7 @@ def recommended_news():
     # Handle the POST request (when a news item is clicked)
     if request.method == 'POST':
         #return request.form['news_url']
-        action = request.form.get('action')  # This will be either 'like' or 'dislike'
+        action = request.form.get('action')
         news_id = request.form['news_id']
         if action:
             action = int (action)
