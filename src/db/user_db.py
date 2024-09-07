@@ -78,6 +78,15 @@ class UserDB:
             print(user_data['categories'])
             return user_data['categories']
         return None
+    
+    def retrieve_user_sentiments(self, user_id: str) -> Optional[List[int]]:
+        user_data = self.db.users.find_one({"_id": ObjectId(user_id)})
+
+        if user_data and 'sentiments' in user_data:
+            print('++++++++++++++++++++++++++++++++++++=')
+            print(user_data['sentiments'])
+            return user_data['sentiments']
+        return None
 
     def add_category_to_user(self, user_id: str, category_id: int):
         user = self.find_user_by_id(user_id)
@@ -96,15 +105,20 @@ class UserDB:
 
     def remove_category_from_user(self, user_id: str, category_id: int):
         user = self.find_user_by_id(user_id)
-
-        print(88888888888888888888888)
-        print(user)
         if category_id in user.categories:
             user.categories.remove(category_id)
 
             self.db.users.update_one(
                     {"_id": ObjectId(user_id)},
                     {"$set": {"categories": user.categories}}
+                )
+            
+    def update_sentiments(self, user_id: str, sentiments: List):
+        #user = self.find_user_by_id(user_id)
+
+        self.db.users.update_one(
+                    {"_id": ObjectId(user_id)},
+                    {"$set": {"sentiments": sentiments}}
                 )
 
 # Usage example:

@@ -1,11 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from src.controllers.welcome_controller import WelcomeController
 from src.utils import format_duration, format_source
-from config.config import CATEGORIES_MAPPING
+from config.config import CATEGORIES_MAPPING, POSITIVE_SENTIMENT, NEGATIVE_SENTIMENT, NEUTRAL_SENTIMENT
 from config.messages import *
 from src.utils import get_category_id
 ERROR_MESSAGE_CATEGORY='error'
 SUCCESS_MESSAGE_CATEGORY='success'
+sentiment_scores = {
+    'Positive': 1,
+    'Negative': -1,
+    'Neutral': 0
+}
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
@@ -61,7 +67,6 @@ def logout():
 def news_preferences():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
     controller = WelcomeController()
     
     if request.method == 'POST':
@@ -74,23 +79,19 @@ def news_preferences():
             
             category_label = request.form['add_category']
             category_id=get_category_id(label=category_label)
-            #return str(category_id)
+
             controller.add_user_category(user_id=session['user_id'], category_id=category_id)
             flash(SUCCESS_CATEGORY_ADDED, SUCCESS_MESSAGE_CATEGORY)
-        elif 'add_sentiment' in request.form:
-            new_sentiment = request.form['new_sentiment']
-            controller.add_user_sentiment(user_id=session['user_id'], sentiment=new_sentiment)
-            flash(f'Sentiment added successfully!', SUCCESS_MESSAGE_CATEGORY)
-        elif 'remove_sentiment' in request.form:
-            sentiment = request.form['remove_sentiment']
-            controller.remove_user_sentiment(user_id=session['user_id'], sentiment=sentiment)
-            flash(f'Sentiment removed!', SUCCESS_MESSAGE_CATEGORY)
-    
-    
+        
+        else:
+            selected_sentiments = request.form.getlist('sentiments')
+            new_sentiments=[]
+            for selected_sentiment in selected_sentiments:
+                new_sentiments.append(sentiment_scores[selected_sentiment])
+            controller.update_user_sentiments(user_id=session['user_id'],sentiments=new_sentiments)
+
     # Fetch user categories and sentiments
     user_categories = controller.get_user_categories(user_id=session['user_id'])
-    #return str(user_categories)
-    #return CATEGORIES_MAPPING
     user_category_labels = [CATEGORIES_MAPPING[cat_id] for cat_id in user_categories]
     
     all_categories = list(CATEGORIES_MAPPING.keys())
@@ -98,12 +99,21 @@ def news_preferences():
     other_category_labels = [CATEGORIES_MAPPING[cat_id] for cat_id in other_categories]
     
     user_sentiments = controller.get_user_sentiments(user_id=session['user_id'])
-    
-    
+
+    positive=negative=neutral=False
+    if POSITIVE_SENTIMENT in user_sentiments:
+        positive = True
+    if NEGATIVE_SENTIMENT in user_sentiments:
+        negative = True
+    if NEUTRAL_SENTIMENT in user_sentiments:
+        neutral = True
+
     return render_template('news_preferences.html', 
                            user_category_labels=user_category_labels,
                            other_category_labels=other_category_labels,
-                           user_sentiments=user_sentiments)
+                           user_sentiments=user_sentiments,
+                           positive=positive, negative=negative, 
+                           neutral = neutral)
 
 
 
@@ -116,7 +126,6 @@ def register():
         email = request.form.get('email').strip()
         password = request.form.get('password').strip()
         password_confirm = request.form.get('password_confirm').strip()
-        
         controller = WelcomeController(
             firstname=firstname,
             lastname=lastname,

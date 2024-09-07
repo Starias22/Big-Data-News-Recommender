@@ -97,7 +97,7 @@ class WelcomeController:
 
     def get_user_sentiments(self, user_id):
         # Fetch user sentiments from database or return an empty list
-        return []
+        return self.user_db.retrieve_user_sentiments(user_id=user_id)
 
     def add_user_sentiment(self, user_id, sentiment):
         # Add a new sentiment for the user in the database
@@ -106,5 +106,10 @@ class WelcomeController:
     def remove_user_sentiment(self, user_id, sentiment):
         # Remove a sentiment for the user from the database
         pass
+
+    def update_user_sentiments(self, user_id, sentiments):
+        self.user_db.update_sentiments(user_id=user_id, sentiments=sentiments)
+
+
 
 
