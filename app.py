@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from src.controllers.welcome_controller import WelcomeController
 from src.utils import format_duration, format_source
-from config.config import CATEGORIES_MAPPING, POSITIVE_SENTIMENT, NEGATIVE_SENTIMENT, NEUTRAL_SENTIMENT
+from config.config import CATEGORIES_MAPPING, POSITIVE_SENTIMENT, NEGATIVE_SENTIMENT, NEUTRAL_SENTIMENT, SEEN, LIKED, DISLIKED
 from config.messages import *
 from src.utils import get_category_id
+PAGE_SIZE = 20
 ERROR_MESSAGE_CATEGORY='error'
 SUCCESS_MESSAGE_CATEGORY='success'
 sentiment_scores = {
@@ -11,7 +12,6 @@ sentiment_scores = {
     'Negative': -1,
     'Neutral': 0
 }
-
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
@@ -180,7 +180,6 @@ def verify_otp():
             controller.register()
             flash(f'Registration completed! Your email has been verified successfully, {register_details["firstname"]}!', 'success')
             # Clear registration state
-            #session.pop('registration_complete', None)
             session.pop('otp', None)
             session.pop('register_details', None)
 
@@ -194,20 +193,32 @@ def verify_otp():
     else:
             return redirect(url_for('register'))
 
-@app.route('/recommended-news')
+@app.route('/recommended-news', methods=["GET", "POST"])
 def recommended_news():
     if 'logged_in' not in session or not session['logged_in']:
         return redirect(url_for('login'))
-
     controller = WelcomeController()
-    recommended_news = controller.get_recommended_news(user_id=session['user_id'])
+    # Handle the POST request (when a news item is clicked)
+    if request.method == 'POST':
+        #return request.form['news_url']
+        action = request.form.get('action')  # This will be either 'like' or 'dislike'
+        news_id = request.form['news_id']
+        if action:
+            action = int (action)
+        else:
+            action = SEEN
+        controller.register_interaction(user_id=session["user_id"], news_id=news_id,action=action)
+
+        if not action: 
+            return redirect(request.form['news_url'])
     
+    recommended_news = controller.get_recommended_news(user_id=session['user_id'])
+
     # Pagination logic
     page_number = int(request.args.get('page', 0))
-    start_idx = page_number * 20
-    end_idx = start_idx + 20
+    start_idx = page_number * PAGE_SIZE
+    end_idx = start_idx + PAGE_SIZE
     current_news = recommended_news[start_idx:end_idx]
-
     return render_template('recommended_news.html', 
                            news=current_news, page_number=page_number, 
                            format_duration = format_duration, 

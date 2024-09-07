@@ -6,16 +6,28 @@
     <title>Recommended News</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+
+    
     <style>
         .news-item {
             border-bottom: 1px solid #ddd;
             padding: 15px 0;
         }
-        .news-image {
+        /*.news-image {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
-        }
+        }*/
+        .news-image {
+    width: 100%; /* Make the image width 100% relative to its container */
+    max-width: 300px; /* Set a maximum width for the image */
+    height: 200px; /* Set a fixed height */
+    object-fit: cover; /* Ensures the image fills the dimensions without distortion */
+    border-radius: 8px;
+}
+
         .news-content {
             padding: 10px 0;
         }
@@ -45,22 +57,41 @@
         {% if news %}
             <div class="news-list">
                 {% for item in news %}
-                    <div class="news-item row">
-                        <div class="col-md-4 text-center">
-                            {% if item.img_url %}
-                                <img src="{{ item.img_url }}" alt="News Image" class="news-image">
-                            {% endif %}
-                        </div>
-                        <div class="col-md-8">
-                            <div class="news-category text-center">{{ item.category }}</div>
-                            <h4 class="news-title text-center">{{ item.title }}</h4>
-                            <div class="news-content text-center">
-                                <p>{{ format_source(item.source_name, item.author) }} | {{ format_duration(item.publication_date) }}</p>
-                                <p><strong>Sentiment Score:</strong> {{ item.sentiment_score }}</p>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+    <form action="{{ url_for('recommended_news') }}" method="POST" class="news-item row">
+        <input type="hidden" name="news_url" value="{{ item.url }}">
+        <input type="hidden" name="news_id" value="{{ item._id }}">  <!-- Hidden field for news ID -->
+        <div class="col-md-4 text-center" style="cursor: pointer;" onclick="this.parentElement.submit();">
+        
+                <img src="{{ item.img_url if item.img_url else '/static/images/news.jpeg' }} " class="news-image" alt="NOT AVAILABLE">
+
+        </div>
+        
+        <div class="col-md-8" style="cursor: pointer;" onclick="this.parentElement.submit();">
+            <div class="news-category text-center">{{ item.category }}</div>
+            <h4 class="news-title text-center">{{ item.title }}</h4>
+            <div class="news-content text-center">
+                <p><strong>Sentiment Score:</strong> {{ item.sentiment_score }}</p>
+                <p>{{ format_source(item.source_name, item.author) }} | {{ format_duration(item.publication_date) }}</p>
+            </div>
+
+            <!-- Add Like and Dislike buttons -->
+            <div class="text-center mt-2">
+               <!-- Like Button -->
+            <button type="submit" name="action" value=1 class="btn btn-success btn-sm">
+                <i class="fas fa-thumbs-up"></i>
+            </button>
+
+            <!-- Dislike Button -->
+            <button type="submit" name="action" value=-1 class="btn btn-danger btn-sm">
+                <i class="fas fa-thumbs-down"></i>
+            </button>
+            </div>
+            
+        </div>
+    </form>
+{% endfor %}
+
+            
             </div>
 
             <!-- Pagination Controls -->

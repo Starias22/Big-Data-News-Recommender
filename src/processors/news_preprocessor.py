@@ -1,4 +1,4 @@
-from pyspark.sql.functions import col, lower, regexp_replace, trim, concat_ws
+from pyspark.sql.functions import col, lower, regexp_replace, trim, concat_ws, when
 from pyspark.ml.feature import StopWordsRemover, Tokenizer
 from nltk import download
 from pyspark.ml import PipelineModel
@@ -93,6 +93,11 @@ class NewsPreprocessor:
         Perform tokenization, lemmatization, and stopwords removal on the cleaned articles.
         Optionally convert the filtered words back to a single string.
         """
+        # First transformation: Replace img_url values not starting with 'http' by None
+        cleaned_articles = cleaned_articles.withColumn(
+            "img_url",
+            when(col("img_url").startswith("http"), col("img_url")).otherwise(None)
+        )
         tokenized_data = self.tokenize(cleaned_articles)
         lemmatized_data = self.lemmatize(tokenized_data)
         filtered_data = self.stopwords_removal(lemmatized_data)
