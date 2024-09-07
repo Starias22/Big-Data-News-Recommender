@@ -5,7 +5,6 @@ from src.utils import generate_otp,send_email
 from src.consumers.recommended_news_fetcher import fetch_recommended_news
 from utils import is_empty
 from src.producers.interactions_producer import send_interaction
-#from src.db.interaction_db import InteractionDB
 from src.models.interaction import Interaction
 from datetime import datetime
 #ezechieladede@gmail.com
@@ -30,8 +29,7 @@ class WelcomeController:
         if not re.match(email_regex, self.user.email):
             return 2  # Invalid email address
         user=self.user_db.authenticate(self.user)
-        return user
-        
+        return user 
 
     def valid_new_user(self):
 
@@ -61,18 +59,12 @@ class WelcomeController:
 
     def register(self):
         user=self.user_db.create_user(self.user)
-    
         return user.id
-
 
     def get_recommended_news(self,user_id):
         self.user.display()
         recommended_news=fetch_recommended_news(user_id=user_id)
         recommended_news=[news.to_dict() for news in recommended_news]
-        #print('The first recommended news is:')
-        #print(recommended_news[0])
-        
-        
         return recommended_news
 
     def register_interaction(self,user_id,news_id,action):
@@ -84,12 +76,9 @@ class WelcomeController:
             # Fetch user categories from database or return an empty list
             return self.user_db.retrieve_user_categories(user_id=user_id)
             
-
     def add_user_category(self, user_id, category_id):
-        self.user_db.add_category_to_user(user_id=user_id,category_id=category_id)
-
         # Add a new category for the user in the database
-        
+        self.user_db.add_category_to_user(user_id=user_id,category_id=category_id)
 
     def remove_user_category(self, user_id, category_id):
         # Remove a category for the user from the database
@@ -99,17 +88,6 @@ class WelcomeController:
         # Fetch user sentiments from database or return an empty list
         return self.user_db.retrieve_user_sentiments(user_id=user_id)
 
-    def add_user_sentiment(self, user_id, sentiment):
-        # Add a new sentiment for the user in the database
-        pass
-
-    def remove_user_sentiment(self, user_id, sentiment):
-        # Remove a sentiment for the user from the database
-        pass
-
     def update_user_sentiments(self, user_id, sentiments):
         self.user_db.update_sentiments(user_id=user_id, sentiments=sentiments)
-
-
-
 
