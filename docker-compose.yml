@@ -142,7 +142,7 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'  # Disable auto topic creation
     volumes:
       - ./data/kafka/log/broker1:/broker
-      - ./scripts:/scripts
+      - ./scripts/kafka-scripts/:/scripts
     networks:
       - kafka
 
@@ -205,7 +205,7 @@ services:
     - airflow_firstname
     - airflow_lastname
     volumes:
-      - ./airflow-init-entrypoint.sh:/entrypoint.sh
+      - ./scripts/airflow-scripts/airflow-init-entrypoint.sh:/entrypoint.sh
     entrypoint: ["/bin/bash", "/entrypoint.sh"]
     networks:
       - backend
@@ -227,7 +227,7 @@ services:
       - ./trained_models:/opt/trained_models/
       - ./data/airflow-logs:/opt/airflow/logs
       - ./config:/opt/config
-      - ./entrypoint.sh:/entrypoint.sh
+      - ./scripts/airflow-scripts/entrypoint.sh:/entrypoint.sh
     command: webserver
     secrets:
       - smtp_user
@@ -251,7 +251,7 @@ services:
       - ./data/airflow-logs:/opt/airflow/logs
       - ./config:/opt/config
       - ./src:/opt/src
-      - ./entrypoint.sh:/entrypoint.sh   
+      - ./scripts/airflow-scripts/entrypoint.sh:/entrypoint.sh   
     command: scheduler
     networks:
       - backend
@@ -283,7 +283,7 @@ services:
       - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
       - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
       - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/
-      - ./entrypoint.sh:/entrypoint.sh
+      - ./scripts/airflow-scripts/entrypoint.sh:/entrypoint.sh
     command: celery worker
     secrets:
       - smtp_user
