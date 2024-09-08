@@ -17,7 +17,6 @@ x-spark-worker-environment: &spark_worker_environment
   SPARK_MASTER_URL: spark://spark-master:7077
   TRAINED_MODELS_PATH: ${TRAINED_MODELS_PATH}
 
-
 x-environment: &airflow_environment
   - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
   - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
@@ -64,7 +63,6 @@ services:
     networks:
       - backend
       - kafka
-
     environment:
       - TRAINED_MODELS_PATH=${TRAINED_MODELS_PATH}
       #- SPARK_MODE=master
@@ -74,7 +72,6 @@ services:
   spark-worker1:
     <<: *spark_common_properties
     container_name: spark-worker1
-    
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     depends_on:
       - spark-master
@@ -144,7 +141,6 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'  # Disable auto topic creation
     volumes:
-      
       - ./data/kafka/log/broker1:/broker
       - ./scripts:/scripts
     networks:
@@ -180,7 +176,6 @@ services:
       POSTGRES_DB: airflow
     networks:
       - backend
-      
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
 
@@ -221,7 +216,6 @@ services:
     restart: always
     container_name: airflow-webserver
     image: *airflow_image
-    
     depends_on:
       - airflow-init
       - kafka-broker1
@@ -243,8 +237,7 @@ services:
     networks:
       - backend
       - kafka
-    
-  
+
   airflow-scheduler:
     restart: always
     container_name: airflow-scheduler 
