@@ -22,4 +22,3 @@ data
 kafka-ui/config.yml
 nltk_data
 secrets
-docker-compose.yml
