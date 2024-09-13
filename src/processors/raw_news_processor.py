@@ -27,8 +27,7 @@ schema = StructType([
 # Initialize Spark Session with Kafka package
 spark = SparkSession.builder \
     .appName("RawNewsProcessingApp") \
-    .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
-        .getOrCreate()
+    .getOrCreate()
 
 # Function to get sentiment score using VADER
 def get_sentiment_score(text):
