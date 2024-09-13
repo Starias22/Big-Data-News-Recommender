@@ -9,7 +9,6 @@ from GoogleNews import GoogleNews
 
 from pathlib import Path
 import sys
-import os
 
 # Add 'src' directory to the Python path
 src_path = Path(__file__).resolve().parents[2]
