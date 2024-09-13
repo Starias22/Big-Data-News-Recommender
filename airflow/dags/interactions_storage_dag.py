@@ -11,7 +11,7 @@ import pendulum
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from config.config import SRC_PATH,KAFKA_PACKAGES,START_HOUR,START_DAYS_AGO,ADMIN_EMAIL
+from config.config import SRC_PATH,START_HOUR,START_DAYS_AGO,ADMIN_EMAIL, SPARK_CONNECTION_ID
 
 from src.airflow_email import success_email,failure_email
 
@@ -38,14 +38,15 @@ dag = DAG(
     catchup = False,
 )
 
+
 interactions_storage_task = SparkSubmitOperator(
     task_id='interactions_storage',
-    conn_id='spark-connection',
+    conn_id=SPARK_CONNECTION_ID,
     application=f'{SRC_PATH}/consumers/interactions_saver.py',
     dag=dag,
-    packages=KAFKA_PACKAGES,
+    #packages=SPARK_KAFKA_PACKAGES,
     deploy_mode="client",
     on_success_callback = success_email,
-     on_failure_callback = failure_email,
+    on_failure_callback = failure_email,
 )
 

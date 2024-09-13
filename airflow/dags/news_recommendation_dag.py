@@ -10,7 +10,7 @@ import pendulum
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from config.config import START_HOUR,START_DAYS_AGO,SRC_PATH,KAFKA_PACKAGES,ADMIN_EMAIL
+from config.config import START_HOUR,START_DAYS_AGO,SRC_PATH,SPARK_KAFKA_PACKAGES,ADMIN_EMAIL, SPARK_CONNECTION_ID
 
 from src.airflow_email import success_email,failure_email
 
@@ -35,32 +35,26 @@ dag = DAG(
     catchup = False,
 )
 
-
-
-
 available_news_fetching_task = SparkSubmitOperator(
     task_id='available_news_fetching',
-    conn_id='spark-connection',
+    conn_id=SPARK_CONNECTION_ID,
     application=f'{SRC_PATH}/processors/processed_news_forwarder.py',
     dag=dag,
-    packages=KAFKA_PACKAGES,
+    packages=SPARK_KAFKA_PACKAGES,
     deploy_mode="client",
     on_success_callback = success_email,
      on_failure_callback = failure_email,
 )
-
-
-
 
 available_news_recommendation_task = SparkSubmitOperator(
     task_id='available_news_recommending',
-    conn_id='spark-connection',
+    conn_id=SPARK_CONNECTION_ID,
     application=f'{SRC_PATH}/consumers/available_news_recommender.py',
     dag=dag,
-    packages=KAFKA_PACKAGES,
+    packages=SPARK_KAFKA_PACKAGES,
     deploy_mode="client",
     on_success_callback = success_email,
      on_failure_callback = failure_email,
 )
 
-available_news_fetching_task>>available_news_recommendation_task
+available_news_fetching_task >> available_news_recommendation_task

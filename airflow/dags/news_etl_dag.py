@@ -12,12 +12,8 @@ import pendulum
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from config.config import START_HOUR,START_DAYS_AGO,SRC_PATH,KAFKA_PACKAGES,ADMIN_EMAIL
+from config.config import START_HOUR,START_DAYS_AGO,SRC_PATH,SPARK_KAFKA_PACKAGES,ADMIN_EMAIL, SPARK_CONNECTION_ID
 from src.airflow_email import success_email,failure_email
-
-
-
-
 
 default_args = {
     'owner': 'airflow',
@@ -46,10 +42,10 @@ dag = DAG(
 
 raw_news_processing_task = SparkSubmitOperator(
     task_id='raw_news_processing',
-    conn_id='spark-connection',
+    conn_id=SPARK_CONNECTION_ID,
     application=f'{SRC_PATH}/processors/raw_news_processor.py',
     dag=dag,
-    packages=KAFKA_PACKAGES,
+    packages=SPARK_KAFKA_PACKAGES,
     deploy_mode="client",
     on_success_callback = success_email,
      on_failure_callback = failure_email,
@@ -61,6 +57,6 @@ filtered_news_storage_task = BashOperator(
     bash_command=f'python3 {SRC_PATH}/consumers/filtered_news_saver.py',
     dag=dag,
     on_success_callback = success_email,
-     on_failure_callback = failure_email,
+    on_failure_callback = failure_email,
 )
 raw_news_processing_task>>filtered_news_storage_task
