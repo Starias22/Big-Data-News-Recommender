@@ -90,14 +90,8 @@ with open(CATEGORIES_JSON_PATH, 'r', encoding='utf-8') as f:
 # Convert keys to integers for category mapping
 CATEGORIES_MAPPING = {int(k): v for k, v in category_mapping.items()}
 
-KAFKA_JARS= [
-    '/opt/bitnami/spark/jars/spark-sql-kafka-0-10_2.12-3.5.1.jar',
-    '/opt/bitnami/spark/jars/spark-streaming-kafka-0-10_2.12-3.5.1.jar',
-    '/opt/bitnami/spark/jars/spark-token-provider-kafka-0-10_2.12-3.5.1.jar'
-]
-KAFKA_PACKAGES="org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,\
+SPARK_KAFKA_PACKAGES="org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1,\
 org.apache.spark:spark-token-provider-kafka-0-10_2.12:3.5.1"
-
 
 FILTERED_NEWS_CHECKPOINT_DIR = CHECKPOINT_DIR +'/filtered_news/'
 AVAILABLE_NEWS_CHECKPOINT_DIR = CHECKPOINT_DIR+ '/available_news/'
@@ -105,3 +99,4 @@ AVAILABLE_NEWS_RECOMMENDER_CHECKPOINT_DIR = SRC_PATH +'/consumer/checkpoint/reco
 PROCESSED_NEWS_CHECKPOINT_DIR = CHECKPOINT_DIR + '/processed_news/'
 SPARK_STREAM_CHECKPOINT_LOCATION=PROJECT_ROOT / 'src/processors/checkpoint/'
 NLTK_DATA_PATH=str(PROJECT_ROOT)+'/nltk_data'
+SPARK_CONNECTION_ID="spark-connection"
