@@ -23,7 +23,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
   - [Secret JSON File Configuration](#secret-json-file-configuration)
   - [Kafka-UI Configuration File](#kafka-ui-configuration-file)
   - [Docker Compose file Configuration](#docker-compose-file-configuration)
-  - [Create Necessary Directories](#create-necessary-directories)
+  - [Set Up Containers Volumes](#set-up-containers-volumes)
   - [Set Permissions](#set-permissions)
   - [Initialize Airflow](#initialize-airflow)
   - [Start All Services](#start-all-services)
@@ -328,75 +328,12 @@ You should also set your username and password.
 
 You may also want to set your firstname and lastname.
 
-#### Create Necessary Directories
+#### Set Up Containers Volumes
 
-First, create a `data` directory and navigate into it. Within the `data` directory, create subdirectories for Zookeeper, Kafka brokers, checkpoints, Redis, PostgreSQL, and MongoDB. Additionally, create a directory for Airflow logs.
-
-```bash
-# Create the main data directory and navigate into it
-mkdir data
-cd data
-
-# Create directories for Zookeeper
-mkdir -p zookeeper/data/
-mkdir -p zookeeper/log/
-
-# Create directories for Kafka brokers
-mkdir -p kafka/log/broker1/
-mkdir -p kafka/log/broker2/
-mkdir -p kafka/log/broker3/
-
-# Create directories for checkpoints
-mkdir -p checkpoint/filtered_news/
-mkdir -p checkpoint/available_news/
-mkdir -p checkpoint/processed_news/
-
-# Create directory for Redis
-mkdir redis/
-
-# Create directory for PostgreSQL
-mkdir postgres
-
-# Create directory for MongoDB
-mkdir mongodb/
-
-# Create directory for Airflow logs
-mkdir airflow-logs/
-
-# Navigate back to the parent directory
-cd ..
-```
-
-### Set Permissions
-
-Set appropriate permissions for the created directories to ensure that the services can read from and write to these directories. Zookeeper and Kafka directories will have full permissions (777), while Redis, PostgreSQL, and MongoDB directories will have read, write, and execute permissions for the owner and read and execute permissions for others (755).
+Run the following script file to set up container volumes. This creates the necessary directories for containers and set appropriate permissions on these directories.
 
 ```bash
-# Set permissions for Zookeeper directories
-chmod -R 777 data/zookeeper/data/
-chmod -R 777 data/zookeeper/log/
-
-# Set permissions for Kafka broker directories
-chmod -R 777 data/kafka/log/broker1/
-chmod -R 777 data/kafka/log/broker2/
-chmod -R 777 data/kafka/log/broker3/
-
-# Set permissions for checkpoint directories
-chmod -R 777 data/checkpoint/filtered_news/
-chmod -R 777 data/checkpoint/available_news/
-chmod -R 777 data/checkpoint/processed_news/
-
-# Set permissions for Redis directory
-chmod -R 755 data/redis/
-
-# Set permissions for PostgreSQL directory
-chmod -R 755 data/postgres/
-
-# Set permissions for MongoDB directory
-chmod -R 755 data/mongodb/
-
-# Set permissions for Airflow logs directory
-chmod -R 777 data/airflow-logs/
+./scripts/setup_volumes.sh
 ```
 
 ### Initialize Airflow
