@@ -36,7 +36,7 @@ class NewsProducer:
         )
         
         # Initialize NewsAPI client
-        self.newsapi = NewsApiClient(api_key=NEWSAPI_KEYS[1])
+        self.newsapi = NewsApiClient(api_key=NEWSAPI_KEYS[0])
         
         # Get current time in UTC
         self.now = datetime.now(pytz.utc)
