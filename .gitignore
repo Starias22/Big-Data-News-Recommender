@@ -22,3 +22,4 @@ data
 kafka-ui/config.yml
 nltk_data
 secrets
+spark_kafka_jar_downoload_logs.txt
