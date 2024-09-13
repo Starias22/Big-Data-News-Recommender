@@ -8,4 +8,4 @@ replication_factor=1
 /usr/bin/kafka-topics --bootstrap-server localhost:9092 --create --topic InteractionsTopic --partitions 6 --replication-factor $replication_factor --config retention.ms=$((24 * 3600 * 1000)) --if-not-exists  # 24 hours in milliseconds
 
 # List Kafka topics
-/usr/bin/kafka-topics --list --bootstrap-server localhost:9092
+/usr/bin/kafka-topics --bootstrap-server localhost:9092 --list 
