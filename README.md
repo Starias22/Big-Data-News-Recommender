@@ -7,6 +7,8 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 ## Table of Contents
 
+- [Solution Overview](#solution-overview)
+
 - [Architecture and Pipeline Description](#architecture-and-pipeline-description)
   - [Schema](#schema)
   - [Components Presentation](#components-presentation)
@@ -44,6 +46,30 @@ The Big Data News Recommender is a system designed to provide personalized news 
 - [Contact Information](#contact-information)
 - [Acknowledgments](#acknowledgments)
 
+
+
+## Solution Overview
+1. Home
+
+![alt text](./resources/interfaces/welcome.png)
+
+2. Registration
+
+![alt text](./resources/interfaces/register.png)
+![alt text](./resources/interfaces/otp.png)
+
+
+3. Login
+
+![alt text](./resources/interfaces/login.png)
+
+4. Preferences
+
+![alt text](./resources/interfaces/preferences.png)
+
+5. Recommened News
+
+![alt text](./resources/interfaces/recommended_news.png)
 
 ## Architecture and Pipeline Description
 
