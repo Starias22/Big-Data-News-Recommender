@@ -279,7 +279,7 @@ services:
       - ./src/:/opt/src/
       - ./scripts:/opt/scripts/
       - ./trained_models/:/opt/trained_models/
-      - /opt/bitnami/spark/jars/:/opt/bitnami/spark/jars/
+      #- /opt/bitnami/spark/jars/:/opt/bitnami/spark/jars/
       - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
       - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
       - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/
