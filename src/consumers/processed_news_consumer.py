@@ -7,10 +7,7 @@ import sys
 src_path = Path(__file__).resolve().parents[2]
 sys.path.append(str(src_path))
 
-from src.models.filtered_news import FilteredNews
-from src.db.filtered_news_db import FilteredNewsDB
 from config.config import KAFKA_BOOTSTRAP_SERVERS,PROCESSED_NEWS_TOPIC
-
 
 def persist_filtered_news(topics=[PROCESSED_NEWS_TOPIC] ,
        servers=KAFKA_BOOTSTRAP_SERVERS):
@@ -27,7 +24,6 @@ def persist_filtered_news(topics=[PROCESSED_NEWS_TOPIC] ,
 
     print("Kafka Consumer Initialized")
 
-    
     # Consume messages from the subscribed topics
     for n, message in enumerate(consumer):
         print('******')

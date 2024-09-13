@@ -17,9 +17,7 @@ from src.db.user_db import UserDB
 # Initialize Spark Session
 spark = SparkSession.builder \
     .appName("AvailableNewsRecommendationApp") \
-    .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1") \
     .getOrCreate()
-
 # Define schema for the features column
 features_schema = StructType([
     StructField("type", IntegerType(), True),
