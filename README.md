@@ -307,20 +307,9 @@ cp -r secrets/ secrets_template/
 
 - Open the `secrets_template/` folder. It contains 2 folders
 1. a folder, named `airflow_user/`. That folder contains files with as content the secrets informations needed to create the first airflow user. These informations include email, firstanme, lastname, password and username.
-2. a folder, named `smtp_user/`. That folder contains files with as content the secrets informations for SMTP user user. These informations include email and password.
+2. a folder, named `smtp_user/`. That folder contains files with as content the secrets informations for SMTP user. These informations include email and password.
 
-1. the value of the `AIRFLOW__SMTP__SMTP_USER` and `AIRFLOW__SMTP__SMTP_MAIL_FROM` variables by the Google email address, your email sender address
-
-2. the value of the `AIRFLOW__SMTP__SMTP_MAIL_FROM` variable by the app password you've generated
-
-
-- Go to the  the airlow initialization service  ie 
-
-`airflow-init` and replace the email address by the admin email address. Use the same email address as the value you set for  `admin_email` during the configuration of `the secret.json` file.
-
-You should also set your username and password.
-
-You may also want to set your firstname and lastname.
+You need to replace the content of these files by your informations.
 
 #### Set Up Containers Volumes
 
