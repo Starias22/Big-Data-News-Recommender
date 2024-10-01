@@ -24,7 +24,6 @@ The Big Data News Recommender is a system designed to provide personalized news 
   - [Kafka-UI Configuration File](#kafka-ui-configuration-file)
   - [Docker Compose file Configuration](#docker-compose-file-configuration)
   - [Set Up Containers Volumes](#set-up-containers-volumes)
-  - [Set Permissions](#set-permissions)
   - [Initialize Airflow](#initialize-airflow)
   - [Start All Services](#start-all-services)
   - [Access Kafka and Create Topics](#access-kafka-and-create-topics)
