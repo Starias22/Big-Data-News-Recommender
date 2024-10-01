@@ -223,10 +223,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./trained_models:/opt/trained_models/
+      #- ./airflow/dags:/opt/airflow/dags
+      #- ./trained_models:/opt/trained_models/
       - ./data/airflow-logs:/opt/airflow/logs
-      - ./config:/opt/config
+      #- ./config:/opt/config
       - ./scripts/airflow-scripts/entrypoint.sh:/entrypoint.sh
     command: webserver
     secrets:
@@ -247,10 +247,10 @@ services:
     environment: *airflow_environment
     volumes:
       - ./airflow/dags:/opt/airflow/dags
-      - ./trained_models:/opt/trained_models/
       - ./data/airflow-logs:/opt/airflow/logs
       - ./config:/opt/config
       - ./src:/opt/src
+      - ./trained_models:/opt/trained_models/
       - ./scripts/airflow-scripts/entrypoint.sh:/entrypoint.sh   
     command: scheduler
     networks:
@@ -277,9 +277,8 @@ services:
       - ./data/airflow-logs:/opt/airflow/logs
       - ./config/:/opt/config/
       - ./src/:/opt/src/
-      - ./scripts:/opt/scripts/
+      #- ./scripts:/opt/scripts/
       - ./trained_models/:/opt/trained_models/
-      #- /opt/bitnami/spark/jars/:/opt/bitnami/spark/jars/
       - ./data/checkpoint/filtered_news/:/opt/airflow/checkpoint/filtered_news/
       - ./data/checkpoint/processed_news/:/opt/airflow/checkpoint/processed_news/
       - ./data/checkpoint/available_news/:/opt/airflow/checkpoint/available_news/
@@ -325,11 +324,11 @@ networks:
 
 secrets:
   smtp_user:
-    file: ./secrets/smtp_user.txt
+    file: ./secrets/smtp_user/user.txt
   smtp_password:
-    file: ./secrets/smtp_password.txt
+    file: ./secrets/smtp_user/password.txt
   smtp_mail_from:
-    file: ./secrets/smtp_mail_from.txt
+    file: ./secrets/smtp_user/mail_from.txt
   airflow_user:
     file: ./secrets/airflow_user/username.txt
   airflow_email:

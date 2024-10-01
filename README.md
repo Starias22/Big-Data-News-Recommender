@@ -295,21 +295,19 @@ cp kafka-ui/config_template.yml kafka-ui/config.yml
 
 Then set your username and password in the `kafka-ui/config.yml`. You will use them to sign in into Kaka UI.
 
-### Docker Compose File Configuration
+### Secrets configurations
 
-You need to configure your `docker-compose.yml` file.
+You need to configure secrets for your `docker-compose.yml` file.
 
-- First of all make a copy of the docker compose template
+- First of all make a copy of the secrets template
 
 ```bash
-cp docker-compose-template.yml docker-compose.yml
+cp -r secrets/ secrets_template/
 ```
 
-- Open the `docker-compose.yml` file 
-
-- Go to the  the airlow environment block ie 
-
-`x-environment: &airflow_environment` and replace
+- Open the `secrets_template/` folder. It contains 2 folders
+1. a folder, named `airflow_user/`. That folder contains files with as content the secrets informations needed to create the first airflow user. These informations include email, firstanme, lastname, password and username.
+2. a folder, named `smtp_user/`. That folder contains files with as content the secrets informations for SMTP user user. These informations include email and password.
 
 1. the value of the `AIRFLOW__SMTP__SMTP_USER` and `AIRFLOW__SMTP__SMTP_MAIL_FROM` variables by the Google email address, your email sender address
 
