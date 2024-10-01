@@ -110,49 +110,46 @@ A service for managing Kafka brokers. Zookeeper has several functions:
 
 This topic contains unprocessed, raw news articles collected from various sources. The data is in its original form as received from the news producers.
 
-This is a message from this topic.
-![alt text](resources/raw-news-topic-message-fields.png)
+<!--This is a message from this topic.
+![alt text](resources/raw-news-topic-message-fields.png) -->
 
 
 - Filtered News Topic
 
 This topic holds news articles that have been filtered to remove news without or with duplicate title, description, URL or content.
 
-This is a message from this topic.
-![alt text](resources/filtered-news-topic-message-field.png)
+<!--This is a message from this topic.
+![alt text](resources/filtered-news-topic-message-field.png) -->
 
 - Processed News Topic
 
 In this topic, news articles are stored after being processed and completed with columns such as categories, and sentiment score. This processing stage prepares the news articles for recommendation.
 
-This is a message from this topic.
+<!--This is a message from this topic.
 
 
 ![alt text](resources/processed-news-topic-message-field-1.png)
 
 ![alt text](resources/processed-news-topic-message-field-2.png)
-![alt text](resources/processed-news-topic-message-field-3.png)
+![alt text](resources/processed-news-topic-message-field-3.png) -->
 
 
 - Available News Topic
 
 This topic includes news articles that are ready for recommendation to users. After filtering and processing, the articles are deemed relevant and suitable for user consumption.
 
-A message of that topic looks like 
-![alt text](resources/available-news-topic-message-fields.png)
+ <!--A message of that topic looks like 
+![alt text](resources/available-news-topic-message-fields.png) -->
 
 
 - Interactions Topic
 
 This topic captures user interactions with the news articles, such as clicks, likes, dislikes.
 
-![alt text](resources/interactions-topic-message-fields.png)
+<!-- ![alt text](resources/interactions-topic-message-fields.png) -->
 
 
-
-These topics are used to organize and manage the flow of different types of data.
-
-The following image show the configuaration of each.
+The following image shows the different topics with their configuarations.
 ![alt text](resources/kafka-topics-configurations.png)
 
 
