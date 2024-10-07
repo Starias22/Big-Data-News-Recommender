@@ -664,8 +664,8 @@ For questions or issues, please contact:
 - GitHub: [Starias22](https://github.com/Starias22)
 - LinkedIn: [Gbètoho Ezéchiel ADEDE](https://www.linkedin.com/in/Starias22)
 
-## Acknowledgments
+<!-- ## Acknowledgments
 
-- Thanks to [contributor1](https://github.com/contributor1) for their valuable input.
+- Thanks to [contributor1](https://github.com/contributor1) for their valuable input. -->
 
                 
