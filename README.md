@@ -7,7 +7,7 @@ This project is part of my Master's in Data Engineering (S2). It is designed to 
 
 The Big Data News Recommender is a system designed to provide personalized news recommendations using big data technologies. It processes large streams of news articles and user interaction data to suggest relevant news content to users.
 
-You can find the detailed project report [here]().
+You can find the detailed project report [here](./S2_Project_Report.pdf).
 ## Table of Contents
 
 - [Solution Overview](#solution-overview)
