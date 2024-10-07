@@ -9,10 +9,9 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 - [Solution Overview](#solution-overview)
 
-- [Architecture and Pipeline Description](#architecture-and-pipeline-description)
+- [Architecture](#architecture)
   - [Schema](#schema)
   - [Components Presentation](#components-presentation)
-  - [Pipeline Comprehensive Description](#pipeline-comprehensive-description)
 - [Installation and Configurations](#installation-and-configurations)
   - [Prerequisites](#prerequisites)
   - [Clone the repository](#clone-the-repository)
@@ -40,6 +39,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
     - [Trigger News ETL DAG](#trigger-news-etl-dag)
     - [Trigger News Recommendation DAG](#trigger-news-recommendation-dag)
     - [Trigger the Interactions Storage DAG](#trigger-the-interactions-storage-dag)
+  - [Pipeline Comprehensive Description](#pipeline-comprehensive-description)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
@@ -70,7 +70,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
 
 ![alt text](./resources/interfaces/recommended_news.png)
 
-## Architecture and Pipeline Description
+## Architecture
 
 ### Schema
 ![alt text](resources/architecture.png)
@@ -183,14 +183,6 @@ The following image shows the different topics with their configuarations.
 #### User
 
 - The end-user who interacts with the News Engine Client to view and interact with recommended news.
-
-
-
-### Pipeline Comprehensive Description
-
-
-
-
 
 ## Installation and Configurations
 
@@ -637,7 +629,9 @@ You can stop your services if you want
 docker compose down
 ```
 
-And fi you start it again you will remark data the data of your services are persisted effectively.
+And if you start it again you will remark data the data of your services are persisted effectively.
+
+### Pipeline Comprehensive Description
 
 ## Contributing
 
