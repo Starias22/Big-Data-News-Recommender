@@ -39,7 +39,7 @@ The Big Data News Recommender is a system designed to provide personalized news 
     - [Trigger News ETL DAG](#trigger-news-etl-dag)
     - [Trigger News Recommendation DAG](#trigger-news-recommendation-dag)
     - [Trigger the Interactions Storage DAG](#trigger-the-interactions-storage-dag)
-  - [Pipeline Comprehensive Description](#pipeline-comprehensive-description)
+- [Pipeline Comprehensive Description](#pipeline-comprehensive-description)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact Information](#contact-information)
