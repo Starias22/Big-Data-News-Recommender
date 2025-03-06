@@ -656,10 +656,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For questions or issues, please contact:
 
-- Name: Gbètoho Ezéchiel ADEDE
-- Email: Gbetoho.ADEDE@um6p.ma
+- Name: G. Ezéchiel ADEDE
+- Email: adedeezechiel@gmail.com
 - GitHub: [Starias22](https://github.com/Starias22)
-- LinkedIn: [Gbètoho Ezéchiel ADEDE](https://www.linkedin.com/in/Starias22)
+- LinkedIn: [G. Ezéchiel ADEDE](https://www.linkedin.com/in/Starias22)
 
 <!-- ## Acknowledgments
 
